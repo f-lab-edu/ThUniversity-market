@@ -15,5 +15,3 @@ security:
   jwt:
     secret-key: testtesttesttesttesttesttesttesttesttesttest
     expire-length: 360000
-  cookie:
-    expire-length: 360000

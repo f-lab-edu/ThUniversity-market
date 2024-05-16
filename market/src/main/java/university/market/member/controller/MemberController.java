@@ -10,14 +10,12 @@ import university.market.member.service.MemberService;
 import university.market.member.service.dto.request.JoinRequest;
 import university.market.member.service.dto.request.LoginRequest;
 import university.market.member.service.dto.response.LoginResponse;
-import university.market.member.utils.JwtCookieProvider;
 
 @RestController
 @RequestMapping("/api/member")
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
-    private final JwtCookieProvider jwtCookieProvider;
 
     @PostMapping("/join")
     public ResponseEntity<Boolean> joinMember(@RequestBody JoinRequest joinRequest) {
