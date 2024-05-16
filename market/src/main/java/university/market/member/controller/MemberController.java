@@ -1,6 +1,5 @@
 package university.market.member.controller;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import university.market.member.service.MemberService;
 import university.market.member.service.dto.request.JoinRequest;
 import university.market.member.service.dto.request.LoginRequest;
+import university.market.member.service.dto.response.LoginResponse;
 import university.market.member.utils.JwtCookieProvider;
 
 @RestController
@@ -26,9 +26,8 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginMember(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        String token = memberService.loginMember(loginRequest);
-        jwtCookieProvider.addJwtTokenToCookie(response, token);
-        return ResponseEntity.ok("ok");
+    public ResponseEntity<LoginResponse> loginMember(@RequestBody LoginRequest loginRequest) {
+        LoginResponse response = memberService.loginMember(loginRequest);;
+        return ResponseEntity.ok(response);
     }
 }
