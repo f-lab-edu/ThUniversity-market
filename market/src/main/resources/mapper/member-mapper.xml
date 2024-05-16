@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="university.market.member.mapper.MemberMapper">
+
+    <resultMap id="MemberResultMap" type="university.market.member.domain.MemberVO">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="email" column="email" />
+        <result property="password" column="password" />
+        <result property="university" column="university" />
+        <result property="auth" column="auth" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+    </resultMap>
+
+    <select id="findMemberByEmail" resultMap="MemberResultMap">
+        SELECT * FROM member WHERE email = #{email}
+    </select>
+
+    <insert id="joinMember">
+        INSERT INTO member (name, email, password, university, auth, created_at, updated_at)
+        VALUES (#{name}, #{email}, #{password}, #{university, typeHandler=university.market.member.mapper.UniversityTypeHandler}, #{auth}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    </insert>
+
+    <select id="loginMember" resultMap="MemberResultMap">
+        SELECT * FROM member WHERE email = #{email} AND password = #{password}
+    </select>
+
+</mapper>

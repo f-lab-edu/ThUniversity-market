@@ -18,8 +18,20 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'jakarta.annotation:jakarta.annotation-api:3.0.0'
 
+	implementation 'io.jsonwebtoken:jjwt:0.12.5'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// Database
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+	implementation 'com.mysql:mysql-connector-j:8.4.0'
 }
 
 tasks.named('test') {

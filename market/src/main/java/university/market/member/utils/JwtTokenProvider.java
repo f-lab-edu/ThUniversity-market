@@ -1,0 +1,48 @@
+package university.market.member.utils;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import java.util.Date;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import university.market.member.exception.LoginException;
+import university.market.member.exception.LoginExceptionType;
+
+@Component
+public class JwtTokenProvider {
+    @Value("${spring.application.name}")
+    private String issuer;
+    @Value("${security.jwt.secret-key}")
+    private String secretKey;
+    @Value("${security.jwt.expire-length}")
+    private int expireTimeMilliSecond;
+
+    public String generateToken(final String email) {
+        final Date now = new Date();
+        final Date expiredDate = new Date(now.getTime() + expireTimeMilliSecond);
+
+        return Jwts.builder()
+                .claim("email", email)
+                .issuer(issuer)
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + expireTimeMilliSecond))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
+    public String extractEmail(final String token) {
+        try {
+            return Jwts.parser()
+                    .setSigningKey(secretKey).build()
+                    .parseSignedClaims(token)
+                    .getBody()
+                    .get("email")
+                    .toString();
+        } catch (final ExpiredJwtException exception) {
+            throw new LoginException(LoginExceptionType.EXPIRED_ACCESS_TOKEN);
+        } catch (final Exception exception) {
+            throw new LoginException(LoginExceptionType.INVALID_ACCESS_TOKEN);
+        }
+    }
+}
