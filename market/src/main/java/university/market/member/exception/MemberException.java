@@ -3,10 +3,10 @@ package university.market.member.exception;
 import university.market.base.exception.BaseException;
 import university.market.base.exception.BaseExceptionType;
 
-public class LoginException extends BaseException {
-    private final LoginExceptionType exceptionType;
+public class MemberException extends BaseException {
+    private final MemberExceptionType exceptionType;
 
-    public LoginException(final LoginExceptionType exceptionType) {
+    public MemberException(final MemberExceptionType exceptionType) {
         super(exceptionType.errorMessage());
         this.exceptionType = exceptionType;
     }
