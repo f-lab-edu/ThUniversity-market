@@ -6,8 +6,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import university.market.member.exception.LoginException;
-import university.market.member.exception.LoginExceptionType;
+import university.market.member.exception.MemberException;
+import university.market.member.exception.MemberExceptionType;
 
 @Component
 public class JwtTokenProvider {
@@ -35,9 +35,9 @@ public class JwtTokenProvider {
                     .get("email")
                     .toString();
         } catch (final ExpiredJwtException exception) {
-            throw new LoginException(LoginExceptionType.EXPIRED_ACCESS_TOKEN);
+            throw new MemberException(MemberExceptionType.EXPIRED_ACCESS_TOKEN);
         } catch (final Exception exception) {
-            throw new LoginException(LoginExceptionType.INVALID_ACCESS_TOKEN);
+            throw new MemberException(MemberExceptionType.INVALID_ACCESS_TOKEN);
         }
     }
 }
