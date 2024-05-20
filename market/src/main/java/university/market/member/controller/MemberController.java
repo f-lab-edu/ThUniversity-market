@@ -1,6 +1,7 @@
 package university.market.member.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,9 +19,9 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/join")
-    public ResponseEntity<Boolean> joinMember(@RequestBody JoinRequest joinRequest) {
-        Boolean loginState = memberService.joinMember(joinRequest);
-        return ResponseEntity.ok(loginState);
+    public ResponseEntity<Void> joinMember(@RequestBody JoinRequest joinRequest) {
+        memberService.joinMember(joinRequest);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/login")
