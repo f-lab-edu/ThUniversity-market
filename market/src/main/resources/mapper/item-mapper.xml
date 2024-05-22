@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="university.market.item.mapper.ItemMapper">
+
+    <resultMap id="ItemResultMap" type="university.market.item.domain.ItemVO">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="status" column="status"/>
+        <result property="auction" column="auction"/>
+        <result property="price" column="price"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+
+        <association property="seller" javaType="university.market.member.domain.MemberVO">
+            <id property="id" column="seller_id"/>
+            <result property="name" column="seller_name"/>
+            <result property="email" column="seller_email"/>
+            <result property="university" column="seller_university"/>
+        </association>
+    </resultMap>
+
+    <insert id="postItem">
+        INSERT INTO item (title, description, image_url, seller, status, auction, price, created_at, updated_at)
+        VALUES (#{title}, #{description}, #{imageUrl}, #{seller.id}, #{status}, #{auction}, #{price}, CURRENT_TIMESTAMP,
+                CURRENT_TIMESTAMP)
+    </insert>
+
+    <select id="getItemById" resultMap="ItemResultMap">
+        SELECT i.*, m.name AS seller_name, m.email AS seller_email, m.university AS seller_university
+        FROM item i
+                 JOIN member m ON i.seller = m.id
+        WHERE i.id = #{id}
+    </select>
+
+    <select id="getItemsBySellerId" resultMap="ItemResultMap">
+        SELECT i.*, m.name AS seller_name, m.email AS seller_email, m.university AS seller_university
+        FROM item i
+                 JOIN member m ON i.seller_id = m.id
+        WHERE i.seller_id = #{sellerId}
+    </select>
+
+    <update id="updateItem">
+        UPDATE item
+        SET title       = #{item.title},
+            description = #{item.description},
+            image_url   = #{item.imageUrl},
+            status      = #{item.status},
+            auction     = #{item.auction},
+            price       = #{item.price},
+            updated_at  = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteItem">
+        DELETE
+        FROM item
+        WHERE id = #{id}
+    </delete>
+
+</mapper>
