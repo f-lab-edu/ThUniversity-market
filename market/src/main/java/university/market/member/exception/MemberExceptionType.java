@@ -7,6 +7,7 @@ public enum MemberExceptionType implements BaseExceptionType {
     ALREADY_EXISTED_MEMBER(HttpStatus.CONFLICT, "존재하는 유저입니다."),
     INVALID_LOGIN_CREDENTIALS(HttpStatus.UNAUTHORIZED, "유효하지 않은 로그인 정보입니다."),
     EXPIRED_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 Access Token입니다."),
+    UNAUTHORIZED_PERMISSION(HttpStatus.UNAUTHORIZED, "권한이 허가되지 않았습니다."),
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 Access Token입니다."),
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 오류가 발생했습니다.");
 
