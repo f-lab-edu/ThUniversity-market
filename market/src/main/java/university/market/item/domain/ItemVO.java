@@ -1,9 +1,14 @@
 package university.market.item.domain;
 
 import java.sql.Timestamp;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import university.market.item.domain.status.StatusType;
 import university.market.member.domain.MemberVO;
 
+@Data
+@NoArgsConstructor
 public class ItemVO {
     private Long id;
 
@@ -11,15 +16,29 @@ public class ItemVO {
 
     private String description;
 
-    private String image_url;
+    private String imageUrl;
 
     private MemberVO seller;
 
     private StatusType status;
+
     private boolean auction;
+
     private int price;
 
     private Timestamp createdAt;
 
     private Timestamp updatedAt;
+
+    @Builder
+    public ItemVO(String title, String description, String imageUrl, MemberVO seller, StatusType statusType,
+                  boolean auction, int price) {
+        this.title = title;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.seller = seller;
+        this.status = statusType;
+        this.auction = auction;
+        this.price = price;
+    }
 }
