@@ -20,18 +20,18 @@ public class UniversityTypeHandler extends BaseTypeHandler<UniversityType> {
     @Override
     public UniversityType getNullableResult(ResultSet rs, String columnName) throws SQLException {
         String name = rs.getString(columnName);
-        return name == null ? null : UniversityType.valueOf(name);
+        return UniversityType.fromString(name);
     }
 
     @Override
     public UniversityType getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
         String name = rs.getString(columnIndex);
-        return name == null ? null : UniversityType.valueOf(name);
+        return UniversityType.fromString(name);
     }
 
     @Override
     public UniversityType getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         String name = cs.getString(columnIndex);
-        return name == null ? null : UniversityType.valueOf(name);
+        return UniversityType.fromString(name);
     }
 }

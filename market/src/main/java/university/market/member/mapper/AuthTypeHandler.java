@@ -18,18 +18,18 @@ public class AuthTypeHandler extends BaseTypeHandler<AuthType> {
     @Override
     public AuthType getNullableResult(ResultSet rs, String columnName) throws SQLException {
         String name = rs.getString(columnName);
-        return name == null ? null : AuthType.valueOf(name);
+        return AuthType.fromString(name);
     }
 
     @Override
     public AuthType getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
         String name = rs.getString(columnIndex);
-        return name == null ? null : AuthType.valueOf(name);
+        return AuthType.fromString(name);
     }
 
     @Override
     public AuthType getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         String name = cs.getString(columnIndex);
-        return name == null ? null : AuthType.valueOf(name);
+        return AuthType.fromString(name);
     }
 }
