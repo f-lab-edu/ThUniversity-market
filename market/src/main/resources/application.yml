@@ -14,4 +14,4 @@ mybatis:
 security:
   jwt:
     secret-key: testtesttesttesttesttesttesttesttesttesttest
-    expire-length: 360000
+    expire-length: 36000000
