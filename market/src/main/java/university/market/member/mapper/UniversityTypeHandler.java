@@ -9,29 +9,27 @@ import org.apache.ibatis.type.JdbcType;
 import university.market.member.domain.university.UniversityType;
 
 public class UniversityTypeHandler extends BaseTypeHandler<UniversityType> {
-
-
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, UniversityType parameter, JdbcType jdbcType)
             throws SQLException {
-        ps.setString(i, parameter.name());
+        ps.setInt(i, parameter.getValue());
     }
 
     @Override
     public UniversityType getNullableResult(ResultSet rs, String columnName) throws SQLException {
-        String name = rs.getString(columnName);
-        return UniversityType.fromString(name);
+        int value = rs.getInt(columnName);
+        return UniversityType.fromValue(value);
     }
 
     @Override
     public UniversityType getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
-        String name = rs.getString(columnIndex);
-        return UniversityType.fromString(name);
+        int value = rs.getInt(columnIndex);
+        return UniversityType.fromValue(value);
     }
 
     @Override
     public UniversityType getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
-        String name = cs.getString(columnIndex);
-        return UniversityType.fromString(name);
+        int value = cs.getInt(columnIndex);
+        return UniversityType.fromValue(value);
     }
 }

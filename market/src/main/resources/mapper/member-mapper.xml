@@ -10,7 +10,8 @@
         <result property="name" column="name"/>
         <result property="email" column="email"/>
         <result property="password" column="password"/>
-        <result property="university" column="university"/>
+        <result property="university" column="university"
+                typeHandler="university.market.member.mapper.UniversityTypeHandler"/>
         <result property="auth" column="auth"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
@@ -45,13 +46,13 @@
     <delete id="deleteMemberByEmail">
         DELETE
         FROM member
-        where email = #{email}
+        WHERE email = #{email}
     </delete>
 
     <delete id="deleteMemberById">
         DELETE
         FROM member
-        where id = #{id}
+        WHERE id = #{id}
     </delete>
 
 </mapper>
