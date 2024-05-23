@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
+import university.market.member.domain.auth.AuthType;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
 import university.market.member.mapper.MemberMapper;
@@ -52,5 +54,17 @@ public class MemberServiceImpl implements MemberService {
                 .memberId(member.getId())
                 .token(jwtTokenProvider.generateToken(member.getEmail()))
                 .build();
+    }
+
+    @AuthCheck(AuthType.ROLE_ADMIN)
+    @Transactional
+    public void deleteMember(Long id) {
+        memberMapper.deleteMemberById(id);
+    }
+
+    @AuthCheck({AuthType.ROLE_ADMIN, AuthType.ROLE_USER})
+    @Transactional
+    public void deleteMyself(String token) {
+        memberMapper.deleteMemberByEmail(jwtTokenProvider.extractEmail(token));
     }
 }
