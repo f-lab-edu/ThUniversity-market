@@ -26,6 +26,15 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    String generateToken(final String email, final ExpireDateSupplier expireDateSupplier) {
+        return Jwts.builder()
+                .claim("email", email)
+                .expiration(expireDateSupplier.expireDate())
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
+
     public String extractEmail(final String token) {
         try {
             return Jwts.parser()
