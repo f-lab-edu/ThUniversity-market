@@ -3,6 +3,7 @@ package university.market.member.service;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -67,5 +68,27 @@ public class AdminMemberServiceTest {
 
         //then
         assertThat(member).isNull();
+
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("[success] admin delete myself is success")
+    public void delete_myself_is_success() throws Exception {
+        //given
+        LoginRequest adminLoginRequest = new LoginRequest("admin@example.com", "adminpassword");
+        LoginResponse adminLoginResponse = memberService.loginMember(adminLoginRequest);
+        String extractedEmail = jwtTokenProvider.extractEmail(adminLoginResponse.token());
+        Assertions.assertThat(extractedEmail).isEqualTo(adminLoginRequest.email());
+
+        //when
+        mockMvc.perform(delete("/api/member/")
+                        .header("Authorization", "Bearer " + adminLoginResponse.token())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        MemberVO member = memberService.findMemberByEmail(extractedEmail);
+
+        //then
+        Assertions.assertThat(member).isNull();
     }
 }
