@@ -56,6 +56,12 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public MemberVO findMemberByEmail(String email) {
+        final MemberVO member = memberMapper.findMemberByEmail(email);
+        return member;
+    }
+
     @AuthCheck(AuthType.ROLE_ADMIN)
     @Transactional
     public void deleteMember(Long id) {
