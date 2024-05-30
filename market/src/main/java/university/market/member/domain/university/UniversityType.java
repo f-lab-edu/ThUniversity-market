@@ -1,7 +1,7 @@
 package university.market.member.domain.university;
 
 public enum UniversityType {
-    USAN(0),
+    PUSAN(0),
     SEOUL(1),
     YONSEI(2),
     KOREA(3);
