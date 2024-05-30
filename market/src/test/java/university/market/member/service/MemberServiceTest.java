@@ -92,6 +92,18 @@ public class MemberServiceTest {
 
     @Test
     @Transactional
+    @DisplayName("[fail] not authorization guest delete myself")
+    public void not_authorization_guest_delete_myself() throws Exception {
+        mockMvc.perform(delete("/api/member/")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", is("유효하지 않은 Access Token입니다.")))
+                .andExpect(jsonPath("$.code", is(401103)))
+                .andExpect(jsonPath("$.error", is(true)));
+    }
+
+    @Test
+    @Transactional
     @DisplayName("[fail] No authentication guest delete user")
     public void no_authentication_guest_delete_user() throws Exception {
         //given
