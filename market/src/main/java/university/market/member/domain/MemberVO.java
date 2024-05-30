@@ -28,11 +28,11 @@ public class MemberVO {
     private Timestamp updatedAt;
 
     @Builder
-    public MemberVO(String name, String email, String password, String university) {
+    public MemberVO(String name, String email, String password, String university, AuthType auth) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.university = UniversityType.valueOf(university.toUpperCase());
-        this.auth = AuthType.ROLE_USER;
+        this.auth = auth;
     }
 }

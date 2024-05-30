@@ -34,6 +34,28 @@ public class MemberServiceImpl implements MemberService {
                 .email(joinRequest.email())
                 .password(passwordEncoder.encode(joinRequest.password()))
                 .university(joinRequest.university())
+                .auth(AuthType.ROLE_USER)
+                .build();
+
+        try {
+            memberMapper.joinMember(memberVO);
+        } catch (Exception e) {
+            throw new MemberException(MemberExceptionType.DATABASE_ERROR);
+        }
+    }
+
+    @Transactional
+    public void joinAdminUser(JoinRequest joinRequest) {
+        if (memberMapper.findMemberByEmail(joinRequest.email()) != null) {
+            throw new MemberException(MemberExceptionType.ALREADY_EXISTED_MEMBER);
+        }
+
+        final MemberVO memberVO = MemberVO.builder()
+                .name(joinRequest.name())
+                .email(joinRequest.email())
+                .password(passwordEncoder.encode(joinRequest.password()))
+                .university(joinRequest.university())
+                .auth(AuthType.ROLE_ADMIN)
                 .build();
 
         try {
