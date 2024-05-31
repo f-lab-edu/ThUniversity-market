@@ -1,5 +1,6 @@
 package university.market.member.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.is;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -15,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import university.market.member.domain.MemberVO;
+import university.market.member.exception.MemberException;
 import university.market.member.service.dto.request.JoinRequest;
 import university.market.member.service.dto.request.LoginRequest;
 import university.market.member.service.dto.response.LoginResponse;
@@ -92,7 +94,7 @@ public class MemberServiceTest {
 
     @Test
     @Transactional
-    @DisplayName("[fail] not authorization guest delete myself")
+    @DisplayName("[fail] not authorization guest can't delete myself")
     public void not_authorization_guest_delete_myself() throws Exception {
         mockMvc.perform(delete("/api/member/")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -104,7 +106,7 @@ public class MemberServiceTest {
 
     @Test
     @Transactional
-    @DisplayName("[fail] No authentication guest delete user")
+    @DisplayName("[fail] No authentication guest can't delete user")
     public void no_authentication_guest_delete_user() throws Exception {
         //given
         String memberEmail = "test@example.com";
@@ -118,5 +120,18 @@ public class MemberServiceTest {
                 .andExpect(jsonPath("$.code", is(401103)))
                 .andExpect(jsonPath("$.error", is(true)));
 
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("[fail] Invalid token user can't extract memberEmail")
+    public void Invalid_token_user_cant_delete_user() {
+        //given
+        String invalidToken = "invalidToken";
+
+        //when, then
+        assertThatThrownBy(() -> jwtTokenProvider.extractEmail(invalidToken))
+                .isInstanceOf(MemberException.class)
+                .hasMessage("유효하지 않은 Access Token입니다.");
     }
 }
