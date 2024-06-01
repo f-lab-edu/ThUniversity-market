@@ -130,7 +130,7 @@ public class MemberServiceTest {
         String invalidToken = "invalidToken";
 
         //when, then
-        assertThatThrownBy(() -> jwtTokenProvider.extractEmail(invalidToken))
+        assertThatThrownBy(() -> jwtTokenProvider.validateToken(invalidToken))
                 .isInstanceOf(MemberException.class)
                 .hasMessage("유효하지 않은 Access Token입니다.");
     }

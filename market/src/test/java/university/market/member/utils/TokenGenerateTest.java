@@ -51,7 +51,7 @@ public class TokenGenerateTest {
         Thread.sleep(expireTime + 1000L);
         // then
 
-        assertThatThrownBy(() -> jwtTokenProvider.extractEmail(token))
+        assertThatThrownBy(() -> jwtTokenProvider.validateToken(token))
                 .isInstanceOf(MemberException.class)
                 .hasMessage("만료된 Access Token입니다.");
     }
