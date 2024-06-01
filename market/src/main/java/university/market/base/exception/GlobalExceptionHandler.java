@@ -32,8 +32,7 @@ public class GlobalExceptionHandler {
                 .status(statusToReturn)
                 .body(new ErrorResponse(
                         ex.exceptionType().errorMessage(),
-                        ((MemberExceptionType) ex.exceptionType()).errorCode(),
+                        ex.exceptionType().errorCode(),
                         true));
     }
-
 }
