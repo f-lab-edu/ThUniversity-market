@@ -36,7 +36,7 @@ public class JwtTokenProviderImpl implements JwtTokenProvider{
     }
 
     @Override
-    public void validateToken(String token) {
+    public void validateToken(final String token) {
         try {
             Claims claims = Jwts.parser().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
         }  catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
