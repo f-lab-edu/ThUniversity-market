@@ -6,6 +6,11 @@ spring:
     url: jdbc:mysql://localhost:3306/market
     username: root
     password: 1027
+  sql:
+    init:
+      mode: always
+      continue-on-error: true
+      schema-locations: classpath:sql/schema.sql
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
