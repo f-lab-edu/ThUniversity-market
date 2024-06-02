@@ -11,6 +11,22 @@ spring:
       mode: always
       continue-on-error: true
       schema-locations: classpath:sql/schema.sql
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+          ssl:
+            protocols: TLSv1.2
+  profiles:
+    include: env
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
