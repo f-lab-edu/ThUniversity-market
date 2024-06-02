@@ -1,5 +1,8 @@
 package university.market.email.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -49,7 +52,7 @@ public class EmailServiceTest {
 
     @Test
     @DisplayName("[success] 이메일 인증 번호 전송 성공")
-    public void 이메일_인증_번호_전송_성공() throws MessagingException {
+    public void 이메일_인증_번호_전송_성공() {
         // given
         EmailRequest emailRequest = new EmailRequest("test@example.com");
         String verificationCode = RandomUtil.generateRandomCode('0', 'z', 6);
@@ -73,7 +76,7 @@ public class EmailServiceTest {
 
     @Test
     @DisplayName("[fail] 이메일 인증 번호 전송 실패")
-    public void 이메일_인증_번호_전송_실패() throws Exception {
+    public void 이메일_인증_번호_전송_실패() {
         // given
         EmailRequest emailRequest = new EmailRequest("test@example.com");
         String verificationCode = RandomUtil.generateRandomCode('0', 'z', 6);
@@ -136,12 +139,12 @@ public class EmailServiceTest {
         when(emailMapper.findEmailToVerification(email)).thenReturn(emailVO);
 
         // when, then
-        try {
+        EmailException exception = assertThrows(EmailException.class, () -> {
             emailService.checkVerificationCode(request);
-        } catch (EmailException e) {
-            assert e.exceptionType() == EmailExceptionType.INVALID_VERIFICATION_CODE;
-        }
+        });
 
+        // then
+        assertEquals(EmailExceptionType.INVALID_VERIFICATION_CODE, exception.exceptionType());
         verify(emailMapper, times(1)).findEmailToVerification(email);
     }
 }
