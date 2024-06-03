@@ -33,10 +33,13 @@ public class AdminMemberServiceTest {
 
     private JoinRequest adminJoinRequest;
 
+    private LoginRequest adminLoginRequest;
+
     @BeforeEach
     void init() {
         //given
         adminJoinRequest = new JoinRequest("Admin User", "admin@example.com", "adminpassword", "pusan");
+        adminLoginRequest = new LoginRequest("admin@example.com", "adminpassword");
 
         //when
         memberService.joinAdminUser(adminJoinRequest);
@@ -53,7 +56,6 @@ public class AdminMemberServiceTest {
         LoginRequest loginRequest = new LoginRequest("test@example.com", "password");
         LoginResponse loginResponse = memberService.loginMember(loginRequest);
 
-        LoginRequest adminLoginRequest = new LoginRequest("admin@example.com", "adminpassword");
         LoginResponse adminLoginResponse = memberService.loginMember(adminLoginRequest);
         String extractedEmail = jwtTokenProvider.extractEmail(adminLoginResponse.token());
         assertThat(extractedEmail).isEqualTo(adminLoginRequest.email());
@@ -76,7 +78,6 @@ public class AdminMemberServiceTest {
     @DisplayName("[success] admin delete myself is success")
     public void delete_myself_is_success() throws Exception {
         //given
-        LoginRequest adminLoginRequest = new LoginRequest("admin@example.com", "adminpassword");
         LoginResponse adminLoginResponse = memberService.loginMember(adminLoginRequest);
         String extractedEmail = jwtTokenProvider.extractEmail(adminLoginResponse.token());
         Assertions.assertThat(extractedEmail).isEqualTo(adminLoginRequest.email());
