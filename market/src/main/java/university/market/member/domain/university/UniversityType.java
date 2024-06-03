@@ -1,10 +1,11 @@
 package university.market.member.domain.university;
 
 public enum UniversityType {
-    PUSAN(0),
-    SEOUL(1),
-    YONSEI(2),
-    KOREA(3);
+    ADMIN(0),
+    PUSAN(1),
+    SEOUL(2),
+    YONSEI(3),
+    KOREA(4);
     private final int value;
 
     UniversityType(int value) {
