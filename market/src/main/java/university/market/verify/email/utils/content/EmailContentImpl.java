@@ -1,4 +1,4 @@
-package university.market.email.utils.content;
+package university.market.verify.email.utils.content;
 
 import org.springframework.stereotype.Component;
 

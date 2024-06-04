@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import university.market.base.exception.response.ErrorResponse;
-import university.market.email.exception.EmailException;
+import university.market.verify.email.exception.EmailException;
 import university.market.member.exception.MemberException;
 
 @RestControllerAdvice

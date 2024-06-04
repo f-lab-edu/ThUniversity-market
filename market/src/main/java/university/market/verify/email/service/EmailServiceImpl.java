@@ -1,4 +1,4 @@
-package university.market.email.service;
+package university.market.verify.email.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -9,14 +9,14 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import university.market.email.domain.EmailVO;
-import university.market.email.exception.EmailException;
-import university.market.email.exception.EmailExceptionType;
-import university.market.email.mapper.EmailMapper;
-import university.market.email.service.dto.CheckVerificationCodeRequest;
-import university.market.email.service.dto.EmailRequest;
-import university.market.email.utils.RandomUtil;
-import university.market.email.utils.content.EmailContent;
+import university.market.verify.email.domain.EmailVO;
+import university.market.verify.email.exception.EmailException;
+import university.market.verify.email.exception.EmailExceptionType;
+import university.market.verify.email.mapper.EmailMapper;
+import university.market.verify.email.service.dto.CheckVerificationCodeRequest;
+import university.market.verify.email.service.dto.EmailRequest;
+import university.market.verify.email.utils.RandomUtil;
+import university.market.verify.email.utils.content.EmailContent;
 
 @Service
 @RequiredArgsConstructor

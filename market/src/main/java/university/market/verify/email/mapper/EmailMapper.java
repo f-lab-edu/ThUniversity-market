@@ -1,7 +1,7 @@
-package university.market.email.mapper;
+package university.market.verify.email.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import university.market.email.domain.EmailVO;
+import university.market.verify.email.domain.EmailVO;
 
 @Mapper
 public interface EmailMapper {

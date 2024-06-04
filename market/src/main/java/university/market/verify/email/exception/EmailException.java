@@ -1,4 +1,4 @@
-package university.market.email.exception;
+package university.market.verify.email.exception;
 
 import university.market.base.exception.BaseException;
 import university.market.base.exception.BaseExceptionType;

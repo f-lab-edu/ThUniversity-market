@@ -1,4 +1,4 @@
-package university.market.email.service.dto;
+package university.market.verify.email.service.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;

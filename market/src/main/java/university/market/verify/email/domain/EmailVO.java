@@ -1,4 +1,4 @@
-package university.market.email.domain;
+package university.market.verify.email.domain;
 
 import java.sql.Timestamp;
 import lombok.Builder;

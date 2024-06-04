@@ -3,7 +3,7 @@ package university.market.email.util;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import university.market.email.utils.RandomUtil;
+import university.market.verify.email.utils.RandomUtil;
 
 
 public class RandomGenerateTest {

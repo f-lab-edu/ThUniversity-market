@@ -1,4 +1,4 @@
-package university.market.email.exception;
+package university.market.verify.email.exception;
 
 import org.springframework.http.HttpStatus;
 import university.market.base.exception.BaseExceptionType;

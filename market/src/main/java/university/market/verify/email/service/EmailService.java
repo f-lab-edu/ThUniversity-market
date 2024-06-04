@@ -1,7 +1,7 @@
-package university.market.email.service;
+package university.market.verify.email.service;
 
-import university.market.email.service.dto.CheckVerificationCodeRequest;
-import university.market.email.service.dto.EmailRequest;
+import university.market.verify.email.service.dto.CheckVerificationCodeRequest;
+import university.market.verify.email.service.dto.EmailRequest;
 
 public interface EmailService {
     void sendVerificationCodeByEmail(EmailRequest emailRequest);

@@ -1,4 +1,4 @@
-package university.market.email.utils;
+package university.market.verify.email.utils;
 
 import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.stereotype.Component;
