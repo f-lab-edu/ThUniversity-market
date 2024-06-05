@@ -27,7 +27,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     private final EmailContent emailContent;
     private final RandomUtil randomUtil;
 
-    @Value("${mail.username}")
+    @Value("${spring.mail.username}")
     private String username;
 
 
