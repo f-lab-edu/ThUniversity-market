@@ -55,6 +55,7 @@ public class AuthCheckAspect {
 
     private MemberVO getCurrentUser() {
         String token = getTokenFromRequest();
+        jwtTokenProvider.validateToken(token);
         String userId = jwtTokenProvider.extractEmail(token);
         return memberMapper.findMemberByEmail(userId);
     }

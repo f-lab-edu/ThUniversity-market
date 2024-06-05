@@ -36,6 +36,13 @@ public class MemberController {
     }
 
     @AuthCheck(AuthType.ROLE_ADMIN)
+    @PostMapping("/join/admin")
+    public ResponseEntity<Void> joinAdminMember(@RequestBody JoinRequest joinRequest) {
+        memberService.joinAdminUser(joinRequest);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @AuthCheck(AuthType.ROLE_ADMIN)
     @DeleteMapping("/{memberId}")
     public ResponseEntity<Void> deleteMember(@PathVariable Long memberId) {
         memberService.deleteMember(memberId);

@@ -25,6 +25,15 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     public void joinMember(JoinRequest joinRequest) {
+        joinUser(joinRequest, AuthType.ROLE_USER);
+    }
+
+    @Transactional
+    public void joinAdminUser(JoinRequest joinRequest) {
+        joinUser(joinRequest, AuthType.ROLE_ADMIN);
+    }
+
+    private void joinUser(JoinRequest joinRequest, AuthType authType) {
         if (memberMapper.findMemberByEmail(joinRequest.email()) != null) {
             throw new MemberException(MemberExceptionType.ALREADY_EXISTED_MEMBER);
         }
@@ -34,6 +43,7 @@ public class MemberServiceImpl implements MemberService {
                 .email(joinRequest.email())
                 .password(passwordEncoder.encode(joinRequest.password()))
                 .university(joinRequest.university())
+                .auth(authType)
                 .build();
 
         try {
@@ -54,6 +64,12 @@ public class MemberServiceImpl implements MemberService {
                 .memberId(member.getId())
                 .token(jwtTokenProvider.generateToken(member.getEmail()))
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public MemberVO findMemberByEmail(String email) {
+        final MemberVO member = memberMapper.findMemberByEmail(email);
+        return member;
     }
 
     @AuthCheck(AuthType.ROLE_ADMIN)
