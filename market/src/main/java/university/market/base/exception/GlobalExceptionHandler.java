@@ -11,13 +11,8 @@ import university.market.member.exception.MemberException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(MemberException.class)
-    public ResponseEntity<ErrorResponse> handleMemberException(MemberException ex) {
-        return createErrorResponse(ex.exceptionType().httpStatus(), ex.exceptionType().errorMessage(), ex.exceptionType().errorCode());
-    }
-
-    @ExceptionHandler(EmailException.class)
-    public ResponseEntity<ErrorResponse> handleEmailException(EmailException ex) {
+    @ExceptionHandler({MemberException.class, EmailException.class})
+    public ResponseEntity<ErrorResponse> handleException(BaseException ex) {
         return createErrorResponse(ex.exceptionType().httpStatus(), ex.exceptionType().errorMessage(), ex.exceptionType().errorCode());
     }
 
