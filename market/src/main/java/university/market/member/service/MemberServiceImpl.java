@@ -14,6 +14,8 @@ import university.market.member.service.dto.request.JoinRequest;
 import university.market.member.service.dto.request.LoginRequest;
 import university.market.member.service.dto.response.LoginResponse;
 import university.market.member.utils.JwtTokenProvider;
+import university.market.verify.email.service.EmailVerificationService;
+import university.market.verify.email.service.dto.CheckVerificationCodeRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -22,18 +24,19 @@ public class MemberServiceImpl implements MemberService {
     private final MemberMapper memberMapper;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final EmailVerificationService emailVerificationService;
 
     @Transactional
     public void joinMember(JoinRequest joinRequest) {
-        joinUser(joinRequest, AuthType.ROLE_USER);
+        joinUser(joinRequest, AuthType.ROLE_USER, false);
     }
 
     @Transactional
     public void joinAdminUser(JoinRequest joinRequest) {
-        joinUser(joinRequest, AuthType.ROLE_ADMIN);
+        joinUser(joinRequest, AuthType.ROLE_ADMIN, true);
     }
 
-    private void joinUser(JoinRequest joinRequest, AuthType authType) {
+    private void joinUser(JoinRequest joinRequest, AuthType authType, boolean emailVerify) {
         if (memberMapper.findMemberByEmail(joinRequest.email()) != null) {
             throw new MemberException(MemberExceptionType.ALREADY_EXISTED_MEMBER);
         }
@@ -44,6 +47,7 @@ public class MemberServiceImpl implements MemberService {
                 .password(passwordEncoder.encode(joinRequest.password()))
                 .university(joinRequest.university())
                 .auth(authType)
+                .emailVerify(emailVerify)
                 .build();
 
         try {
@@ -51,6 +55,13 @@ public class MemberServiceImpl implements MemberService {
         } catch (Exception e) {
             throw new MemberException(MemberExceptionType.DATABASE_ERROR);
         }
+    }
+
+    @AuthCheck({AuthType.ROLE_USER})
+    @Transactional
+    public void verifyEmailUser(CheckVerificationCodeRequest checkVerificationCodeRequest) {
+        emailVerificationService.checkVerificationCode(checkVerificationCodeRequest);
+        memberMapper.updateEmailVerify(checkVerificationCodeRequest.email(), true, AuthType.ROLE_VERIFY_USER);
     }
 
     @Transactional(readOnly = true)
@@ -68,17 +79,16 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(readOnly = true)
     public MemberVO findMemberByEmail(String email) {
-        final MemberVO member = memberMapper.findMemberByEmail(email);
-        return member;
+        return memberMapper.findMemberByEmail(email);
     }
 
-    @AuthCheck(AuthType.ROLE_ADMIN)
+    @AuthCheck({AuthType.ROLE_ADMIN})
     @Transactional
     public void deleteMember(Long id) {
         memberMapper.deleteMemberById(id);
     }
 
-    @AuthCheck({AuthType.ROLE_ADMIN, AuthType.ROLE_USER})
+    @AuthCheck({AuthType.ROLE_ADMIN, AuthType.ROLE_VERIFY_USER, AuthType.ROLE_USER})
     @Transactional
     public void deleteMyself(String token) {
         memberMapper.deleteMemberByEmail(jwtTokenProvider.extractEmail(token));

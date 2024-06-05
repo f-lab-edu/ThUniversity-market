@@ -16,6 +16,7 @@ import university.market.member.service.MemberService;
 import university.market.member.service.dto.request.JoinRequest;
 import university.market.member.service.dto.request.LoginRequest;
 import university.market.member.service.dto.response.LoginResponse;
+import university.market.verify.email.service.dto.CheckVerificationCodeRequest;
 
 @RestController
 @RequestMapping("/api/member")
@@ -42,6 +43,13 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @AuthCheck(AuthType.ROLE_USER)
+    @PostMapping("/verify")
+    public ResponseEntity<Void> memberEmailVerify(@RequestBody CheckVerificationCodeRequest checkVerificationCodeRequest) {
+        memberService.verifyEmailUser(checkVerificationCodeRequest);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
     @AuthCheck(AuthType.ROLE_ADMIN)
     @DeleteMapping("/{memberId}")
     public ResponseEntity<Void> deleteMember(@PathVariable Long memberId) {
@@ -49,7 +57,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @AuthCheck({AuthType.ROLE_ADMIN, AuthType.ROLE_USER})
+    @AuthCheck({AuthType.ROLE_ADMIN, AuthType.ROLE_VERIFY_USER, AuthType.ROLE_USER})
     @DeleteMapping("/")
     public ResponseEntity<Void> deleteMyself(HttpServletRequest request) {
         String token = request.getHeader("Authorization").substring(7);
