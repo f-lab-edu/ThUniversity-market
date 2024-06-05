@@ -48,13 +48,14 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         EmailVO findEmail = emailMapper.findEmailToVerification(request.email());
         if (findEmail == null) {
             throw new EmailException(EmailExceptionType.EMAIL_NOT_FOUND);
-        } else if (!Objects.equals(findEmail.getVerificationCode(), request.verificationCode())) {
+        }
+
+        if (!Objects.equals(findEmail.getVerificationCode(), request.verificationCode())) {
             throw new EmailException(EmailExceptionType.INVALID_VERIFICATION_CODE);
         }
     }
 
-    @Transactional
-    protected void saveVerificationCode(String email, String verificationCode) {
+    public void saveVerificationCode(String email, String verificationCode) {
         emailMapper.saveVerificationCode(
                 EmailVO.builder()
                         .email(email)
