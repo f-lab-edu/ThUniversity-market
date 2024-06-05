@@ -33,8 +33,6 @@ public class AdminMemberServiceTest {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    private JoinRequest adminJoinRequest;
-
     private LoginRequest adminLoginRequest;
 
     @BeforeEach
