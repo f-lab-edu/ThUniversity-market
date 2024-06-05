@@ -36,10 +36,13 @@ public class MemberServiceTest {
 
     private JoinRequest joinRequest;
 
+    private LoginRequest loginRequest;
+
     @BeforeEach
     void init() {
         //given
         joinRequest = new JoinRequest("Test User","test@example.com", "password", "pusan");
+        loginRequest = new LoginRequest("test@example.com", "password");
 
         //when
         memberService.joinMember(joinRequest);
@@ -60,9 +63,6 @@ public class MemberServiceTest {
     @Transactional
     @DisplayName("[success] Login is success")
     public void login_is_success() {
-        //given
-        LoginRequest loginRequest = new LoginRequest("test@example.com", "password");
-
         //when
         LoginResponse loginResponse = memberService.loginMember(loginRequest);
         String extractedEmail = jwtTokenProvider.extractEmail(loginResponse.token());
@@ -76,7 +76,6 @@ public class MemberServiceTest {
     @DisplayName("[success] delete myself is success")
     public void delete_myself_is_success() throws Exception {
         //given
-        LoginRequest loginRequest = new LoginRequest("test@example.com", "password");
         LoginResponse loginResponse = memberService.loginMember(loginRequest);
         String extractedEmail = jwtTokenProvider.extractEmail(loginResponse.token());
         assertThat(extractedEmail).isEqualTo(loginRequest.email());

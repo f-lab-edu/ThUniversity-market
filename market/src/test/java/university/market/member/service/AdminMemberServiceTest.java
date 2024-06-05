@@ -2,7 +2,9 @@ package university.market.member.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,13 +35,12 @@ public class AdminMemberServiceTest {
 
     private JoinRequest adminJoinRequest;
 
+    private LoginRequest adminLoginRequest;
+
     @BeforeEach
     void init() {
         //given
-        adminJoinRequest = new JoinRequest("Admin User", "admin@example.com", "adminpassword", "pusan");
-
-        //when
-        memberService.joinAdminUser(adminJoinRequest);
+        adminLoginRequest = new LoginRequest("admin@example.com", "password");
     }
 
     @Test
@@ -53,7 +54,6 @@ public class AdminMemberServiceTest {
         LoginRequest loginRequest = new LoginRequest("test@example.com", "password");
         LoginResponse loginResponse = memberService.loginMember(loginRequest);
 
-        LoginRequest adminLoginRequest = new LoginRequest("admin@example.com", "adminpassword");
         LoginResponse adminLoginResponse = memberService.loginMember(adminLoginRequest);
         String extractedEmail = jwtTokenProvider.extractEmail(adminLoginResponse.token());
         assertThat(extractedEmail).isEqualTo(adminLoginRequest.email());
@@ -76,7 +76,6 @@ public class AdminMemberServiceTest {
     @DisplayName("[success] admin delete myself is success")
     public void delete_myself_is_success() throws Exception {
         //given
-        LoginRequest adminLoginRequest = new LoginRequest("admin@example.com", "adminpassword");
         LoginResponse adminLoginResponse = memberService.loginMember(adminLoginRequest);
         String extractedEmail = jwtTokenProvider.extractEmail(adminLoginResponse.token());
         Assertions.assertThat(extractedEmail).isEqualTo(adminLoginRequest.email());
@@ -90,5 +89,28 @@ public class AdminMemberServiceTest {
 
         //then
         Assertions.assertThat(member).isNull();
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("[success] admin create admin user")
+    public void admin_create_admin_user() throws Exception {
+        // given
+        LoginResponse adminLoginResponse = memberService.loginMember(adminLoginRequest);
+        JoinRequest joinRequest = new JoinRequest("Tested User", "test2@example.com", "password2", "pusan");
+        String joinRequestJson = new ObjectMapper().writeValueAsString(joinRequest);
+
+        // when
+        mockMvc.perform(post("/api/member/join/admin")
+                        .header("Authorization", "Bearer " + adminLoginResponse.token())
+                        .content(joinRequestJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        MemberVO memberVO = memberService.findMemberByEmail(joinRequest.email());
+
+        // then
+        assertThat(memberVO.getEmail()).isEqualTo(joinRequest.email());
+        assertThat(memberVO.getName()).isEqualTo(joinRequest.name());
     }
 }
