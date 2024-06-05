@@ -1,12 +1,21 @@
 package university.market.email.util;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import university.market.verify.email.utils.RandomUtil;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import university.market.verify.email.utils.random.RandomUtil;
 
-
+@ExtendWith(MockitoExtension.class)
 public class RandomGenerateTest {
+    @Mock
+    private RandomUtil randomUtil;
 
     @Test
     @DisplayName("[success] 랜덤 문자 생성 성공")
@@ -15,13 +24,15 @@ public class RandomGenerateTest {
         char leftLimit = '0';
         char rightLimit = 'Z';
         int limit = 6;
+        String verificationCode = "123abc";
+
+        when(randomUtil.generateRandomCode(leftLimit,rightLimit,limit)).thenReturn(verificationCode);
 
         // when
-        final String generateRandomCode = RandomUtil.generateRandomCode(leftLimit, rightLimit, limit);
+        final String generateRandomCode = randomUtil.generateRandomCode(leftLimit, rightLimit, limit);
 
         // then
-        assertThat(generateRandomCode).isNotNull();
-        assertThat(generateRandomCode.length()).isEqualTo(limit);
-        assertThat(generateRandomCode.chars().allMatch(i -> (i >= '0' && i <= '9') || (i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z'))).isTrue();
+        verify(randomUtil, times(1)).generateRandomCode(leftLimit,rightLimit,limit);
+        assertThat(verificationCode).isEqualTo(generateRandomCode);
     }
 }

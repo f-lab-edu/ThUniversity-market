@@ -15,16 +15,17 @@ import university.market.verify.email.exception.EmailExceptionType;
 import university.market.verify.email.mapper.EmailMapper;
 import university.market.verify.email.service.dto.CheckVerificationCodeRequest;
 import university.market.verify.email.service.dto.EmailRequest;
-import university.market.verify.email.utils.RandomUtil;
+import university.market.verify.email.utils.random.RandomUtil;
 import university.market.verify.email.utils.content.EmailContent;
 
 @Service
 @RequiredArgsConstructor
-public class EmailServiceImpl implements EmailService{
+public class EmailVerificationServiceImpl implements EmailVerificationService {
 
     private final JavaMailSender javaMailSender;
     private final EmailMapper emailMapper;
     private final EmailContent emailContent;
+    private final RandomUtil randomUtil;
 
     @Value("${mail.username}")
     private String username;
@@ -33,7 +34,7 @@ public class EmailServiceImpl implements EmailService{
 
     @Override
     public void sendVerificationCodeByEmail(EmailRequest emailRequest) {
-        String verificationCode = RandomUtil.generateRandomCode('0','z',6);
+        String verificationCode = randomUtil.generateRandomCode('0','Z',6);
         String setFrom = this.username;
         String toMail = emailRequest.email();
         String title = emailContent.buildVerificationEmailTitle();

@@ -1,6 +1,5 @@
 package university.market.email.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,19 +19,22 @@ import university.market.verify.email.domain.EmailVO;
 import university.market.verify.email.exception.EmailException;
 import university.market.verify.email.exception.EmailExceptionType;
 import university.market.verify.email.mapper.EmailMapper;
-import university.market.verify.email.service.EmailServiceImpl;
+import university.market.verify.email.service.EmailVerificationServiceImpl;
 import university.market.verify.email.service.dto.CheckVerificationCodeRequest;
 import university.market.verify.email.service.dto.EmailRequest;
-import university.market.verify.email.utils.RandomUtil;
+import university.market.verify.email.utils.random.RandomUtil;
 import university.market.verify.email.utils.content.EmailContent;
 
 import jakarta.mail.internet.MimeMessage;
 
 @ExtendWith(MockitoExtension.class)
-public class EmailServiceTest {
+public class EmailVerificationServiceTest {
 
     @Mock
     private JavaMailSender javaMailSender;
+
+    @Mock
+    private RandomUtil randomUtil;
 
     @Mock
     private EmailMapper emailMapper;
@@ -41,11 +43,11 @@ public class EmailServiceTest {
     private EmailContent emailContent;
 
     @InjectMocks
-    private EmailServiceImpl emailService;
+    private EmailVerificationServiceImpl emailService;
 
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
-        Field usernameField = EmailServiceImpl.class.getDeclaredField("username");
+        Field usernameField = EmailVerificationServiceImpl.class.getDeclaredField("username");
         usernameField.setAccessible(true);
         usernameField.set(emailService, "test@example.com");
     }
@@ -55,11 +57,12 @@ public class EmailServiceTest {
     public void 이메일_인증_번호_전송_성공() {
         // given
         EmailRequest emailRequest = new EmailRequest("test@example.com");
-        String verificationCode = RandomUtil.generateRandomCode('0', 'z', 6);
+        String verificationCode = "123abc";
 
         // mocking
         when(emailContent.buildVerificationEmailTitle()).thenReturn("Verification Code");
         when(emailContent.buildVerificationEmailContent(anyString())).thenReturn("Your verification code is: " + verificationCode);
+        when(randomUtil.generateRandomCode('0', 'Z', 6)).thenReturn(verificationCode);
 
         MimeMessage mimeMessage = mock(MimeMessage.class);
         MimeMessageHelper mimeMessageHelper = mock(MimeMessageHelper.class);
@@ -70,6 +73,7 @@ public class EmailServiceTest {
         emailService.sendVerificationCodeByEmail(emailRequest);
 
         // then
+        verify(randomUtil, times(1)).generateRandomCode('0', 'Z', 6);
         verify(javaMailSender, times(1)).send(mimeMessage);
         verify(emailMapper, times(1)).saveVerificationCode(any(EmailVO.class));
     }
@@ -79,9 +83,10 @@ public class EmailServiceTest {
     public void 이메일_인증_번호_전송_실패() {
         // given
         EmailRequest emailRequest = new EmailRequest("test@example.com");
-        String verificationCode = RandomUtil.generateRandomCode('0', 'z', 6);
+        String verificationCode = "123abc";
 
         // mocking
+        when(randomUtil.generateRandomCode('0', 'Z', 6)).thenReturn(verificationCode);
         when(emailContent.buildVerificationEmailTitle()).thenReturn("Verification Code");
         when(emailContent.buildVerificationEmailContent(anyString())).thenReturn("Your verification code is: " + verificationCode);
 
@@ -96,6 +101,7 @@ public class EmailServiceTest {
             assert e.exceptionType() == EmailExceptionType.EMAIL_SEND_FAILED;
         }
 
+        verify(randomUtil, times(1)).generateRandomCode('0','Z',6);
         verify(javaMailSender, times(1)).send(mimeMessage);
         verify(emailMapper, times(0)).saveVerificationCode(any(EmailVO.class));
     }
