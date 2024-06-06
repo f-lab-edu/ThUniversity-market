@@ -15,6 +15,8 @@ import university.market.item.service.ItemService;
 import university.market.item.service.dto.request.PostItemRequest;
 import university.market.item.service.dto.request.UpdateItemRequest;
 import university.market.item.service.dto.response.ItemResponse;
+import university.market.member.annotation.AuthCheck;
+import university.market.member.domain.auth.AuthType;
 
 @RestController
 @RequestMapping("/api/item")
@@ -22,24 +24,28 @@ import university.market.item.service.dto.response.ItemResponse;
 public class ItemController {
     private final ItemService itemService;
 
+    @AuthCheck({AuthType.ROLE_USER, AuthType.ROLE_ADMIN})
     @PostMapping("/")
     public ResponseEntity<Void> postItem(@RequestBody PostItemRequest postItemRequest) {
         itemService.postItem(postItemRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @AuthCheck({AuthType.ROLE_USER, AuthType.ROLE_ADMIN})
     @PatchMapping("/")
     public ResponseEntity<Void> updateItem(@RequestBody UpdateItemRequest updateItemRequest) {
         itemService.updateItem(updateItemRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @AuthCheck({AuthType.ROLE_USER, AuthType.ROLE_ADMIN})
     @GetMapping("/{itemId}")
     public ResponseEntity<ItemResponse> getItemById(@PathVariable Long itemId) {
         ItemResponse item = itemService.getItemById(itemId);
         return ResponseEntity.ok(item);
     }
 
+    @AuthCheck(AuthType.ROLE_USER)
     @DeleteMapping("/{itemId}")
     public ResponseEntity<Void> deleteItem(@PathVariable Long itemId) {
         itemService.deleteItem(itemId);
