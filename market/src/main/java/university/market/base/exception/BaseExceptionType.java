@@ -7,4 +7,6 @@ public interface BaseExceptionType {
     HttpStatus httpStatus();
 
     String errorMessage();
+
+    int errorCode();
 }
