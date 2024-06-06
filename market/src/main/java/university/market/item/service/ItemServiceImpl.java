@@ -76,6 +76,7 @@ public class ItemServiceImpl implements ItemService {
         itemMapper.deleteItem(id);
     }
 
+    @Transactional
     @Override
     public ItemResponse getItemById(Long id) {
         final ItemVO findItem = itemMapper.getItemById(id);
