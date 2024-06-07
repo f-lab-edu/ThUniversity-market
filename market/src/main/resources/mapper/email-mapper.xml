@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="university.market.verify.email.mapper.EmailMapper">
+
+    <resultMap id="EmailResultMap" type="university.market.verify.email.domain.EmailVO">
+        <id property="id" column="id"/>
+        <result property="email" column="email"/>
+        <result property="verificationCode" column="verification_code"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <insert id="saveVerificationCode" parameterType="university.market.verify.email.domain.EmailVO">
+        INSERT INTO email (email, verification_code, created_at, updated_at)
+        VALUES (#{email}, #{verificationCode}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    </insert>
+
+    <select id="findEmailToVerification" resultMap="EmailResultMap" parameterType="string">
+        SELECT *
+        FROM email
+        WHERE email = #{email}
+    </select>
+
+</mapper>
