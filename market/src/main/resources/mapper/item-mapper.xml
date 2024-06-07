@@ -24,7 +24,7 @@
         </association>
     </resultMap>
 
-    <insert id="postItem">
+    <insert id="postItem" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO item (title, description, image_url, seller, status, auction, price, created_at, updated_at)
         VALUES (#{title}, #{description}, #{imageUrl}, #{seller.id}, #{status}, #{auction}, #{price}, CURRENT_TIMESTAMP,
                 CURRENT_TIMESTAMP)

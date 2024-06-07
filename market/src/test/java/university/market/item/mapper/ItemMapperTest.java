@@ -49,7 +49,7 @@ public class ItemMapperTest {
     public void item_등록_성공() {
         // when
         itemMapper.postItem(itemVO);
-        ItemVO item = itemMapper.getItemById(1L);
+        ItemVO item = itemMapper.getItemById(itemVO.getId());
 
         // then
         assertThat(item.getTitle()).isEqualTo(itemVO.getTitle());
@@ -74,8 +74,8 @@ public class ItemMapperTest {
                 .build();
 
         // when
-        itemMapper.updateItem(1L, updatedItemVO);
-        ItemVO updatedItem = itemMapper.getItemById(1L);
+        itemMapper.updateItem(itemVO.getId(), updatedItemVO);
+        ItemVO updatedItem = itemMapper.getItemById(itemVO.getId());
 
         // then
         assertThat(updatedItem.getTitle()).isEqualTo(updatedItemVO.getTitle());
