@@ -23,16 +23,19 @@ public class MemberVO {
 
     private AuthType auth;
 
+    private boolean emailVerify;
+
     private Timestamp createdAt;
 
     private Timestamp updatedAt;
 
     @Builder
-    public MemberVO(String name, String email, String password, String university, AuthType auth) {
+    public MemberVO(String name, String email, String password, String university, AuthType auth, boolean emailVerify) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.university = UniversityType.valueOf(university.toUpperCase());
         this.auth = auth;
+        this.emailVerify = emailVerify;
     }
 }
