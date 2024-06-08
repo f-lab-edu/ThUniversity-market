@@ -13,7 +13,7 @@ import university.market.member.mapper.MemberMapper;
 import university.market.member.service.dto.request.JoinRequest;
 import university.market.member.service.dto.request.LoginRequest;
 import university.market.member.service.dto.response.LoginResponse;
-import university.market.member.utils.JwtTokenProvider;
+import university.market.member.utils.jwt.JwtTokenProvider;
 import university.market.verify.email.service.EmailVerificationService;
 import university.market.verify.email.service.dto.CheckVerificationCodeRequest;
 

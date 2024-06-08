@@ -14,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import lombok.extern.slf4j.Slf4j;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
+import university.market.member.utils.jwt.ExpireDateSupplier;
+import university.market.member.utils.jwt.JwtTokenProvider;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
