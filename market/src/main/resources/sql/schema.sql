@@ -1,10 +1,10 @@
-drop table if exists market.member;
 drop table if exists market.email;
+drop table if exists market.member;
 
 create table member(
       id bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
       name varchar(255) NOT NULL,
-      email varchar(255) NOT NULL,
+      email varchar(255) NOT NULL UNIQUE,
       password varchar(255) NOT NULL,
       university int NOT NULL,
       auth enum('ROLE_USER','ROLE_VERIFY_USER','ROLE_ADMIN') NOT NULL,
