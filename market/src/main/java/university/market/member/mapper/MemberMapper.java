@@ -14,5 +14,5 @@ public interface MemberMapper {
 
     void deleteMemberById(Long id);
 
-    void updateEmailVerify(String email, boolean verified, AuthType auth);
+    void updateAuth(String email, AuthType auth);
 }

@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import university.market.member.domain.MemberVO;
+import university.market.member.domain.auth.AuthType;
 import university.market.member.exception.MemberException;
 import university.market.member.service.dto.request.JoinRequest;
 import university.market.member.service.dto.request.LoginRequest;
@@ -127,7 +128,7 @@ public class MemberServiceTest {
 
         //then
         MemberVO member = memberService.findMemberByEmail(extractedEmail);
-        assertThat(member.isEmailVerify()).isTrue();
+        assertThat(member.getAuth()).isEqualTo(AuthType.ROLE_VERIFY_USER);
     }
 
     @Test
