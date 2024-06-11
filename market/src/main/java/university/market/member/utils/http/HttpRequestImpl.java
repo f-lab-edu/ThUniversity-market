@@ -1,7 +1,6 @@
 package university.market.member.utils.http;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import university.market.member.domain.MemberVO;
@@ -13,6 +12,8 @@ import university.market.member.utils.jwt.JwtTokenProvider;
 @Component
 public class HttpRequestImpl implements HttpRequest {
 
+    private static final ThreadLocal<MemberVO> currentUser = new ThreadLocal<>();
+
     @Autowired
     private HttpServletRequest request;
 
@@ -23,47 +24,30 @@ public class HttpRequestImpl implements HttpRequest {
     private JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public MemberVO getMemberSession() {
-        HttpSession session = request.getSession(false);
-
-        if (session == null) {
-            session = createSession();
+    public MemberVO getCurrentMember() {
+        if(currentUser.get() != null) {
+            return currentUser.get();
         }
 
-        try {
-            MemberVO currentUser = (MemberVO) session.getAttribute("currentUser");
-            if (currentUser == null) {
-                currentUser = (MemberVO) session.getAttribute("currentUser");
-            }
-            return currentUser;
-        } catch (ClassCastException e) {
-            throw new MemberException(MemberExceptionType.INVALID_CASTING);
-        } catch (RuntimeException e) {
-            throw new MemberException(MemberExceptionType.SESSION_ERROR);
-        }
+        String token = getTokenFromRequest();
+        MemberVO member = memberMapper.findMemberByEmail(jwtTokenProvider.extractEmail(token));
+        currentUser.set(member);
+        return currentUser.get();
     }
 
-    @Override
-    public String getTokenFromRequest() {
+    public static void clearCurrentUser() {
+        currentUser.remove();
+    }
+
+    private String getTokenFromRequest() {
         String token = request.getHeader("Authorization");
 
         if (token == null || !token.startsWith("Bearer ")) {
             throw new MemberException(MemberExceptionType.INVALID_ACCESS_TOKEN);
         }
-        return token.substring(7);
-    }
 
-    private HttpSession createSession() {
-        HttpSession session = request.getSession(true);  // Create a new session if not exists
-        String token = getTokenFromRequest();
-        String memberEmail = jwtTokenProvider.extractEmail(token);
-        MemberVO member = memberMapper.findMemberByEmail(memberEmail);
-
-        if (member == null) {
-            throw new MemberException(MemberExceptionType.MEMBER_NOT_FOUND);
-        }
-
-        session.setAttribute("currentUser", member);
-        return session;
+        String validToken = token.substring(7);
+        jwtTokenProvider.validateToken(validToken);
+        return validToken;
     }
 }

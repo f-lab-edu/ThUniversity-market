@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
+import university.market.member.exception.MemberException;
+import university.market.member.exception.MemberExceptionType;
 import university.market.member.utils.http.HttpRequest;
 
 @Aspect
@@ -21,7 +23,7 @@ public class AuthCheckAspect {
 
     @Before("@annotation(university.market.member.annotation.AuthCheck)")
     public void checkAuth(JoinPoint joinPoint) {
-        MemberVO currentUser = httpRequest.getMemberSession();
+        MemberVO currentUser = httpRequest.getCurrentMember();
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
@@ -38,7 +40,7 @@ public class AuthCheckAspect {
         }
 
         if (!hasRequiredAuth) {
-            throw new SecurityException("권한 부족");
+            throw new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION);
         }
     }
 }
