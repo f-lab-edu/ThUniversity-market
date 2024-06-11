@@ -2,6 +2,7 @@ package university.market.helper.fixture;
 
 import university.market.item.domain.ItemVO;
 import university.market.item.domain.status.StatusType;
+import university.market.member.domain.MemberVO;
 import university.market.verify.email.utils.random.RandomUtil;
 import university.market.verify.email.utils.random.RandomUtilImpl;
 
@@ -11,12 +12,12 @@ public class ItemFixture {
 
     private ItemFixture() {}
 
-    public static ItemVO testItem() {
+    public static ItemVO testItem(MemberVO member) {
         return ItemVO.builder()
                 .title(randomUtil.generateRandomCode('0', 'z', 10))
                 .description(randomUtil.generateRandomCode('0', 'z', 500))
                 .imageUrl("https:///" + randomUtil.generateRandomCode('0', 'z', 10) + ".com")
-                .seller(MemberFixture.testMember())
+                .seller(member)
                 .statusType(StatusType.SELLING)
                 .auction(false)
                 .price(Integer.parseInt(randomUtil.generateRandomCode('0', '9', 6)))
