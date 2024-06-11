@@ -49,7 +49,7 @@ public class ItemServiceTest {
     public void init() {
         // given
         mockMember = MemberFixture.testMember();
-        mockItem = ItemFixture.testItem();
+        mockItem = ItemFixture.testItem(mockMember);
     }
 
     @Test
@@ -155,16 +155,16 @@ public class ItemServiceTest {
         when(itemMapper.getItemById(itemId)).thenReturn(mockItem);
 
         // when
-        ItemResponse itemResponse = itemService.getItemById(itemId);
+        ItemVO findedItem = itemService.getItemById(itemId);
 
         // then
         verify(itemMapper).getItemById(itemId);
 
-        assert itemResponse.title().equals(mockItem.getTitle());
-        assert itemResponse.description().equals(mockItem.getDescription());
-        assert itemResponse.image_url().equals(mockItem.getImageUrl());
-        assert itemResponse.status().equals(mockItem.getStatus().name());
-        assert itemResponse.auction() == mockItem.isAuction();
-        assert itemResponse.price() == mockItem.getPrice();
+        assert findedItem.getTitle().equals(mockItem.getTitle());
+        assert findedItem.getDescription().equals(mockItem.getDescription());
+        assert findedItem.getImageUrl().equals(mockItem.getImageUrl());
+        assert findedItem.getStatus().equals(mockItem.getStatus());
+        assert findedItem.isAuction() == mockItem.isAuction();
+        assert findedItem.getPrice() == mockItem.getPrice();
     }
 }
