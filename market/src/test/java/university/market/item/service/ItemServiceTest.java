@@ -167,6 +167,25 @@ public class ItemServiceTest {
     }
 
     @Test
+    @DisplayName("[success] admin item 삭제 성공")
+    public void admin_item_삭제_성공() {
+        // given
+        MemberVO adminMember = MemberFixture.testIdMember(AuthType.ROLE_ADMIN);
+        Long itemId = mockItem.getId();
+
+        // mocking
+        when(httpRequest.getCurrentMember()).thenReturn(adminMember);
+        when(itemMapper.getItemById(itemId)).thenReturn(mockItem);
+        doNothing().when(itemMapper).deleteItem(itemId);
+
+        // when
+        itemService.deleteItem(itemId);
+
+        // then
+        verify(itemMapper).deleteItem(itemId);
+    }
+
+    @Test
     @DisplayName("[success] item 조회 성공")
     public void item_조회_성공() {
         // given
