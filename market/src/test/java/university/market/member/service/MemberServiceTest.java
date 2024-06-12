@@ -17,11 +17,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import university.market.member.domain.MemberVO;
+import university.market.member.domain.auth.AuthType;
 import university.market.member.exception.MemberException;
 import university.market.member.service.dto.request.JoinRequest;
 import university.market.member.service.dto.request.LoginRequest;
 import university.market.member.service.dto.response.LoginResponse;
-import university.market.member.utils.JwtTokenProvider;
+import university.market.member.utils.jwt.JwtTokenProvider;
 import university.market.verify.email.service.EmailVerificationServiceImpl;
 
 @SpringBootTest
@@ -127,7 +128,7 @@ public class MemberServiceTest {
 
         //then
         MemberVO member = memberService.findMemberByEmail(extractedEmail);
-        assertThat(member.isEmailVerify()).isTrue();
+        assertThat(member.getAuth()).isEqualTo(AuthType.ROLE_VERIFY_USER);
     }
 
     @Test

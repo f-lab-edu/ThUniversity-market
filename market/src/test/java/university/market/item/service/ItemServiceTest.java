@@ -26,7 +26,7 @@ import university.market.member.domain.MemberVO;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
 import university.market.member.service.MemberServiceImpl;
-import university.market.member.utils.JwtTokenProvider;
+import university.market.member.utils.jwt.JwtTokenProvider;
 
 @ExtendWith(MockitoExtension.class)
 public class ItemServiceTest {

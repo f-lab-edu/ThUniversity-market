@@ -1,5 +1,6 @@
 package university.market.helper.fixture;
 
+import java.security.NoSuchAlgorithmException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import university.market.member.domain.MemberVO;
@@ -10,7 +11,17 @@ import university.market.verify.email.utils.random.RandomUtilImpl;
 
 public class MemberFixture {
 
-    private static final RandomUtil randomUtil = new RandomUtilImpl();;
+    private static final RandomUtil randomUtil;
+
+    static {
+        try {
+            randomUtil = new RandomUtilImpl();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    ;
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private MemberFixture() {
@@ -24,7 +35,6 @@ public class MemberFixture {
                 .password(passwordEncoder.encode(randomUtil.generateRandomCode('0', 'z', 10)))
                 .university(UniversityType.SEOUL.name())
                 .auth(AuthType.ROLE_USER)
-                .emailVerify(true)
                 .build();
     }
 }

@@ -9,7 +9,7 @@ public enum MemberExceptionType implements BaseExceptionType {
     EXPIRED_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 Access Token입니다.", 401102),
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 Access Token입니다.", 401103),
     UNAUTHORIZED_PERMISSION(HttpStatus.UNAUTHORIZED, "권한이 없는 유저입니다.", 401104),
-    DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 오류가 발생했습니다.", 500104);
+    DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 오류가 발생했습니다.", 500105);
 
     private final HttpStatus httpStatus;
     private final String errorMessage;

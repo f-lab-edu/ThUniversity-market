@@ -6,14 +6,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RandomUtilImpl implements RandomUtil{
-    public String generateRandomCode(final char leftLimit, final char rightLimit, final int limit) {
-        SecureRandom secureRandom;
-        try {
-            secureRandom = SecureRandom.getInstanceStrong();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
 
+    private final SecureRandom secureRandom;
+
+    public RandomUtilImpl() throws NoSuchAlgorithmException {
+        this.secureRandom = SecureRandom.getInstanceStrong();
+    }
+
+    public String generateRandomCode(final char leftLimit, final char rightLimit, final int limit) {
         StringBuilder randomString = new StringBuilder(limit);
 
         for (int i = 0; i < limit; i++) {

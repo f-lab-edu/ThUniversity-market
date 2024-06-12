@@ -1,4 +1,4 @@
-package university.market.member.utils;
+package university.market.member.utils.jwt;
 public interface JwtTokenProvider {
 
     String generateToken(String email);

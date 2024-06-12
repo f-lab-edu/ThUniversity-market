@@ -1,5 +1,6 @@
 package university.market.helper.fixture;
 
+import java.security.NoSuchAlgorithmException;
 import university.market.item.domain.ItemVO;
 import university.market.item.domain.status.StatusType;
 import university.market.verify.email.utils.random.RandomUtil;
@@ -7,7 +8,15 @@ import university.market.verify.email.utils.random.RandomUtilImpl;
 
 public class ItemFixture {
 
-    private static final RandomUtil randomUtil = new RandomUtilImpl();
+    private static final RandomUtil randomUtil;
+
+    static {
+        try {
+            randomUtil = new RandomUtilImpl();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private ItemFixture() {}
 

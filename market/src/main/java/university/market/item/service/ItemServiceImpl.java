@@ -15,7 +15,7 @@ import university.market.member.domain.MemberVO;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
 import university.market.member.service.MemberService;
-import university.market.member.utils.JwtTokenProvider;
+import university.market.member.utils.jwt.JwtTokenProvider;
 
 @Service
 @RequiredArgsConstructor
