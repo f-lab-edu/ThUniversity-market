@@ -1,6 +1,7 @@
 package university.market.helper.fixture;
 
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import university.market.member.domain.MemberVO;
@@ -27,7 +28,7 @@ public class MemberFixture {
     private MemberFixture() {
     }
 
-    public static MemberVO testMember() {
+    public static MemberVO testMember(AuthType authType) {
         return MemberVO.builder()
                 .name(randomUtil.generateRandomCode('0', 'z', 10))
                 .email(randomUtil.generateRandomCode('0', 'z', 10) + "@" + randomUtil.generateRandomCode('A', 'z', 10)
@@ -36,5 +37,19 @@ public class MemberFixture {
                 .university(UniversityType.SEOUL.name())
                 .auth(AuthType.ROLE_USER)
                 .build();
+    }
+
+    public static MemberVO testIdMember(AuthType authType) {
+        return new MemberVO(
+                Long.parseLong(randomUtil.generateRandomCode('0','9', 16)),
+                randomUtil.generateRandomCode('0', 'z', 10),
+                randomUtil.generateRandomCode('0', 'z', 10) + "@" + randomUtil.generateRandomCode('A', 'z', 10)
+                        + randomUtil.generateRandomCode('A', 'z', 3),
+                passwordEncoder.encode(randomUtil.generateRandomCode('0', 'z', 10)),
+                UniversityType.SEOUL,
+                AuthType.ROLE_USER,
+                new Timestamp(System.currentTimeMillis()),
+                new Timestamp(System.currentTimeMillis())
+        );
     }
 }
