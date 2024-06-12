@@ -38,14 +38,14 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @AuthCheck({AuthType.ROLE_USER, AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @GetMapping("/{itemId}")
     public ResponseEntity<ItemResponse> getItemById(@PathVariable Long itemId) {
         ItemResponse item = itemService.getItemById(itemId);
         return ResponseEntity.ok(item);
     }
 
-    @AuthCheck({AuthType.ROLE_VERIFY_USER})
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @DeleteMapping("/{itemId}")
     public ResponseEntity<Void> deleteItem(@PathVariable Long itemId) {
         itemService.deleteItem(itemId);

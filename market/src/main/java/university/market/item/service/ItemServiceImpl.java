@@ -11,6 +11,7 @@ import university.market.item.mapper.ItemMapper;
 import university.market.item.service.dto.request.PostItemRequest;
 import university.market.item.service.dto.request.UpdateItemRequest;
 import university.market.item.service.dto.response.ItemResponse;
+import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.exception.MemberException;
@@ -23,6 +24,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
     private final HttpRequest httpRequest;
 
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
     public void postItem(PostItemRequest postItemRequest) {
@@ -40,6 +42,7 @@ public class ItemServiceImpl implements ItemService {
         itemMapper.postItem(itemVO);
     }
 
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
     public void updateItem(UpdateItemRequest updateItemRequest) {
@@ -67,6 +70,7 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
     public void deleteItem(Long itemId) {
@@ -84,6 +88,7 @@ throw new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION);
         }
     }
 
+    @AuthCheck({AuthType.ROLE_USER, AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
     public ItemResponse getItemById(Long id) {
