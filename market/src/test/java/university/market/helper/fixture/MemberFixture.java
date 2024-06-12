@@ -35,7 +35,7 @@ public class MemberFixture {
                         + randomUtil.generateRandomCode('A', 'z', 3))
                 .password(passwordEncoder.encode(randomUtil.generateRandomCode('0', 'z', 10)))
                 .university(UniversityType.SEOUL.name())
-                .auth(AuthType.ROLE_USER)
+                .auth(authType)
                 .build();
     }
 
@@ -47,7 +47,7 @@ public class MemberFixture {
                         + randomUtil.generateRandomCode('A', 'z', 3),
                 passwordEncoder.encode(randomUtil.generateRandomCode('0', 'z', 10)),
                 UniversityType.SEOUL,
-                AuthType.ROLE_USER,
+                authType,
                 new Timestamp(System.currentTimeMillis()),
                 new Timestamp(System.currentTimeMillis())
         );
