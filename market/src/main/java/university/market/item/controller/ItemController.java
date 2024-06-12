@@ -24,28 +24,28 @@ import university.market.member.domain.auth.AuthType;
 public class ItemController {
     private final ItemService itemService;
 
-    @AuthCheck({AuthType.ROLE_USER, AuthType.ROLE_ADMIN})
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @PostMapping("/")
     public ResponseEntity<Void> postItem(@RequestBody PostItemRequest postItemRequest) {
         itemService.postItem(postItemRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @AuthCheck({AuthType.ROLE_USER, AuthType.ROLE_ADMIN})
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @PatchMapping("/")
     public ResponseEntity<Void> updateItem(@RequestBody UpdateItemRequest updateItemRequest) {
         itemService.updateItem(updateItemRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @AuthCheck({AuthType.ROLE_USER, AuthType.ROLE_ADMIN})
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @GetMapping("/{itemId}")
     public ResponseEntity<ItemResponse> getItemById(@PathVariable Long itemId) {
         ItemResponse item = itemService.getItemById(itemId);
         return ResponseEntity.ok(item);
     }
 
-    @AuthCheck(AuthType.ROLE_USER)
+    @AuthCheck({AuthType.ROLE_VERIFY_USER})
     @DeleteMapping("/{itemId}")
     public ResponseEntity<Void> deleteItem(@PathVariable Long itemId) {
         itemService.deleteItem(itemId);
