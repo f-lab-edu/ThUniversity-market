@@ -135,6 +135,8 @@ public class ItemServiceTest {
         Long itemId = mockItem.getId();
 
         // mocking
+        when(httpRequest.getCurrentMember()).thenReturn(mockMember);
+        when(itemMapper.getItemById(itemId)).thenReturn(mockItem);
         doNothing().when(itemMapper).deleteItem(itemId);
 
         // when
@@ -142,6 +144,26 @@ public class ItemServiceTest {
 
         // then
         verify(itemMapper).deleteItem(itemId);
+    }
+
+    @Test
+    @DisplayName("[fail] item 삭제 실패 권한 없음")
+    public void item_삭제_실패_권한_없음() {
+        // given
+        MemberVO testedMember = MemberFixture.testIdMember(AuthType.ROLE_USER);
+        Long itemId = mockItem.getId();
+
+        // mocking
+        when(httpRequest.getCurrentMember()).thenReturn(testedMember);
+        when(itemMapper.getItemById(itemId)).thenReturn(mockItem);
+
+        // when
+        MemberException exception = assertThrows(MemberException.class, () -> {
+            itemService.deleteItem(itemId);
+        });
+
+        // then
+        assertThat(exception.exceptionType()).isEqualTo(MemberExceptionType.UNAUTHORIZED_PERMISSION);
     }
 
     @Test
