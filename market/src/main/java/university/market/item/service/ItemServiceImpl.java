@@ -14,21 +14,18 @@ import university.market.item.service.dto.response.ItemResponse;
 import university.market.member.domain.MemberVO;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
-import university.market.member.service.MemberService;
-import university.market.member.utils.jwt.JwtTokenProvider;
+import university.market.member.utils.http.HttpRequest;
 
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
-    private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final HttpRequest httpRequest;
 
     @Transactional
     @Override
     public void postItem(PostItemRequest postItemRequest) {
-        final MemberVO member = memberService.findMemberByEmail(
-                jwtTokenProvider.extractEmail(postItemRequest.memberToken()));
+        final MemberVO member = httpRequest.getCurrentMember();
         final ItemVO itemVO = ItemVO.builder()
                 .title(postItemRequest.title())
                 .description(postItemRequest.description())
@@ -45,8 +42,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public void updateItem(UpdateItemRequest updateItemRequest) {
-        final MemberVO member = memberService.findMemberByEmail(
-                jwtTokenProvider.extractEmail(updateItemRequest.memberToken()));
+        final MemberVO member = httpRequest.getCurrentMember();
         final ItemVO item = itemMapper.getItemById(updateItemRequest.itemId());
 
         if (item == null) {
@@ -73,7 +69,6 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public void deleteItem(Long id) {
-        // 추후 권한에 따라 삭제 구현
         itemMapper.deleteItem(id);
     }
 
