@@ -195,15 +195,15 @@ public class ItemServiceTest {
         when(itemMapper.getItemById(itemId)).thenReturn(mockItem);
 
         // when
-        ItemResponse itemResponse = itemService.getItemById(itemId);
+        ItemVO item = itemService.getItemById(itemId);
 
         // then
         verify(itemMapper).getItemById(itemId);
 
-        assertThat(itemResponse.itemId()).isEqualTo(itemId);
-        assertThat(itemResponse.title()).isEqualTo(mockItem.getTitle());
-        assertThat(itemResponse.description()).isEqualTo(mockItem.getDescription());
-        assertThat(itemResponse.image_url()).isEqualTo(mockItem.getImageUrl());
-        assertThat(itemResponse.status()).isEqualTo(mockItem.getStatus().name());
+        assertThat(item.getId()).isEqualTo(itemId);
+        assertThat(item.getTitle()).isEqualTo(mockItem.getTitle());
+        assertThat(item.getDescription()).isEqualTo(mockItem.getDescription());
+        assertThat(item.getStatus()).isEqualTo(mockItem.getStatus());
+        assertThat(item.isAuction()).isEqualTo(mockItem.isAuction());
     }
 }
