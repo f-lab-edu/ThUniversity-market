@@ -12,6 +12,7 @@ import university.market.item.service.dto.request.PostItemRequest;
 import university.market.item.service.dto.request.UpdateItemRequest;
 import university.market.item.service.dto.response.ItemResponse;
 import university.market.member.domain.MemberVO;
+import university.market.member.domain.auth.AuthType;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
 import university.market.member.utils.http.HttpRequest;
@@ -49,27 +50,38 @@ public class ItemServiceImpl implements ItemService {
             throw new ItemException(ItemExceptionType.INVALID_ITEM);
         }
 
-        if (item.getSeller() != member) {
+        if(member == item.getSeller() || member.getAuth() == AuthType.ROLE_ADMIN) {
+            final ItemVO updateItem = ItemVO.builder()
+                    .title(updateItemRequest.title())
+                    .description(updateItemRequest.description())
+                    .imageUrl("blank2")
+                    .seller(member)
+                    .statusType(StatusType.valueOf(updateItemRequest.status()))
+                    .auction(updateItemRequest.auction())
+                    .price(updateItemRequest.price())
+                    .build();
+
+            itemMapper.updateItem(updateItemRequest.itemId(), updateItem);
+        } else {
             throw new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION);
         }
-
-        final ItemVO updateItem = ItemVO.builder()
-                .title(updateItemRequest.title())
-                .description(updateItemRequest.description())
-                .imageUrl("blank2")
-                .seller(member)
-                .statusType(StatusType.valueOf(updateItemRequest.status()))
-                .auction(updateItemRequest.auction())
-                .price(updateItemRequest.price())
-                .build();
-
-        itemMapper.updateItem(updateItemRequest.itemId(), updateItem);
     }
 
     @Transactional
     @Override
-    public void deleteItem(Long id) {
-        itemMapper.deleteItem(id);
+    public void deleteItem(Long itemId) {
+        final MemberVO member = httpRequest.getCurrentMember();
+        final ItemVO item = itemMapper.getItemById(itemId);
+
+        if (item == null) {
+            throw new ItemException(ItemExceptionType.INVALID_ITEM);
+        }
+
+        if(member == item.getSeller() || member.getAuth() == AuthType.ROLE_ADMIN) {
+            itemMapper.deleteItem(itemId);
+        } else {
+throw new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION);
+        }
     }
 
     @Transactional
