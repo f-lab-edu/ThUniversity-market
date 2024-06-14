@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,6 +28,7 @@ import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
+import university.market.member.utils.auth.PermissionCheck;
 import university.market.member.utils.http.HttpRequest;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,6 +38,9 @@ public class ItemServiceTest {
 
     @Mock
     private HttpRequest httpRequest;
+
+    @Mock
+    private PermissionCheck permissionCheck;
 
     @InjectMocks
     private ItemServiceImpl itemService;
@@ -118,6 +123,9 @@ public class ItemServiceTest {
         when(httpRequest.getCurrentMember()).thenReturn(testedMember);
         when(itemMapper.getItemById(updateItemRequest.itemId())).thenReturn(mockItem2);
 
+        doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION)).when(permissionCheck)
+                .hasPermission(any());
+
         // when
         MemberException exception = assertThrows(MemberException.class, () -> {
             itemService.updateItem(updateItemRequest);
@@ -156,6 +164,8 @@ public class ItemServiceTest {
         // mocking
         when(httpRequest.getCurrentMember()).thenReturn(testedMember);
         when(itemMapper.getItemById(itemId)).thenReturn(mockItem);
+        doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION)).when(permissionCheck)
+                .hasPermission(any());
 
         // when
         MemberException exception = assertThrows(MemberException.class, () -> {

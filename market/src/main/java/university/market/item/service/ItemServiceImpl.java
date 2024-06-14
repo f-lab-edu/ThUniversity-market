@@ -14,8 +14,7 @@ import university.market.item.service.dto.response.ItemResponse;
 import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
-import university.market.member.exception.MemberException;
-import university.market.member.exception.MemberExceptionType;
+import university.market.member.utils.auth.PermissionCheck;
 import university.market.member.utils.http.HttpRequest;
 
 @Service
@@ -23,6 +22,7 @@ import university.market.member.utils.http.HttpRequest;
 public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
     private final HttpRequest httpRequest;
+    private final PermissionCheck permissionCheck;
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
@@ -53,21 +53,19 @@ public class ItemServiceImpl implements ItemService {
             throw new ItemException(ItemExceptionType.INVALID_ITEM);
         }
 
-        if(member == item.getSeller() || member.getAuth() == AuthType.ROLE_ADMIN) {
-            final ItemVO updateItem = ItemVO.builder()
-                    .title(updateItemRequest.title())
-                    .description(updateItemRequest.description())
-                    .imageUrl("blank2")
-                    .seller(member)
-                    .statusType(StatusType.valueOf(updateItemRequest.status()))
-                    .auction(updateItemRequest.auction())
-                    .price(updateItemRequest.price())
-                    .build();
+        permissionCheck.hasPermission(() -> item.getSeller() != member && member.getAuth() != AuthType.ROLE_ADMIN);
 
-            itemMapper.updateItem(updateItemRequest.itemId(), updateItem);
-        } else {
-            throw new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION);
-        }
+        final ItemVO updateItem = ItemVO.builder()
+                .title(updateItemRequest.title())
+                .description(updateItemRequest.description())
+                .imageUrl("blank2")
+                .seller(member)
+                .statusType(StatusType.valueOf(updateItemRequest.status()))
+                .auction(updateItemRequest.auction())
+                .price(updateItemRequest.price())
+                .build();
+
+        itemMapper.updateItem(updateItemRequest.itemId(), updateItem);
     }
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
@@ -81,11 +79,9 @@ public class ItemServiceImpl implements ItemService {
             throw new ItemException(ItemExceptionType.INVALID_ITEM);
         }
 
-        if(member == item.getSeller() || member.getAuth() == AuthType.ROLE_ADMIN) {
-            itemMapper.deleteItem(itemId);
-        } else {
-throw new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION);
-        }
+        permissionCheck.hasPermission(() -> item.getSeller() != member && member.getAuth() != AuthType.ROLE_ADMIN);
+
+        itemMapper.deleteItem(itemId);
     }
 
     @AuthCheck({AuthType.ROLE_USER, AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
