@@ -10,9 +10,11 @@ import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.transaction.annotation.Transactional;
+import university.market.helper.fixture.ItemFixture;
+import university.market.helper.fixture.MemberFixture;
 import university.market.item.domain.ItemVO;
-import university.market.item.domain.status.StatusType;
 import university.market.member.domain.MemberVO;
+import university.market.member.domain.auth.AuthType;
 import university.market.member.mapper.MemberMapper;
 
 @MybatisTest
@@ -24,23 +26,18 @@ public class ItemMapperTest {
     @Autowired
     private MemberMapper memberMapper;
 
-    private ItemVO itemVO;
+    private ItemVO item;
 
-    private MemberVO memberVO;
+    private MemberVO member;
 
     @BeforeEach
     @Transactional
     public void init() {
         // given
-        memberVO = memberMapper.findMemberByEmail("admin@example.com");
-        itemVO = ItemVO.builder()
-                .title("test")
-                .description("testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest")
-                .imageUrl("http://testtesttest.testtesttest.testtesttest")
-                .seller(memberVO)
-                .statusType(StatusType.SELLING)
-                .price(3000)
-                .build();
+        member = MemberFixture.testMember(AuthType.ROLE_VERIFY_USER);
+        memberMapper.joinMember(member);
+
+        item = ItemFixture.testItem(member);
     }
 
     @Test
@@ -48,12 +45,12 @@ public class ItemMapperTest {
     @DisplayName("[success] item 등록후 찾기 성공")
     public void item_등록_성공() {
         // when
-        itemMapper.postItem(itemVO);
-        ItemVO item = itemMapper.getItemById(itemVO.getId());
+        itemMapper.postItem(item);
+        ItemVO postedItem = itemMapper.getItemById(item.getId());
 
         // then
-        assertThat(item.getTitle()).isEqualTo(itemVO.getTitle());
-        assertThat(item.getDescription()).isEqualTo(itemVO.getDescription());
+        assertThat(postedItem.getTitle()).isEqualTo(item.getTitle());
+        assertThat(postedItem.getDescription()).isEqualTo(item.getDescription());
     }
 
 
@@ -62,24 +59,32 @@ public class ItemMapperTest {
     @DisplayName("[success] item 업데이트 성공")
     public void item_업데이트_성공() {
         // given
-        itemMapper.postItem(itemVO);
+        itemMapper.postItem(item);
 
-        ItemVO updatedItemVO = ItemVO.builder()
-                .title("updateTest")
-                .description("updatetesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest")
-                .imageUrl("http://testtesttest.testtesttest.testtesttest")
-                .seller(memberVO)
-                .statusType(StatusType.SELLING)
-                .price(30000)
-                .build();
+        ItemVO updateItem = ItemFixture.testItem(member);
 
         // when
-        itemMapper.updateItem(itemVO.getId(), updatedItemVO);
-        ItemVO updatedItem = itemMapper.getItemById(itemVO.getId());
+        itemMapper.updateItem(item.getId(), updateItem);
+        ItemVO updatedItem = itemMapper.getItemById(item.getId());
 
         // then
-        assertThat(updatedItem.getTitle()).isEqualTo(updatedItemVO.getTitle());
-        assertThat(updatedItem.getDescription()).isEqualTo(updatedItemVO.getDescription());
-        assertThat(updatedItem.getPrice()).isEqualTo(updatedItemVO.getPrice());
+        assertThat(updatedItem.getTitle()).isEqualTo(updateItem.getTitle());
+        assertThat(updatedItem.getDescription()).isEqualTo(updateItem.getDescription());
+        assertThat(updatedItem.getPrice()).isEqualTo(updateItem.getPrice());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("[success] item 삭제 성공")
+    public void item_삭제_성공() {
+        // given
+        itemMapper.postItem(item);
+
+        // when
+        itemMapper.deleteItem(item.getId());
+        ItemVO deletedItem = itemMapper.getItemById(item.getId());
+
+        // then
+        assertThat(deletedItem).isNull();
     }
 }
