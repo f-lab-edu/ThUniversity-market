@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import university.market.item.domain.ItemVO;
 import university.market.item.service.ItemService;
 import university.market.item.service.dto.request.PostItemRequest;
 import university.market.item.service.dto.request.UpdateItemRequest;
@@ -26,9 +27,9 @@ public class ItemController {
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @PostMapping("/")
-    public ResponseEntity<Void> postItem(@RequestBody PostItemRequest postItemRequest) {
-        itemService.postItem(postItemRequest);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<ItemVO> postItem(@RequestBody PostItemRequest postItemRequest) {
+        ItemVO item = itemService.postItem(postItemRequest);
+        return ResponseEntity.ok(item);
     }
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})

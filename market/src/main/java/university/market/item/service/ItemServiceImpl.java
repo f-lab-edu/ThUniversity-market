@@ -27,7 +27,7 @@ public class ItemServiceImpl implements ItemService {
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
-    public void postItem(PostItemRequest postItemRequest) {
+    public ItemVO postItem(PostItemRequest postItemRequest) {
         final MemberVO member = httpRequest.getCurrentMember();
         final ItemVO itemVO = ItemVO.builder()
                 .title(postItemRequest.title())
@@ -40,6 +40,7 @@ public class ItemServiceImpl implements ItemService {
                 .build();
 
         itemMapper.postItem(itemVO);
+        return itemVO;
     }
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
