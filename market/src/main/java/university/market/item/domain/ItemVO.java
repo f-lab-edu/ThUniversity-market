@@ -28,6 +28,8 @@ public class ItemVO {
 
     private int price;
 
+    private boolean isDeleted;
+
     private Timestamp createdAt;
 
     private Timestamp updatedAt;

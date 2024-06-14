@@ -30,6 +30,7 @@ create table item(
     status enum('SELLING', 'TRADING', 'FINISH') NOT NULL,
     auction boolean NOT NULL,
     price int NOT NULL,
+    is_deleted boolean NOT NULL,
     created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (seller) REFERENCES member(id)

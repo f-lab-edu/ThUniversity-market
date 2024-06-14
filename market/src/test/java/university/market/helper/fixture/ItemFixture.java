@@ -20,7 +20,8 @@ public class ItemFixture {
         }
     }
 
-    private ItemFixture() {}
+    private ItemFixture() {
+    }
 
     public static ItemVO testItem(MemberVO member) {
         return ItemVO.builder()
@@ -44,6 +45,7 @@ public class ItemFixture {
                 StatusType.SELLING,
                 false,
                 Integer.parseInt(randomUtil.generateRandomCode('0', '9', 6)),
+                false,
                 new Timestamp(System.currentTimeMillis()),
                 new Timestamp(System.currentTimeMillis())
         );
