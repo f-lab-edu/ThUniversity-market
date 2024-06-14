@@ -37,13 +37,6 @@
         WHERE i.id = #{id}
     </select>
 
-    <select id="getItemsBySellerId" resultMap="ItemResultMap">
-        SELECT i.*, m.name AS seller_name, m.email AS seller_email, m.university AS seller_university
-        FROM item i
-                 JOIN member m ON i.seller_id = m.id
-        WHERE i.seller_id = #{sellerId}
-    </select>
-
     <update id="updateItem">
         UPDATE item
         SET title       = #{item.title},
