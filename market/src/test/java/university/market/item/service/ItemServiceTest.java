@@ -23,7 +23,6 @@ import university.market.item.domain.status.StatusType;
 import university.market.item.mapper.ItemMapper;
 import university.market.item.service.dto.request.PostItemRequest;
 import university.market.item.service.dto.request.UpdateItemRequest;
-import university.market.item.service.dto.response.ItemResponse;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.exception.MemberException;

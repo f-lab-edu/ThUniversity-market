@@ -4,7 +4,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,10 +19,10 @@ import university.market.item.mapper.ItemMapper;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.mapper.MemberMapper;
+import university.market.offer.domain.OfferStatus;
 import university.market.offer.domain.OfferVO;
 
 @MybatisTest
-@Slf4j
 @AutoConfigureTestDatabase(replace = NONE)
 public class OfferMapperTest {
 
@@ -57,7 +56,7 @@ public class OfferMapperTest {
         item = ItemFixture.testItem(seller);
         itemMapper.postItem(item);
 
-        offer = OfferFixture.testOffer(buyer, item);
+        offer = OfferFixture.testOffer(buyer, item, 3000, OfferStatus.OFFER);
     }
 
     @Test
@@ -77,14 +76,14 @@ public class OfferMapperTest {
 
     @Test
     @Transactional
-    @DisplayName("[success] offer 업데이트 성공")
-    public void offer_업데이트_성공() {
+    @DisplayName("[success] offer 가격 업데이트 성공")
+    public void offer_가격_업데이트_성공() {
         // given
         offerMapper.createOffer(offer);
-        OfferVO updateOffer = OfferFixture.testOffer(buyer, item);
+        OfferVO updateOffer = OfferFixture.testOffer(buyer, item, 4000, OfferStatus.OFFER);
 
         // when
-        offerMapper.updateOffer(offer.getId(), updateOffer.getPrice());
+        offerMapper.updatePriceOffer(offer.getId(), updateOffer.getPrice());
         OfferVO updatedOffer = offerMapper.findOfferById(offer.getId());
 
         // then
@@ -114,11 +113,11 @@ public class OfferMapperTest {
         offerMapper.createOffer(offer);
 
         // when
-        offerMapper.acceptOffer(offer.getId());
+        offerMapper.updateStatusOffer(offer.getId(), OfferStatus.ACCEPT);
         OfferVO acceptedOffer = offerMapper.findOfferById(offer.getId());
 
         // then
-        assertThat(acceptedOffer.isAccepted()).isTrue();
+        assertThat(acceptedOffer.getStatus()).isEqualTo(OfferStatus.ACCEPT);
     }
 
     @Test
@@ -129,10 +128,9 @@ public class OfferMapperTest {
         MemberVO buyer2 = MemberFixture.testMember(AuthType.ROLE_VERIFY_USER);
         memberMapper.joinMember(buyer2);
 
-        OfferVO offer2 = OfferFixture.testOffer(buyer2, item);
+        OfferVO offer2 = OfferFixture.testOffer(buyer2, item, 5000, OfferStatus.OFFER);
         offerMapper.createOffer(offer);
         offerMapper.createOffer(offer2);
-
 
         // when
         List<OfferVO> savedOffers = offerMapper.getOffersByItemId(item.getId());
@@ -152,7 +150,7 @@ public class OfferMapperTest {
         ItemVO item2 = ItemFixture.testItem(seller);
         itemMapper.postItem(item2);
 
-        OfferVO offer2 = OfferFixture.testOffer(buyer, item2);
+        OfferVO offer2 = OfferFixture.testOffer(buyer, item2, 4000, OfferStatus.OFFER);
         offerMapper.createOffer(offer);
         offerMapper.createOffer(offer2);
 
