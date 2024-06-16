@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import university.market.base.exception.BaseExceptionType;
 
 public enum OfferExceptionType implements BaseExceptionType {
-    OFFER_NOT_FOUND(HttpStatus.NOT_FOUND, "오퍼를 찾을 수 없습니다.", 404001);
+    NO_OFFER_MYSELF(HttpStatus.BAD_REQUEST, "자신에게 오퍼를 보낼 수 없습니다.", 400002);
 
     private final HttpStatus httpStatus;
     private final String errorMessage;
