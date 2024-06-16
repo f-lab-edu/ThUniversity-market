@@ -1,8 +1,10 @@
 package university.market.helper.fixture;
 
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
 import university.market.item.domain.ItemVO;
 import university.market.member.domain.MemberVO;
+import university.market.offer.domain.OfferStatus;
 import university.market.offer.domain.OfferVO;
 import university.market.verify.email.utils.random.RandomUtil;
 import university.market.verify.email.utils.random.RandomUtilImpl;
@@ -19,13 +21,28 @@ public class OfferFixture {
         }
     }
 
-    private OfferFixture() {}
+    private OfferFixture() {
+    }
 
-    public static OfferVO testOffer(MemberVO buyer, ItemVO item) {
+    public static OfferVO testOffer(MemberVO buyer, ItemVO item, int price, OfferStatus status) {
         return OfferVO.builder()
-                .price(Integer.parseInt(randomUtil.generateRandomCode('0', '9', 6)))
+                .price(price)
                 .item(item)
                 .buyer(buyer)
+                .status(status)
                 .build();
+    }
+
+    public static OfferVO testIdOffer(MemberVO buyer, ItemVO item, int price, OfferStatus status) {
+        return new OfferVO(
+                Long.parseLong(randomUtil.generateRandomCode('0', '9', 10)),
+                item,
+                buyer,
+                price,
+                status,
+                false,
+                new Timestamp(System.currentTimeMillis()),
+                new Timestamp(System.currentTimeMillis())
+        );
     }
 }
