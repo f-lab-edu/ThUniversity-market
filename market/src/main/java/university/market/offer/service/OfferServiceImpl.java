@@ -12,7 +12,7 @@ import university.market.member.domain.MemberVO;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
 import university.market.member.service.MemberService;
-import university.market.member.utils.JwtTokenProvider;
+import university.market.member.utils.jwt.JwtTokenProvider;
 import university.market.offer.domain.OfferVO;
 import university.market.offer.mapper.OfferMapper;
 import university.market.offer.service.dto.request.OfferRequest;
@@ -21,7 +21,7 @@ import university.market.offer.service.dto.response.OfferResponse;
 
 @Service
 @RequiredArgsConstructor
-public class OfferServiceImpl implements OfferService{
+public class OfferServiceImpl implements OfferService {
 
     private final OfferMapper offerMapper;
 

@@ -11,24 +11,24 @@ import university.market.item.mapper.ItemMapper;
 import university.market.item.service.dto.request.PostItemRequest;
 import university.market.item.service.dto.request.UpdateItemRequest;
 import university.market.item.service.dto.response.ItemResponse;
+import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
-import university.market.member.exception.MemberException;
-import university.market.member.exception.MemberExceptionType;
-import university.market.member.service.MemberService;
-import university.market.member.utils.JwtTokenProvider;
+import university.market.member.domain.auth.AuthType;
+import university.market.member.utils.auth.PermissionCheck;
+import university.market.member.utils.http.HttpRequest;
 
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
-    private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final HttpRequest httpRequest;
+    private final PermissionCheck permissionCheck;
 
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
-    public void postItem(PostItemRequest postItemRequest) {
-        final MemberVO member = memberService.findMemberByEmail(
-                jwtTokenProvider.extractEmail(postItemRequest.memberToken()));
+    public ItemVO postItem(PostItemRequest postItemRequest) {
+        final MemberVO member = httpRequest.getCurrentMember();
         final ItemVO itemVO = ItemVO.builder()
                 .title(postItemRequest.title())
                 .description(postItemRequest.description())
@@ -40,22 +40,21 @@ public class ItemServiceImpl implements ItemService {
                 .build();
 
         itemMapper.postItem(itemVO);
+        return itemVO;
     }
 
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
     public void updateItem(UpdateItemRequest updateItemRequest) {
-        final MemberVO member = memberService.findMemberByEmail(
-                jwtTokenProvider.extractEmail(updateItemRequest.memberToken()));
+        final MemberVO member = httpRequest.getCurrentMember();
         final ItemVO item = itemMapper.getItemById(updateItemRequest.itemId());
 
         if (item == null) {
             throw new ItemException(ItemExceptionType.INVALID_ITEM);
         }
 
-        if (item.getSeller() != member) {
-            throw new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION);
-        }
+        permissionCheck.hasPermission(() -> item.getSeller() != member && member.getAuth() != AuthType.ROLE_ADMIN);
 
         final ItemVO updateItem = ItemVO.builder()
                 .title(updateItemRequest.title())
@@ -70,13 +69,23 @@ public class ItemServiceImpl implements ItemService {
         itemMapper.updateItem(updateItemRequest.itemId(), updateItem);
     }
 
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
-    public void deleteItem(Long id) {
-        // 추후 권한에 따라 삭제 구현
-        itemMapper.deleteItem(id);
+    public void deleteItem(Long itemId) {
+        final MemberVO member = httpRequest.getCurrentMember();
+        final ItemVO item = itemMapper.getItemById(itemId);
+
+        if (item == null) {
+            throw new ItemException(ItemExceptionType.INVALID_ITEM);
+        }
+
+        permissionCheck.hasPermission(() -> item.getSeller() != member && member.getAuth() != AuthType.ROLE_ADMIN);
+
+        itemMapper.deleteItem(itemId);
     }
 
+    @AuthCheck({AuthType.ROLE_USER, AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
     public ItemVO getItemById(Long id) {

@@ -6,11 +6,10 @@ drop table if exists market.email;
 create table member(
       id bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
       name varchar(255) NOT NULL,
-      email varchar(255) NOT NULL,
+      email varchar(255) NOT NULL UNIQUE,
       password varchar(255) NOT NULL,
       university int NOT NULL,
       auth enum('ROLE_USER','ROLE_VERIFY_USER','ROLE_ADMIN') NOT NULL,
-      email_verify boolean NOT NULL,
       created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -32,6 +31,7 @@ create table item(
     status enum('SELLING', 'TRADING', 'FINISH') NOT NULL,
     auction boolean NOT NULL,
     price int NOT NULL,
+    is_deleted boolean NOT NULL,
     created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (seller) REFERENCES member(id)

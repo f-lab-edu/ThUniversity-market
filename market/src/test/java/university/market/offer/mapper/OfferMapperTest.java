@@ -18,6 +18,7 @@ import university.market.helper.fixture.OfferFixture;
 import university.market.item.domain.ItemVO;
 import university.market.item.mapper.ItemMapper;
 import university.market.member.domain.MemberVO;
+import university.market.member.domain.auth.AuthType;
 import university.market.member.mapper.MemberMapper;
 import university.market.offer.domain.OfferVO;
 
@@ -47,8 +48,8 @@ public class OfferMapperTest {
     @Transactional
     public void init() {
         // given
-        buyer = MemberFixture.testMember();
-        seller = MemberFixture.testMember();
+        buyer = MemberFixture.testMember(AuthType.ROLE_VERIFY_USER);
+        seller = MemberFixture.testMember(AuthType.ROLE_VERIFY_USER);
 
         memberMapper.joinMember(buyer);
         memberMapper.joinMember(seller);
@@ -125,7 +126,7 @@ public class OfferMapperTest {
     @DisplayName("[success] item id로 offer 목록 조회 성공")
     public void item_id로_offer_목록_조회_성공() {
         // given
-        MemberVO buyer2 = MemberFixture.testMember();
+        MemberVO buyer2 = MemberFixture.testMember(AuthType.ROLE_VERIFY_USER);
         memberMapper.joinMember(buyer2);
 
         OfferVO offer2 = OfferFixture.testOffer(buyer2, item);

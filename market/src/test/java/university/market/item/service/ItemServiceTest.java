@@ -1,8 +1,10 @@
 package university.market.item.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,10 +25,11 @@ import university.market.item.service.dto.request.PostItemRequest;
 import university.market.item.service.dto.request.UpdateItemRequest;
 import university.market.item.service.dto.response.ItemResponse;
 import university.market.member.domain.MemberVO;
+import university.market.member.domain.auth.AuthType;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
-import university.market.member.service.MemberServiceImpl;
-import university.market.member.utils.JwtTokenProvider;
+import university.market.member.utils.auth.PermissionCheck;
+import university.market.member.utils.http.HttpRequest;
 
 @ExtendWith(MockitoExtension.class)
 public class ItemServiceTest {
@@ -34,22 +37,39 @@ public class ItemServiceTest {
     private ItemMapper itemMapper;
 
     @Mock
-    private MemberServiceImpl memberService;
+    private HttpRequest httpRequest;
 
     @Mock
-    private JwtTokenProvider jwtTokenProvider;
+    private PermissionCheck permissionCheck;
+
     @InjectMocks
     private ItemServiceImpl itemService;
 
     private ItemVO mockItem;
 
+    private ItemVO mockItem2;
+
     private MemberVO mockMember;
+
+    private UpdateItemRequest updateItemRequest;
 
     @BeforeEach
     public void init() {
         // given
-        mockMember = MemberFixture.testMember();
-        mockItem = ItemFixture.testItem(mockMember);
+        mockMember = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
+
+        mockItem = ItemFixture.testIdItem(mockMember);
+
+        mockItem2 = ItemFixture.testItem(mockMember);
+
+        updateItemRequest = new UpdateItemRequest(
+                mockItem.getId(),
+                mockItem2.getTitle(),
+                mockItem2.getDescription(),
+                mockItem2.getStatus().name(),
+                mockItem2.isAuction(),
+                mockItem2.getPrice()
+        );
     }
 
     @Test
@@ -58,16 +78,14 @@ public class ItemServiceTest {
     public void item_등록_성공() {
         // given
         PostItemRequest postItemRequest = new PostItemRequest(
-                "token",
-                "title",
-                "description",
-                false,
-                1000
+                mockItem.getTitle(),
+                mockItem.getDescription(),
+                mockItem.isAuction(),
+                mockItem.getPrice()
         );
 
         // mocking
-        when(jwtTokenProvider.extractEmail(postItemRequest.memberToken())).thenReturn(mockMember.getEmail());
-        when(memberService.findMemberByEmail(mockMember.getEmail())).thenReturn(mockMember);
+        when(httpRequest.getCurrentMember()).thenReturn(mockMember);
 
         // when
         itemService.postItem(postItemRequest);
@@ -79,55 +97,44 @@ public class ItemServiceTest {
     @Test
     @DisplayName("[success] item 업데이트 성공")
     public void item_업데이트_성공() {
-        // given
-        UpdateItemRequest updateItemRequest = new UpdateItemRequest(
-                mockItem.getId(),
-                "updated title",
-                "updated description",
-                "token",
-                StatusType.SELLING.name(),
-                false,
-                2000
-        );
-
         // mocking
-        when(jwtTokenProvider.extractEmail(updateItemRequest.memberToken())).thenReturn(mockItem.getSeller().getEmail());
-        when(memberService.findMemberByEmail(mockItem.getSeller().getEmail())).thenReturn(mockItem.getSeller());
-        when(itemMapper.getItemById(updateItemRequest.itemId())).thenReturn(mockItem);
+        when(httpRequest.getCurrentMember()).thenReturn(mockMember);
+        doNothing().when(itemMapper).updateItem(updateItemRequest.itemId(), mockItem2);
+        when(itemMapper.getItemById(updateItemRequest.itemId())).thenReturn(mockItem2);
 
         // when
         itemService.updateItem(updateItemRequest);
+        ItemVO updatedItem = itemMapper.getItemById(updateItemRequest.itemId());
 
         // then
-        verify(itemMapper).updateItem(eq(updateItemRequest.itemId()), any(ItemVO.class));
+        assertThat(updatedItem.getTitle()).isEqualTo(updateItemRequest.title());
+        assertThat(updatedItem.getDescription()).isEqualTo(updateItemRequest.description());
+        assertThat(updatedItem.getStatus()).isEqualTo(StatusType.valueOf(updateItemRequest.status()));
+        assertThat(updatedItem.isAuction()).isEqualTo(updateItemRequest.auction());
+        assertThat(updatedItem.getPrice()).isEqualTo(updateItemRequest.price());
     }
 
     @Test
     @DisplayName("[fail] item 업데이트 실패 - 권한 없음")
     public void item_업데이트_실패_권한_없음() {
-        // given
-        UpdateItemRequest updateItemRequest = new UpdateItemRequest(
-                mockItem.getId(),
-                "updated title",
-                "updated description",
-                "token",
-                StatusType.SELLING.name(),
-                false,
-                2000
-        );
+        MemberVO testedMember = MemberFixture.testIdMember(AuthType.ROLE_USER);
 
         // mocking
-        when(jwtTokenProvider.extractEmail(updateItemRequest.memberToken())).thenReturn(mockMember.getEmail());
-        when(memberService.findMemberByEmail(mockMember.getEmail())).thenReturn(mockMember);
-        when(itemMapper.getItemById(updateItemRequest.itemId())).thenReturn(mockItem);
+        when(httpRequest.getCurrentMember()).thenReturn(testedMember);
+        when(itemMapper.getItemById(updateItemRequest.itemId())).thenReturn(mockItem2);
 
-        // when & then
-        try {
+        doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION)).when(permissionCheck)
+                .hasPermission(any());
+
+        // when
+        MemberException exception = assertThrows(MemberException.class, () -> {
             itemService.updateItem(updateItemRequest);
-        } catch (MemberException e) {
-            assert e.exceptionType() == MemberExceptionType.UNAUTHORIZED_PERMISSION;
-        }
+        });
+
+        // then
+        assertThat(exception.exceptionType()).isEqualTo(MemberExceptionType.UNAUTHORIZED_PERMISSION);
     }
+
 
     @Test
     @DisplayName("[success] item 삭제 성공")
@@ -136,6 +143,49 @@ public class ItemServiceTest {
         Long itemId = mockItem.getId();
 
         // mocking
+        when(httpRequest.getCurrentMember()).thenReturn(mockMember);
+        when(itemMapper.getItemById(itemId)).thenReturn(mockItem);
+        doNothing().when(itemMapper).deleteItem(itemId);
+
+        // when
+        itemService.deleteItem(itemId);
+
+        // then
+        verify(itemMapper).deleteItem(itemId);
+    }
+
+    @Test
+    @DisplayName("[fail] item 삭제 실패 권한 없음")
+    public void item_삭제_실패_권한_없음() {
+        // given
+        MemberVO testedMember = MemberFixture.testIdMember(AuthType.ROLE_USER);
+        Long itemId = mockItem.getId();
+
+        // mocking
+        when(httpRequest.getCurrentMember()).thenReturn(testedMember);
+        when(itemMapper.getItemById(itemId)).thenReturn(mockItem);
+        doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION)).when(permissionCheck)
+                .hasPermission(any());
+
+        // when
+        MemberException exception = assertThrows(MemberException.class, () -> {
+            itemService.deleteItem(itemId);
+        });
+
+        // then
+        assertThat(exception.exceptionType()).isEqualTo(MemberExceptionType.UNAUTHORIZED_PERMISSION);
+    }
+
+    @Test
+    @DisplayName("[success] admin item 삭제 성공")
+    public void admin_item_삭제_성공() {
+        // given
+        MemberVO adminMember = MemberFixture.testIdMember(AuthType.ROLE_ADMIN);
+        Long itemId = mockItem.getId();
+
+        // mocking
+        when(httpRequest.getCurrentMember()).thenReturn(adminMember);
+        when(itemMapper.getItemById(itemId)).thenReturn(mockItem);
         doNothing().when(itemMapper).deleteItem(itemId);
 
         // when
@@ -155,16 +205,15 @@ public class ItemServiceTest {
         when(itemMapper.getItemById(itemId)).thenReturn(mockItem);
 
         // when
-        ItemVO findedItem = itemService.getItemById(itemId);
+        ItemVO item = itemService.getItemById(itemId);
 
         // then
         verify(itemMapper).getItemById(itemId);
 
-        assert findedItem.getTitle().equals(mockItem.getTitle());
-        assert findedItem.getDescription().equals(mockItem.getDescription());
-        assert findedItem.getImageUrl().equals(mockItem.getImageUrl());
-        assert findedItem.getStatus().equals(mockItem.getStatus());
-        assert findedItem.isAuction() == mockItem.isAuction();
-        assert findedItem.getPrice() == mockItem.getPrice();
+        assertThat(item.getId()).isEqualTo(itemId);
+        assertThat(item.getTitle()).isEqualTo(mockItem.getTitle());
+        assertThat(item.getDescription()).isEqualTo(mockItem.getDescription());
+        assertThat(item.getImageUrl()).isEqualTo(mockItem.getImageUrl());
+        assertThat(item.getStatus()).isEqualTo(mockItem.getStatus());
     }
 }

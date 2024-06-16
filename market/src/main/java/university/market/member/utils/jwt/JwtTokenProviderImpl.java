@@ -1,4 +1,4 @@
-package university.market.member.utils;
+package university.market.member.utils.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

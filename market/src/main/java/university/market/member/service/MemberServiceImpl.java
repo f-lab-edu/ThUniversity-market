@@ -13,7 +13,7 @@ import university.market.member.mapper.MemberMapper;
 import university.market.member.service.dto.request.JoinRequest;
 import university.market.member.service.dto.request.LoginRequest;
 import university.market.member.service.dto.response.LoginResponse;
-import university.market.member.utils.JwtTokenProvider;
+import university.market.member.utils.jwt.JwtTokenProvider;
 import university.market.verify.email.service.EmailVerificationService;
 import university.market.verify.email.service.dto.CheckVerificationCodeRequest;
 
@@ -28,15 +28,15 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     public void joinMember(JoinRequest joinRequest) {
-        joinUser(joinRequest, AuthType.ROLE_USER, false);
+        joinUser(joinRequest, AuthType.ROLE_USER);
     }
 
     @Transactional
     public void joinAdminUser(JoinRequest joinRequest) {
-        joinUser(joinRequest, AuthType.ROLE_ADMIN, true);
+        joinUser(joinRequest, AuthType.ROLE_ADMIN);
     }
 
-    private void joinUser(JoinRequest joinRequest, AuthType authType, boolean emailVerify) {
+    private void joinUser(JoinRequest joinRequest, AuthType authType) {
         if (memberMapper.findMemberByEmail(joinRequest.email()) != null) {
             throw new MemberException(MemberExceptionType.ALREADY_EXISTED_MEMBER);
         }
@@ -47,7 +47,6 @@ public class MemberServiceImpl implements MemberService {
                 .password(passwordEncoder.encode(joinRequest.password()))
                 .university(joinRequest.university())
                 .auth(authType)
-                .emailVerify(emailVerify)
                 .build();
 
         try {
@@ -61,7 +60,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public void verifyEmailUser(CheckVerificationCodeRequest checkVerificationCodeRequest) {
         emailVerificationService.checkVerificationCode(checkVerificationCodeRequest);
-        memberMapper.updateEmailVerify(checkVerificationCodeRequest.email(), true, AuthType.ROLE_VERIFY_USER);
+        memberMapper.updateAuth(checkVerificationCodeRequest.email(), AuthType.ROLE_VERIFY_USER);
     }
 
     @Transactional(readOnly = true)
