@@ -1,6 +1,7 @@
 package university.market.member.domain;
 
 import java.sql.Timestamp;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import university.market.member.domain.university.UniversityType;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class MemberVO {
 
     private Long id;

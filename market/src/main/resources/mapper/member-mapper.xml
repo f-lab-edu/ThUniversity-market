@@ -29,7 +29,7 @@
         WHERE id = #{id}
     </select>
 
-    <insert id="joinMember">
+    <insert id="joinMember" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO member (name, email, password, university, auth, created_at, updated_at)
         VALUES (#{name}, #{email}, #{password},
                 #{university, typeHandler=university.market.member.mapper.UniversityTypeHandler}, #{auth},

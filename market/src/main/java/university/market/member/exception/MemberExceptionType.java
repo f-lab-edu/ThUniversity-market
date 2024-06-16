@@ -31,6 +31,7 @@ public enum MemberExceptionType implements BaseExceptionType {
         return errorMessage;
     }
 
+    @Override
     public int errorCode() {
         return errorCode;
     }
