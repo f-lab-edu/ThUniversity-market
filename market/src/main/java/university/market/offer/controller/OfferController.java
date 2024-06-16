@@ -16,7 +16,6 @@ import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.auth.AuthType;
 import university.market.offer.service.OfferService;
 import university.market.offer.service.dto.request.OfferRequest;
-import university.market.offer.service.dto.request.UpdateOfferRequest;
 import university.market.offer.service.dto.response.OfferResponse;
 
 @RestController
@@ -41,9 +40,18 @@ public class OfferController {
     }
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
-    @GetMapping("/accept/{offerId}")
-    public ResponseEntity<Void> acceptOffer(@PathVariable Long offerId) {
-        offerService.acceptOffer(offerId);
+    @PatchMapping("/{offerId}/price")
+    public ResponseEntity<Void> updateOffer(@PathVariable Long offerId,
+                                            @RequestBody int price) {
+        offerService.updatePriceOffer(offerId, price);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @PatchMapping("/{offerId}/status")
+    public ResponseEntity<Void> updateOffer(@PathVariable Long offerId,
+                                            @RequestBody String status) {
+        offerService.updateStatusOffer(offerId, status);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -55,9 +63,9 @@ public class OfferController {
     }
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
-    @PostMapping("/member/{memberId}")
-    public ResponseEntity<List<OfferResponse>> getOffersByMemberId(@PathVariable Long memberId) {
-        List<OfferResponse> offers = offerService.getOffersByMemberId(memberId);
+    @GetMapping("/member")
+    public ResponseEntity<List<OfferResponse>> getOffersByMemberId() {
+        List<OfferResponse> offers = offerService.getOffersByMemberId();
         return ResponseEntity.ok(offers);
     }
 
@@ -67,12 +75,4 @@ public class OfferController {
         offerService.deleteOffer(offerId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
-    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
-    @PatchMapping("/")
-    public ResponseEntity<Void> updateOffer(@RequestBody UpdateOfferRequest offerRequest) {
-        offerService.updateOffer(offerRequest);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
 }
