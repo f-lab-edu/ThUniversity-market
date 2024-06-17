@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="university.market.offer.mapper.OfferMapper">
+
+    <resultMap id="OfferResultMap" type="university.market.offer.domain.OfferVO">
+        <id property="id" column="id"/>
+        <result property="price" column="price"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+
+        <association property="buyer" javaType="university.market.member.domain.MemberVO">
+            <id property="id" column="buyer_id"/>
+            <result property="name" column="buyer_name"/>
+            <result property="email" column="buyer_email"/>
+            <result property="university" column="buyer_university"/>
+        </association>
+
+        <association property="item" javaType="university.market.item.domain.ItemVO">
+            <id property="id" column="item_id"/>
+            <result property="title" column="item_title"/>
+            <result property="description" column="item_description"/>
+            <result property="imageUrl" column="image_url"/>
+            <result property="status" column="item_status"/>
+            <result property="auction" column="item_auction"/>
+            <result property="price" column="item_price"/>
+            <result property="createdAt" column="item_created_at"/>
+            <result property="updatedAt" column="item_updated_at"/>
+
+            <association property="seller" javaType="university.market.member.domain.MemberVO">
+                <id property="id" column="seller_id"/>
+                <result property="name" column="seller_name"/>
+                <result property="email" column="seller_email"/>
+                <result property="university" column="seller_university"/>
+            </association>
+        </association>
+    </resultMap>
+
+
+    <insert id="createOffer" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO offer (item, buyer, price, status, is_deleted, created_at, updated_at)
+        VALUES (#{item.id}, #{buyer.id}, #{price}, #{status}, #{isDeleted}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updatePriceOffer">
+        UPDATE offer
+        SET price = #{price}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStatusOffer">
+        UPDATE offer
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteOffer">
+        UPDATE offer
+        SET is_deleted = true
+        WHERE id = #{id}
+    </delete>
+
+    <select id="findOfferById" resultMap="OfferResultMap">
+        SELECT o.id          AS id,
+               o.price       AS price,
+               o.status      AS status,
+               o.created_at  AS created_at,
+               o.updated_at  AS updated_at,
+               m.id          AS buyer_id,
+               m.name        AS buyer_name,
+               m.email       AS buyer_email,
+               m.university  AS buyer_university,
+               i.id          AS item_id,
+               i.title       AS title,
+               i.description AS description,
+               i.image_url   AS image_url,
+               i.status      AS status,
+               i.auction     AS auction,
+               i.price       AS item_price,
+               i.created_at  AS item_created_at,
+               i.updated_at  AS item_updated_at,
+               s.id          AS seller_id,
+               s.name        AS seller_name,
+               s.email       AS seller_email,
+               s.university  AS seller_university
+        FROM offer o
+                 JOIN member m ON o.buyer = m.id
+                 JOIN item i ON o.item = i.id
+                 JOIN member s ON i.seller = s.id
+        WHERE o.id = #{id}
+          AND o.is_deleted = false
+    </select>
+
+    <select id="getOffersByItemId" resultMap="OfferResultMap">
+        SELECT o.id          AS id,
+               o.price       AS price,
+               o.status      AS status,
+               o.created_at  AS created_at,
+               o.updated_at  AS updated_at,
+               m.id          AS buyer_id,
+               m.name        AS buyer_name,
+               m.email       AS buyer_email,
+               m.university  AS buyer_university,
+               i.id          AS item_id,
+               i.title       AS title,
+               i.description AS description,
+               i.image_url   AS image_url,
+               i.status      AS status,
+               i.auction     AS auction,
+               i.price       AS item_price,
+               i.created_at  AS item_created_at,
+               i.updated_at  AS item_updated_at,
+               s.id          AS seller_id,
+               s.name        AS seller_name,
+               s.email       AS seller_email,
+               s.university  AS seller_university
+        FROM offer o
+                 JOIN member m ON o.buyer = m.id
+                 JOIN item i ON o.item = i.id
+                 JOIN member s ON i.seller = s.id
+        WHERE o.item = #{itemId}
+          AND o.is_deleted = false
+    </select>
+
+    <select id="getOffersByMemberId" resultMap="OfferResultMap">
+        SELECT o.id          AS id,
+               o.price       AS price,
+               o.status      AS status,
+               o.created_at  AS created_at,
+               o.updated_at  AS updated_at,
+               m.id          AS buyer_id,
+               m.name        AS buyer_name,
+               m.email       AS buyer_email,
+               m.university  AS buyer_university,
+               i.id          AS item_id,
+               i.title       AS title,
+               i.description AS description,
+               i.image_url   AS image_url,
+               i.status      AS status,
+               i.auction     AS auction,
+               i.price       AS item_price,
+               i.created_at  AS item_created_at,
+               i.updated_at  AS item_updated_at,
+               s.id          AS seller_id,
+               s.name        AS seller_name,
+               s.email       AS seller_email,
+               s.university  AS seller_university
+        FROM offer o
+                 JOIN member m ON o.buyer = m.id
+                 JOIN item i ON o.item = i.id
+                 JOIN member s ON i.seller = s.id
+        WHERE o.buyer = #{buyerId}
+          AND o.is_deleted = false
+    </select>
+
+</mapper>

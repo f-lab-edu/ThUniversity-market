@@ -88,16 +88,7 @@ public class ItemServiceImpl implements ItemService {
     @AuthCheck({AuthType.ROLE_USER, AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
-    public ItemResponse getItemById(Long id) {
-        final ItemVO findItem = itemMapper.getItemById(id);
-        return ItemResponse.builder()
-                .itemId(id)
-                .title(findItem.getTitle())
-                .description(findItem.getDescription())
-                .image_url(findItem.getImageUrl())
-                .status(findItem.getStatus().name())
-                .auction(findItem.isAuction())
-                .price(findItem.getPrice())
-                .build();
+    public ItemVO getItemById(Long id) {
+        return itemMapper.getItemById(id);
     }
 }

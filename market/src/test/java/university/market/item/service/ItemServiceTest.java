@@ -23,7 +23,6 @@ import university.market.item.domain.status.StatusType;
 import university.market.item.mapper.ItemMapper;
 import university.market.item.service.dto.request.PostItemRequest;
 import university.market.item.service.dto.request.UpdateItemRequest;
-import university.market.item.service.dto.response.ItemResponse;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.exception.MemberException;
@@ -205,15 +204,15 @@ public class ItemServiceTest {
         when(itemMapper.getItemById(itemId)).thenReturn(mockItem);
 
         // when
-        ItemResponse itemResponse = itemService.getItemById(itemId);
+        ItemVO item = itemService.getItemById(itemId);
 
         // then
         verify(itemMapper).getItemById(itemId);
 
-        assertThat(itemResponse.itemId()).isEqualTo(itemId);
-        assertThat(itemResponse.title()).isEqualTo(mockItem.getTitle());
-        assertThat(itemResponse.description()).isEqualTo(mockItem.getDescription());
-        assertThat(itemResponse.image_url()).isEqualTo(mockItem.getImageUrl());
-        assertThat(itemResponse.status()).isEqualTo(mockItem.getStatus().name());
+        assertThat(item.getId()).isEqualTo(itemId);
+        assertThat(item.getTitle()).isEqualTo(mockItem.getTitle());
+        assertThat(item.getDescription()).isEqualTo(mockItem.getDescription());
+        assertThat(item.getImageUrl()).isEqualTo(mockItem.getImageUrl());
+        assertThat(item.getStatus()).isEqualTo(mockItem.getStatus());
     }
 }

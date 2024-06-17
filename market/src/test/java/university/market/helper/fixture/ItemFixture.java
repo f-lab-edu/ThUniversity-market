@@ -27,6 +27,7 @@ public class ItemFixture {
         return ItemVO.builder()
                 .title(randomUtil.generateRandomCode('0', 'z', 10))
                 .description(randomUtil.generateRandomCode('0', 'z', 500))
+                .seller(member)
                 .imageUrl("blank2")
                 .seller(member)
                 .statusType(StatusType.SELLING)
