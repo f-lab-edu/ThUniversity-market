@@ -13,6 +13,7 @@ import university.market.item.service.ItemService;
 import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
+import university.market.member.utils.auth.PermissionCheck;
 import university.market.member.utils.http.HttpRequest;
 
 @Service
@@ -24,6 +25,8 @@ public class DibsServiceImpl implements DibsService {
 
     private DibsMapper dibsMapper;
 
+    private PermissionCheck permissionCheck;
+
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
@@ -31,9 +34,7 @@ public class DibsServiceImpl implements DibsService {
         MemberVO member = httpRequest.getCurrentMember();
         ItemVO item = itemService.getItemById(itemId);
 
-        if (member.equals(item.getSeller())) {
-            throw new DibsException(DibsExceptionType.NO_DIBS_MYSELF);
-        }
+        permissionCheck.hasPermission(() -> item.getSeller().equals(member), new DibsException(DibsExceptionType.NO_DIBS_MYSELF));
 
         DibsVO dibsVO = DibsVO.builder()
             .member(member)
