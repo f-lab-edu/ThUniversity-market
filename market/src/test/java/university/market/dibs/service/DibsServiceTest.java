@@ -2,6 +2,9 @@ package university.market.dibs.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,6 +26,7 @@ import university.market.item.domain.ItemVO;
 import university.market.item.service.ItemService;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
+import university.market.member.utils.auth.PermissionCheck;
 import university.market.member.utils.http.HttpRequest;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,6 +39,9 @@ public class DibsServiceTest {
 
     @Mock
     private DibsMapper dibsMapper;
+
+    @Mock
+    private PermissionCheck permissionCheck;
 
     @InjectMocks
     private DibsServiceImpl dibsService;
@@ -58,6 +65,7 @@ public class DibsServiceTest {
         // mocking
         when(httpRequest.getCurrentMember()).thenReturn(dibs.getMember());
         when(itemService.getItemById(dibs.getItem().getId())).thenReturn(dibs.getItem());
+        doNothing().when(permissionCheck).hasPermission(any(), any());
 
         // when
         dibsService.addDibs(dibs.getItem().getId());
@@ -72,6 +80,7 @@ public class DibsServiceTest {
         // mocking
         when(httpRequest.getCurrentMember()).thenReturn(dibs.getItem().getSeller());
         when(itemService.getItemById(dibs.getItem().getId())).thenReturn(dibs.getItem());
+        doThrow(new DibsException(DibsExceptionType.NO_DIBS_MYSELF)).when(permissionCheck).hasPermission(any(), any());
 
         // when
         DibsException exception = assertThrows(DibsException.class, () -> {
