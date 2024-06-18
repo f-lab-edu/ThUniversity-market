@@ -26,9 +26,9 @@ public class ItemController {
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @PostMapping("/")
-    public ResponseEntity<Void> postItem(@RequestBody PostItemRequest postItemRequest) {
-        itemService.postItem(postItemRequest);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<ItemVO> postItem(@RequestBody PostItemRequest postItemRequest) {
+        ItemVO item = itemService.postItem(postItemRequest);
+        return ResponseEntity.ok(item);
     }
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
