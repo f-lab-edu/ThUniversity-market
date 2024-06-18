@@ -1,4 +1,5 @@
 drop table if exists market.offer;
+drop table if exists market.dibs;
 drop table if exists market.item;
 drop table if exists market.member;
 drop table if exists market.email;
@@ -48,6 +49,16 @@ create table offer(
     updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (item) REFERENCES item(id),
     FOREIGN KEY (buyer) REFERENCES member(id)
+);
+
+create table dibs(
+                     id bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                     item bigint NOT NULL,
+                     member bigint NOT NULL,
+                     created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+                     updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                     FOREIGN KEY (item) REFERENCES item(id),
+                     FOREIGN KEY (member) REFERENCES member(id)
 );
 
 SET GLOBAL event_scheduler = ON;
