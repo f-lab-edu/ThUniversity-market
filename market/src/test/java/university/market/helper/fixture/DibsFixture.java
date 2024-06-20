@@ -9,7 +9,7 @@ import university.market.verify.email.utils.random.RandomUtil;
 import university.market.verify.email.utils.random.RandomUtilImpl;
 
 public class DibsFixture {
-    public static RandomUtil randomUtil;
+    public static final RandomUtil randomUtil;
 
     static {
         try {
