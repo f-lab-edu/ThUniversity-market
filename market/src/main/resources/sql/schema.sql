@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS market.chat_member;
+DROP TABLE IF EXISTS market.chat;
 drop table if exists market.offer;
 drop table if exists market.dibs;
 drop table if exists market.item;
@@ -52,13 +54,33 @@ create table offer(
 );
 
 create table dibs(
-                     id bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                     item bigint NOT NULL,
-                     member bigint NOT NULL,
-                     created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-                     updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                     FOREIGN KEY (item) REFERENCES item(id),
-                     FOREIGN KEY (member) REFERENCES member(id)
+    id bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    item bigint NOT NULL,
+    member bigint NOT NULL,
+    created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (item) REFERENCES item(id),
+    FOREIGN KEY (member) REFERENCES member(id)
+);
+
+CREATE TABLE chat (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    item BIGINT,
+    is_deleted BOOLEAN NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (item) REFERENCES item(id)
+);
+
+CREATE TABLE chat_member (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    chat_auth ENUM('GUEST', 'HOST') NOT NULL,
+    chat BIGINT NOT NULL,
+    member BIGINT NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chat) REFERENCES chat(id),
+    FOREIGN KEY (member) REFERENCES member(id)
 );
 
 SET GLOBAL event_scheduler = ON;
