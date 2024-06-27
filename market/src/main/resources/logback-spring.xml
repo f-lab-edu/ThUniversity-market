@@ -8,10 +8,10 @@
     <property name="FILE_LOG_PATTERN"
               value="%d{yyyy-MM-dd HH:mm:ss.SSS, ${logback.timezone:-Asia/Seoul}} [%thread] %5level %logger - %msg%n"/>
 
-    <include resource="console-appender.xml"/>
-    <include resource="default-appender.xml"/>
-    <include resource="http-appender.xml"/>
-    <include resource="error-appender.xml"/>
+    <include resource="log/console-appender.xml"/>
+    <include resource="log/default-appender.xml"/>
+    <include resource="log/http-appender.xml"/>
+    <include resource="log/error-appender.xml"/>
 
     <logger name="ExceptionLogger" level="WARN" additivity="false">
         <appender-ref ref="ERROR"/>
