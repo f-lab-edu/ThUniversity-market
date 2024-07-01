@@ -1,22 +1,28 @@
 package university.market.base.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import university.market.base.exception.response.ErrorResponse;
-import university.market.verify.email.exception.EmailException;
-import university.market.member.exception.MemberException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    Logger defaultLog = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    Logger exceptionLog = LoggerFactory.getLogger("ExceptionLogger");
 
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ErrorResponse> handleException(BaseException ex) {
-        return createErrorResponse(ex.exceptionType().httpStatus(), ex.exceptionType().errorMessage(), ex.exceptionType().errorCode());
+        defaultLog.error(ex.getMessage());
+        exceptionLog.error(ex.getMessage());
+        return createErrorResponse(ex.exceptionType().httpStatus(), ex.exceptionType().errorMessage(),
+                ex.exceptionType().errorCode());
     }
 
-    private ResponseEntity<ErrorResponse> createErrorResponse(HttpStatus originalStatus, String errorMessage, int errorCode) {
+    private ResponseEntity<ErrorResponse> createErrorResponse(HttpStatus originalStatus, String errorMessage,
+                                                              int errorCode) {
         HttpStatus statusToReturn = determineHttpStatus(originalStatus);
         return ResponseEntity
                 .status(statusToReturn)
@@ -29,5 +35,12 @@ public class GlobalExceptionHandler {
             case SERVER_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
             default -> originalStatus;
         };
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Void> handleException(Exception e) {
+        defaultLog.error(e.getMessage());
+        exceptionLog.error(e.getMessage(), e);
+        return ResponseEntity.internalServerError().build();
     }
 }

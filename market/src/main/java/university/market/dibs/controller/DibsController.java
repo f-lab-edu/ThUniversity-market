@@ -14,7 +14,7 @@ import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.auth.AuthType;
 
 @RestController
-@RequestMapping("/dibs")
+@RequestMapping("/api/dibs")
 @RequiredArgsConstructor
 public class DibsController {
 
