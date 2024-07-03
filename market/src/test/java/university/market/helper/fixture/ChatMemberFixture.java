@@ -1,9 +1,9 @@
 package university.market.helper.fixture;
 
 import java.security.NoSuchAlgorithmException;
-import university.market.chat.domain.ChatMemberVO;
-import university.market.chat.domain.ChatVO;
-import university.market.chat.domain.chatauth.ChatAuthType;
+import university.market.chat.room.domain.ChatMemberVO;
+import university.market.chat.room.domain.ChatVO;
+import university.market.chat.room.domain.chatauth.ChatAuthType;
 import university.market.member.domain.MemberVO;
 import university.market.verify.email.utils.random.RandomUtil;
 import university.market.verify.email.utils.random.RandomUtilImpl;

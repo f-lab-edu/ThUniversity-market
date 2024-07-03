@@ -1,4 +1,4 @@
-package university.market.chat.service.dto;
+package university.market.chat.room.service.dto;
 
 import java.util.List;
 import lombok.Builder;

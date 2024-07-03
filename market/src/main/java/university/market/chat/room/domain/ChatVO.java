@@ -1,4 +1,4 @@
-package university.market.chat.domain;
+package university.market.chat.room.domain;
 
 import java.sql.Timestamp;
 import java.util.List;

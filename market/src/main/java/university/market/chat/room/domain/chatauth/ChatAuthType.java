@@ -1,4 +1,4 @@
-package university.market.chat.domain.chatauth;
+package university.market.chat.room.domain.chatauth;
 
 public enum ChatAuthType {
     GUEST,

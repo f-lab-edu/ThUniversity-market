@@ -1,4 +1,4 @@
-package university.market.chat.controller;
+package university.market.chat.room.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import university.market.chat.domain.ChatVO;
-import university.market.chat.service.ChatService;
-import university.market.chat.service.dto.ChatCreateRequest;
+import university.market.chat.room.domain.ChatVO;
+import university.market.chat.room.service.ChatService;
+import university.market.chat.room.service.dto.ChatCreateRequest;
 import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;

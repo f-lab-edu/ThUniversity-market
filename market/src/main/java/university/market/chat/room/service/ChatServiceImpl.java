@@ -1,18 +1,18 @@
-package university.market.chat.service;
+package university.market.chat.room.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import university.market.chat.domain.ChatMemberVO;
-import university.market.chat.domain.ChatVO;
-import university.market.chat.domain.chatauth.ChatAuthType;
-import university.market.chat.exception.ChatException;
-import university.market.chat.exception.ChatExceptionType;
-import university.market.chat.mapper.ChatMapper;
-import university.market.chat.mapper.ChatMemberMapper;
-import university.market.chat.service.dto.ChatCreateRequest;
+import university.market.chat.room.domain.ChatMemberVO;
+import university.market.chat.room.domain.ChatVO;
+import university.market.chat.room.domain.chatauth.ChatAuthType;
+import university.market.chat.room.exception.ChatException;
+import university.market.chat.room.exception.ChatExceptionType;
+import university.market.chat.room.mapper.ChatMapper;
+import university.market.chat.room.mapper.ChatMemberMapper;
+import university.market.chat.room.service.dto.ChatCreateRequest;
 import university.market.item.service.ItemService;
 import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
@@ -155,5 +155,11 @@ public class ChatServiceImpl implements ChatService {
                         .getChatAuth()
                         != ChatAuthType.HOST);
         chatMapper.updateChat(chatId, title);
+    }
+
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @Override
+    public ChatMemberVO getChatMember(Long chatId, Long memberId) {
+        return chatMemberMapper.getChatMemberByChatAndMember(chatId, memberId);
     }
 }

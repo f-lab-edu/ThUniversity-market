@@ -1,4 +1,4 @@
-package university.market.chat.mapper;
+package university.market.chat.room.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
@@ -11,9 +11,11 @@ import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.transaction.annotation.Transactional;
-import university.market.chat.domain.ChatMemberVO;
-import university.market.chat.domain.ChatVO;
-import university.market.chat.domain.chatauth.ChatAuthType;
+import university.market.chat.room.domain.ChatMemberVO;
+import university.market.chat.room.domain.ChatVO;
+import university.market.chat.room.domain.chatauth.ChatAuthType;
+import university.market.chat.room.mapper.ChatMapper;
+import university.market.chat.room.mapper.ChatMemberMapper;
 import university.market.helper.fixture.ChatFixture;
 import university.market.helper.fixture.ChatMemberFixture;
 import university.market.helper.fixture.ItemFixture;
