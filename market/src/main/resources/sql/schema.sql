@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS market.chat_member;
+DROP TABLE IF EXISTS market.message;
 DROP TABLE IF EXISTS market.chat;
 drop table if exists market.offer;
 drop table if exists market.dibs;
@@ -81,6 +82,16 @@ CREATE TABLE chat_member (
     created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (chat) REFERENCES chat(id),
     FOREIGN KEY (member) REFERENCES member(id)
+);
+
+CREATE TABLE message (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    chat BIGINT NOT NULL,
+    sender BIGINT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chat) REFERENCES chat(id),
+    FOREIGN KEY (sender) REFERENCES member(id)
 );
 
 SET GLOBAL event_scheduler = ON;
