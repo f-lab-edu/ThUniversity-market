@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import university.market.member.domain.auth.AuthType;
+import university.market.member.domain.memberstatus.MemberStatus;
 import university.market.member.domain.university.UniversityType;
 
 @Data
@@ -24,6 +25,8 @@ public class MemberVO {
     private UniversityType university;
 
     private AuthType auth;
+
+    private MemberStatus memberStatus;
 
     private Timestamp createdAt;
 

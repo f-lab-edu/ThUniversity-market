@@ -14,6 +14,7 @@ create table member(
       password varchar(255) NOT NULL,
       university int NOT NULL,
       auth enum('ROLE_USER','ROLE_VERIFY_USER','ROLE_ADMIN') NOT NULL,
+      member_status enum('ONLINE', 'OFFLINE') NOT NULL,
       created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -80,6 +81,7 @@ CREATE TABLE chat_member (
     chat BIGINT NOT NULL,
     member BIGINT NOT NULL,
     created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    last_read_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (chat) REFERENCES chat(id),
     FOREIGN KEY (member) REFERENCES member(id)
 );
