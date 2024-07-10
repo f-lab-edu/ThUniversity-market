@@ -6,7 +6,7 @@ import university.market.chat.message.service.dto.request.MessageRequest;
 import university.market.member.domain.MemberVO;
 
 public interface MessageService {
-    void sendMessage(Long chatId, MessageRequest request, MemberVO member);
+    void sendMessage(MessageRequest request, MemberVO member);
 
     List<MessageVO> getMessageByChat(Long chatId, MemberVO member);
 }
