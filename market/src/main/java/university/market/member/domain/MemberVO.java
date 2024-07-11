@@ -38,6 +38,7 @@ public class MemberVO {
         this.email = email;
         this.password = password;
         this.university = UniversityType.valueOf(university.toUpperCase());
+        this.memberStatus = MemberStatus.OFFLINE;
         this.auth = auth;
     }
 }
