@@ -3,6 +3,7 @@ package university.market.chat.message.mapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
+import java.sql.Timestamp;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,5 +89,22 @@ public class MessageMapperTest {
         assertThat(messages.size()).isEqualTo(1);
         assertThat(messages.getFirst().getSender().getName()).isEqualTo(buyer.getName());
         assertThat(messages.getFirst().getContent()).isEqualTo(message.getContent());
+    }
+
+    @Test
+    @DisplayName("[success] 메시지 조회 lastReadAt 업데이트 성공")
+    public void lastReadAt_업데이트_성공() {
+        //given
+        ChatMemberVO chatMember = chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), buyer.getId());
+        Timestamp beforeLastReadAt = chatMember.getLastReadAt();
+
+        //when
+        chatMemberMapper.updateLastReadAt(chat.getId(), buyer.getId(),
+                new Timestamp(System.currentTimeMillis() + 1000));
+
+        //then
+        ChatMemberVO updatedChatMember = chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), buyer.getId());
+        Timestamp updatedLastReadAt = updatedChatMember.getLastReadAt();
+        assertThat(updatedLastReadAt).isNotEqualTo(beforeLastReadAt);
     }
 }
