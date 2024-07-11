@@ -1,5 +1,6 @@
 package university.market.chat.message.service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class MessageServiceImpl implements MessageService {
         permissionCheck.hasPermission(() -> chatService.getChatMember(chatId, member.getId()) != null,
                 new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER));
 
-        chatMemberMapper.updateLastReadAt(chatId, member.getId());
+        chatMemberMapper.updateLastReadAt(chatId, member.getId(), new Timestamp(System.currentTimeMillis()));
         return messageMapper.getMessagesByChat(chatId);
     }
 }
