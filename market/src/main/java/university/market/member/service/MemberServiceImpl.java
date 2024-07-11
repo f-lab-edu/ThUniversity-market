@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
+import university.market.member.domain.memberstatus.MemberStatus;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
 import university.market.member.mapper.MemberMapper;
@@ -91,5 +92,11 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public void deleteMyself(String token) {
         memberMapper.deleteMemberByEmail(jwtTokenProvider.extractEmail(token));
+    }
+
+    @Override
+    @Transactional
+    public void updateMemberStatus(Long id, MemberStatus memberStatus) {
+        memberMapper.updateMemberStatus(id, memberStatus);
     }
 }
