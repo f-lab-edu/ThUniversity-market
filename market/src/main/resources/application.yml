@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    active: dev
   application:
     name: market
   datasource:
@@ -38,4 +36,4 @@ mybatis:
 security:
   jwt:
     secret-key: testtesttesttesttesttesttesttesttesttesttest
-    expire-length: 36000000
+    expire-length: 360000000
