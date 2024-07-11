@@ -1,5 +1,6 @@
 package university.market.chat.room.mapper;
 
+import java.sql.Timestamp;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import university.market.chat.room.domain.ChatMemberVO;
@@ -11,7 +12,7 @@ public interface ChatMemberMapper {
 
     List<ChatMemberVO> getMembersByChat(Long chatId);
 
-    void updateLastReadAt(Long chatId, Long memberId);
+    void updateLastReadAt(Long chatId, Long memberId, Timestamp lastReadAt);
 
     ChatMemberVO getChatMemberByChatAndMember(Long chatId, Long memberId);
 

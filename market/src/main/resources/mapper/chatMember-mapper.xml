@@ -8,6 +8,7 @@
     <resultMap id="ChatMemberResultMap" type="university.market.chat.room.domain.ChatMemberVO">
         <id property="id" column="id"/>
         <result property="chatAuth" column="chat_auth"/>
+        <result property="lastReadAt" column="last_read_at"/>
         <result property="createdAt" column="created_at"/>
 
         <association property="member" javaType="university.market.member.domain.MemberVO">
@@ -45,8 +46,8 @@
     </resultMap>
 
     <insert id="addMember" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO chat_member (chat, member, chat_auth, created_at)
-        VALUES (#{chat.id}, #{member.id}, #{chatAuth}, CURRENT_TIMESTAMP)
+        INSERT INTO chat_member (chat, member, chat_auth, last_read_at, created_at)
+        VALUES (#{chat.id}, #{member.id}, #{chatAuth}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
     </insert>
 
     <select id="getChatsByMember" resultMap="ChatMemberResultMap">
@@ -77,6 +78,13 @@
                  JOIN member s ON i.seller = s.id
         WHERE cm.member = #{memberId}
     </select>
+
+    <update id="updateLastReadAt">
+        UPDATE chat_member
+        SET last_read_at = #{lastReadAt}
+        WHERE chat = #{chatId}
+          AND member = #{memberId}
+    </update>
 
     <select id="getMembersByChat" resultMap="ChatMemberResultMap">
         SELECT cm.*,
