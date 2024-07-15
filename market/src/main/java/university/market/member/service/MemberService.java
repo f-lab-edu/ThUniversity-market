@@ -24,4 +24,6 @@ public interface MemberService {
     void updateMemberStatus(Long id, MemberStatus memberStatus);
 
     void verifyEmailUser(CheckVerificationCodeRequest checkVerificationCodeRequest);
+
+    MemberVO findMemberByToken(String token);
 }

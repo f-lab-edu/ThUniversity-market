@@ -99,4 +99,12 @@ public class MemberServiceImpl implements MemberService {
     public void updateMemberStatus(Long id, MemberStatus memberStatus) {
         memberMapper.updateMemberStatus(id, memberStatus);
     }
+
+    @Override
+    @Transactional
+    public MemberVO findMemberByToken(String token) {
+        jwtTokenProvider.validateToken(token);
+        String email = jwtTokenProvider.extractEmail(token);
+        return memberMapper.findMemberByEmail(email);
+    }
 }
