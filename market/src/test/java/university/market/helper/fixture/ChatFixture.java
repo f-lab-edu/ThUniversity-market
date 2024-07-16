@@ -2,7 +2,7 @@ package university.market.helper.fixture;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
-import university.market.chat.domain.ChatVO;
+import university.market.chat.room.domain.ChatVO;
 import university.market.item.domain.ItemVO;
 import university.market.verify.email.utils.random.RandomUtil;
 import university.market.verify.email.utils.random.RandomUtilImpl;

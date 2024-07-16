@@ -1,7 +1,7 @@
-package university.market.chat.mapper;
+package university.market.chat.room.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import university.market.chat.domain.ChatVO;
+import university.market.chat.room.domain.ChatVO;
 
 @Mapper
 public interface ChatMapper {
