@@ -84,6 +84,7 @@ CREATE TABLE chat_member (
 );
 
 CREATE INDEX idx_item_id_is_deleted ON item (id, is_deleted);
+CREATE INDEX idx_chat_id_is_deleted ON chat (id, is_deleted);
 
 SET GLOBAL event_scheduler = ON;
 

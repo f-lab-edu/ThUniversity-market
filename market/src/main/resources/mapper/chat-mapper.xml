@@ -3,9 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="university.market.chat.mapper.ChatMapper">
+<mapper namespace="university.market.chat.room.mapper.ChatMapper">
 
-    <resultMap id="ChatResultMap" type="university.market.chat.domain.ChatVO">
+    <resultMap id="ChatResultMap" type="university.market.chat.room.domain.ChatVO">
         <id property="id" column="id"/>
         <result property="title" column="title"/>
         <result property="isDeleted" column="is_deleted"/>
@@ -63,6 +63,7 @@
         UPDATE chat
         SET is_deleted = true
         WHERE id = #{chatId}
+          AND c.is_deleted = false
     </delete>
 
     <update id="updateChat">
@@ -70,5 +71,6 @@
         SET title      = #{title},
             updated_at = CURRENT_TIMESTAMP
         WHERE id = #{chatId}
+          AND c.is_deleted = false
     </update>
 </mapper>
