@@ -21,19 +21,17 @@ import university.market.member.utils.http.HttpRequest;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
-    private final HttpRequest httpRequest;
     private final PermissionCheck permissionCheck;
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
-    public ItemVO postItem(PostItemRequest postItemRequest) {
-        final MemberVO member = httpRequest.getCurrentMember();
+    public ItemVO postItem(PostItemRequest postItemRequest, MemberVO currentMember) {
         final ItemVO itemVO = ItemVO.builder()
                 .title(postItemRequest.title())
                 .description(postItemRequest.description())
                 .imageUrl("blank")
-                .seller(member)
+                .seller(currentMember)
                 .statusType(StatusType.SELLING)
                 .auction(postItemRequest.auction())
                 .price(postItemRequest.price())
@@ -46,21 +44,20 @@ public class ItemServiceImpl implements ItemService {
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
-    public void updateItem(UpdateItemRequest updateItemRequest) {
-        final MemberVO member = httpRequest.getCurrentMember();
+    public void updateItem(UpdateItemRequest updateItemRequest, MemberVO currentMember) {
         final ItemVO item = itemMapper.getItemById(updateItemRequest.itemId());
 
         if (item == null) {
             throw new ItemException(ItemExceptionType.INVALID_ITEM);
         }
 
-        permissionCheck.hasPermission(() -> item.getSeller() != member && member.getAuth() != AuthType.ROLE_ADMIN);
+        permissionCheck.hasPermission(() -> item.getSeller() != currentMember && currentMember.getAuth() != AuthType.ROLE_ADMIN);
 
         final ItemVO updateItem = ItemVO.builder()
                 .title(updateItemRequest.title())
                 .description(updateItemRequest.description())
                 .imageUrl("blank2")
-                .seller(member)
+                .seller(currentMember)
                 .statusType(StatusType.valueOf(updateItemRequest.status()))
                 .auction(updateItemRequest.auction())
                 .price(updateItemRequest.price())
@@ -72,15 +69,14 @@ public class ItemServiceImpl implements ItemService {
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
-    public void deleteItem(Long itemId) {
-        final MemberVO member = httpRequest.getCurrentMember();
+    public void deleteItem(Long itemId, MemberVO currentMember) {
         final ItemVO item = itemMapper.getItemById(itemId);
 
         if (item == null) {
             throw new ItemException(ItemExceptionType.INVALID_ITEM);
         }
 
-        permissionCheck.hasPermission(() -> item.getSeller() != member && member.getAuth() != AuthType.ROLE_ADMIN);
+        permissionCheck.hasPermission(() -> item.getSeller() != currentMember && currentMember.getAuth() != AuthType.ROLE_ADMIN);
 
         itemMapper.deleteItem(itemId);
     }

@@ -17,24 +17,26 @@ import university.market.item.service.dto.request.PostItemRequest;
 import university.market.item.service.dto.request.UpdateItemRequest;
 import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.auth.AuthType;
+import university.market.member.utils.http.HttpRequest;
 
 @RestController
 @RequestMapping("/api/item")
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
+    private final HttpRequest httpRequest;
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @PostMapping("/")
     public ResponseEntity<ItemVO> postItem(@RequestBody PostItemRequest postItemRequest) {
-        ItemVO item = itemService.postItem(postItemRequest);
+        ItemVO item = itemService.postItem(postItemRequest, httpRequest.getCurrentMember());
         return ResponseEntity.ok(item);
     }
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @PatchMapping("/")
     public ResponseEntity<Void> updateItem(@RequestBody UpdateItemRequest updateItemRequest) {
-        itemService.updateItem(updateItemRequest);
+        itemService.updateItem(updateItemRequest, httpRequest.getCurrentMember());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -48,7 +50,7 @@ public class ItemController {
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @DeleteMapping("/{itemId}")
     public ResponseEntity<Void> deleteItem(@PathVariable Long itemId) {
-        itemService.deleteItem(itemId);
+        itemService.deleteItem(itemId, httpRequest.getCurrentMember());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
