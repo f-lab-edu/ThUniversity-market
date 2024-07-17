@@ -1,4 +1,4 @@
-package university.market.chat.exception;
+package university.market.chat.room.exception;
 
 import university.market.base.exception.BaseException;
 import university.market.base.exception.BaseExceptionType;

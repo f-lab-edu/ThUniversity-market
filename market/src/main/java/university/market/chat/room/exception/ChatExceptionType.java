@@ -1,4 +1,4 @@
-package university.market.chat.exception;
+package university.market.chat.room.exception;
 
 import org.springframework.http.HttpStatus;
 import university.market.base.exception.BaseExceptionType;

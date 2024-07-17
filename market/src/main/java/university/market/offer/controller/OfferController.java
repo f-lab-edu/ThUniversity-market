@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.auth.AuthType;
+import university.market.member.utils.http.HttpRequest;
 import university.market.offer.service.OfferService;
 import university.market.offer.service.dto.request.OfferRequest;
 import university.market.offer.service.dto.response.OfferResponse;
@@ -24,18 +25,19 @@ import university.market.offer.service.dto.response.OfferResponse;
 public class OfferController {
 
     private final OfferService offerService;
+    private final HttpRequest httpRequest;
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @PostMapping("/")
     public ResponseEntity<Void> sendOffer(@RequestBody OfferRequest offerRequest) {
-        offerService.createOffer(offerRequest);
+        offerService.createOffer(offerRequest, httpRequest.getCurrentMember());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @GetMapping("/{offerId}")
     public ResponseEntity<OfferResponse> getOfferById(@PathVariable Long offerId) {
-        OfferResponse offer = offerService.getOfferById(offerId);
+        OfferResponse offer = offerService.getOfferById(offerId, httpRequest.getCurrentMember());
         return ResponseEntity.ok(offer);
     }
 
@@ -43,7 +45,7 @@ public class OfferController {
     @PatchMapping("/{offerId}/price")
     public ResponseEntity<Void> updateOffer(@PathVariable Long offerId,
                                             @RequestBody int price) {
-        offerService.updatePriceOffer(offerId, price);
+        offerService.updatePriceOffer(offerId, price, httpRequest.getCurrentMember());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -51,28 +53,28 @@ public class OfferController {
     @PatchMapping("/{offerId}/status")
     public ResponseEntity<Void> updateOffer(@PathVariable Long offerId,
                                             @RequestBody String status) {
-        offerService.updateStatusOffer(offerId, status);
+        offerService.updateStatusOffer(offerId, status, httpRequest.getCurrentMember());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @PostMapping("/item/{itemId}")
     public ResponseEntity<List<OfferResponse>> getOffersByItemId(@PathVariable Long itemId) {
-        List<OfferResponse> offers = offerService.getOffersByItemId(itemId);
+        List<OfferResponse> offers = offerService.getOffersByItemId(itemId, httpRequest.getCurrentMember());
         return ResponseEntity.ok(offers);
     }
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @GetMapping("/member")
     public ResponseEntity<List<OfferResponse>> getOffersByMemberId() {
-        List<OfferResponse> offers = offerService.getOffersByMemberId();
+        List<OfferResponse> offers = offerService.getOffersByMemberId(httpRequest.getCurrentMember());
         return ResponseEntity.ok(offers);
     }
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @DeleteMapping("/{offerId}")
     public ResponseEntity<Void> deleteOffer(@PathVariable Long offerId) {
-        offerService.deleteOffer(offerId);
+        offerService.deleteOffer(offerId, httpRequest.getCurrentMember());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

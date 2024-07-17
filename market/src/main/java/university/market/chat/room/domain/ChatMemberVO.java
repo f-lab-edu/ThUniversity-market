@@ -1,11 +1,11 @@
-package university.market.chat.domain;
+package university.market.chat.room.domain;
 
 import java.sql.Timestamp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import university.market.chat.domain.chatauth.ChatAuthType;
+import university.market.chat.room.domain.chatauth.ChatAuthType;
 import university.market.member.domain.MemberVO;
 
 @Data
