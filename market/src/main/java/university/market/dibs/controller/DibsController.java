@@ -12,6 +12,7 @@ import university.market.dibs.domain.DibsVO;
 import university.market.dibs.service.DibsService;
 import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.auth.AuthType;
+import university.market.member.utils.http.HttpRequest;
 
 @RestController
 @RequestMapping("/api/dibs")
@@ -19,11 +20,12 @@ import university.market.member.domain.auth.AuthType;
 public class DibsController {
 
     private final DibsService dibsService;
+    private final HttpRequest httpRequest;
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @GetMapping("/{itemId}")
     public ResponseEntity<Void> addDibs(@PathVariable Long itemId) {
-        dibsService.addDibs(itemId);
+        dibsService.addDibs(itemId, httpRequest.getCurrentMember());
         return ResponseEntity.ok().build();
     }
 
@@ -37,7 +39,7 @@ public class DibsController {
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @GetMapping("/list")
     public ResponseEntity<List<DibsVO>> getDibsByMemberId() {
-        List<DibsVO> dibsList = dibsService.getDibsByMemberId();
+        List<DibsVO> dibsList = dibsService.getDibsByMemberId(httpRequest.getCurrentMember());
         return ResponseEntity.ok(dibsList);
     }
 }
