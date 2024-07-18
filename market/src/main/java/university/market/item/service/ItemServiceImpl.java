@@ -10,7 +10,6 @@ import university.market.item.exception.ItemExceptionType;
 import university.market.item.mapper.ItemMapper;
 import university.market.item.service.dto.request.PostItemRequest;
 import university.market.item.service.dto.request.UpdateItemRequest;
-import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.utils.auth.PermissionCheck;
@@ -21,7 +20,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
     private final PermissionCheck permissionCheck;
 
-    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    //    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
     public ItemVO postItem(PostItemRequest postItemRequest, MemberVO currentMember) {
@@ -39,7 +38,7 @@ public class ItemServiceImpl implements ItemService {
         return itemVO;
     }
 
-    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    //    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
     public void updateItem(UpdateItemRequest updateItemRequest, MemberVO currentMember) {
@@ -65,7 +64,7 @@ public class ItemServiceImpl implements ItemService {
         itemMapper.updateItem(updateItemRequest.itemId(), updateItem);
     }
 
-    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    //    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
     public void deleteItem(Long itemId, MemberVO currentMember) {
@@ -81,7 +80,7 @@ public class ItemServiceImpl implements ItemService {
         itemMapper.deleteItem(itemId);
     }
 
-    @AuthCheck({AuthType.ROLE_USER, AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    //    @AuthCheck({AuthType.ROLE_USER, AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
     public ItemVO getItemById(Long id) {
