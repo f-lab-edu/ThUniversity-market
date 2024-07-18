@@ -67,7 +67,7 @@ public class SocketConnectionTest {
         item = ItemFixture.testItem(seller);
         itemMapper.postItem(item);
 
-        chat = ChatFixture.testIdChat(item);
+        chat = ChatFixture.testChat(item);
         chatMapper.createChat(chat);
 
         ChatMemberVO chatMember1 = ChatMemberFixture.testChatMember(ChatAuthType.HOST, chat, seller);
