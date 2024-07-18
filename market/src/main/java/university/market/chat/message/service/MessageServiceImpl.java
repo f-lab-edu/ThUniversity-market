@@ -30,7 +30,7 @@ public class MessageServiceImpl implements MessageService {
         MessageVO message = MessageVO.builder()
                 .content(request.content())
                 .sender(member)
-                .chat(chatService.getChat(request.chatId()))
+                .chat(chatService.getChat(request.chatId(), member))
                 .build();
 
         messageMapper.sendMessage(message);

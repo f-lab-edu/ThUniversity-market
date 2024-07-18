@@ -27,7 +27,6 @@ import university.market.member.domain.auth.AuthType;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
 import university.market.member.utils.auth.PermissionCheck;
-import university.market.member.utils.http.HttpRequest;
 import university.market.offer.domain.OfferStatus;
 import university.market.offer.domain.OfferVO;
 import university.market.offer.exception.OfferException;
@@ -38,8 +37,6 @@ import university.market.offer.service.dto.response.OfferResponse;
 
 @ExtendWith(MockitoExtension.class)
 public class OfferServiceTest {
-    @Mock
-    private HttpRequest httpRequest;
 
     @Mock
     private OfferMapper offerMapper;
@@ -78,13 +75,12 @@ public class OfferServiceTest {
                 .price(offer.getPrice())
                 .build();
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(member);
         when(itemService.getItemById(offerRequest.itemId())).thenReturn(item);
         doNothing().when(permissionCheck).hasPermission(any(), any());
         doNothing().when(offerMapper).createOffer(any(OfferVO.class));
 
         // when
-        offerService.createOffer(offerRequest);
+        offerService.createOffer(offerRequest, member);
 
         // then
         verify(offerMapper).createOffer(any(OfferVO.class));
@@ -99,14 +95,13 @@ public class OfferServiceTest {
                 .price(offer.getPrice())
                 .build();
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(seller);
         when(itemService.getItemById(offerRequest.itemId())).thenReturn(item);
         doThrow(new OfferException(OfferExceptionType.NO_OFFER_MYSELF)).when(permissionCheck)
                 .hasPermission(any(), any());
 
         // when
         OfferException exception = assertThrows(OfferException.class, () -> {
-            offerService.createOffer(offerRequest);
+            offerService.createOffer(offerRequest, seller);
         });
 
         // then
@@ -120,14 +115,13 @@ public class OfferServiceTest {
         OfferStatus offerStatus = OfferStatus.ACCEPT;
 
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(seller);
         when(offerMapper.findOfferById(offer.getId())).thenReturn(offer);
         when(itemService.getItemById(item.getId())).thenReturn(item);
         doNothing().when(permissionCheck).hasPermission(any());
         doNothing().when(offerMapper).updateStatusOffer(offer.getId(), offerStatus);
 
         // when
-        offerService.updateStatusOffer(offer.getId(), offerStatus.name());
+        offerService.updateStatusOffer(offer.getId(), offerStatus.name(), seller);
 
         // then
         verify(offerMapper).updateStatusOffer(offer.getId(), offerStatus);
@@ -140,7 +134,6 @@ public class OfferServiceTest {
         OfferStatus offerStatus = OfferStatus.ACCEPT;
 
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(member);
         when(offerMapper.findOfferById(offer.getId())).thenReturn(offer);
         when(itemService.getItemById(item.getId())).thenReturn(item);
         doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION)).when(permissionCheck)
@@ -148,7 +141,7 @@ public class OfferServiceTest {
 
         // when
         MemberException exception = assertThrows(MemberException.class, () -> {
-            offerService.updateStatusOffer(offer.getId(), offerStatus.name());
+            offerService.updateStatusOffer(offer.getId(), offerStatus.name(), member);
         });
 
         // then
@@ -162,13 +155,12 @@ public class OfferServiceTest {
         int price = 4000;
 
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(member);
         when(offerMapper.findOfferById(offer.getId())).thenReturn(offer);
         doNothing().when(permissionCheck).hasPermission(any());
         doNothing().when(offerMapper).updatePriceOffer(offer.getId(), price);
 
         // when
-        offerService.updatePriceOffer(offer.getId(), price);
+        offerService.updatePriceOffer(offer.getId(), price, member);
 
         // then
         verify(offerMapper).updatePriceOffer(offer.getId(), price);
@@ -181,14 +173,13 @@ public class OfferServiceTest {
         int price = 4000;
 
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(seller);
         when(offerMapper.findOfferById(offer.getId())).thenReturn(offer);
         doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION)).when(permissionCheck)
                 .hasPermission(any());
 
         // when
         MemberException exception = assertThrows(MemberException.class, () -> {
-            offerService.updatePriceOffer(offer.getId(), price);
+            offerService.updatePriceOffer(offer.getId(), price, seller);
         });
 
         // then
@@ -199,13 +190,12 @@ public class OfferServiceTest {
     @DisplayName("[success] deleteOffer 성공")
     public void deleteOffer_성공() {
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(seller);
         when(offerMapper.findOfferById(offer.getId())).thenReturn(offer);
         doNothing().when(permissionCheck).hasPermission(any());
         lenient().doNothing().when(offerMapper).deleteOffer(offer.getId());
 
         // when
-        offerService.deleteOffer(offer.getId());
+        offerService.deleteOffer(offer.getId(), seller);
 
         // then
         verify(offerMapper).deleteOffer(offer.getId());
@@ -220,12 +210,11 @@ public class OfferServiceTest {
         List<OfferVO> offers = List.of(offer, offer2);
 
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(seller);
         doNothing().when(permissionCheck).hasPermission(any());
         when(offerMapper.getOffersByItemId(item.getId())).thenReturn(offers);
 
         // when
-        List<OfferResponse> savedOffers = offerService.getOffersByItemId(item.getId());
+        List<OfferResponse> savedOffers = offerService.getOffersByItemId(item.getId(), seller);
 
         // then
         assertThat(savedOffers).isNotEmpty();
@@ -241,11 +230,10 @@ public class OfferServiceTest {
         List<OfferVO> offers = List.of(offer, offer2);
 
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(member);
         when(offerMapper.getOffersByMemberId(member.getId())).thenReturn(offers);
 
         // when
-        List<OfferResponse> savedOffers = offerService.getOffersByMemberId();
+        List<OfferResponse> savedOffers = offerService.getOffersByMemberId(member);
 
         // then
         assertThat(savedOffers).isNotEmpty();

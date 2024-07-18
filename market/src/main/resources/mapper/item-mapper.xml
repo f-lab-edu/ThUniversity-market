@@ -50,12 +50,14 @@
             price       = #{item.price},
             updated_at  = CURRENT_TIMESTAMP
         WHERE id = #{id}
+          AND is_deleted = false
     </update>
 
     <delete id="deleteItem">
         UPDATE item
         SET is_deleted = true
         WHERE id = #{id}
+          AND is_deleted = false
     </delete>
 
 </mapper>

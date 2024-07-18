@@ -36,7 +36,6 @@ import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
 import university.market.member.service.MemberService;
 import university.market.member.utils.auth.PermissionCheck;
-import university.market.member.utils.http.HttpRequest;
 
 @ExtendWith(MockitoExtension.class)
 public class ChatServiceTest {
@@ -45,9 +44,6 @@ public class ChatServiceTest {
 
     @Mock
     private MemberService memberService;
-
-    @Mock
-    private HttpRequest httpRequest;
 
     @Mock
     private ChatMapper chatMapper;
@@ -74,7 +70,7 @@ public class ChatServiceTest {
         member = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
         item = ItemFixture.testIdItem(member);
         chat = ChatFixture.testIdChat(item);
-        chatMember = ChatMemberFixture.testIdChatMember(ChatAuthType.GUEST, chat, member);
+        chatMember = ChatMemberFixture.testIdChatMember(ChatAuthType.HOST, chat, member);
     }
 
     @Test
@@ -84,7 +80,6 @@ public class ChatServiceTest {
         MemberVO testedMember = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
 
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(member);
         when(itemService.getItemById(item.getId())).thenReturn(item);
         when(memberService.findMemberByEmail(testedMember.getEmail())).thenReturn(testedMember);
 
@@ -93,7 +88,7 @@ public class ChatServiceTest {
                 .title(chat.getTitle())
                 .itemId(item.getId())
                 .memberEmails(List.of(testedMember.getEmail()))
-                .build());
+                .build(), member);
 
         // then
         assertThat(chatVO.getTitle()).isEqualTo(chat.getTitle());
@@ -108,7 +103,6 @@ public class ChatServiceTest {
         List<String> memberEmails = List.of(testedMember.getEmail(), testedMember2.getEmail());
 
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(member);
         when(itemService.getItemById(item.getId())).thenReturn(item);
         doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION))
                 .when(permissionCheck).hasPermission(any());
@@ -118,7 +112,7 @@ public class ChatServiceTest {
                     .title(chat.getTitle())
                     .itemId(item.getId())
                     .memberEmails(memberEmails)
-                    .build());
+                    .build(), member);
         });
 
         // then
@@ -130,11 +124,10 @@ public class ChatServiceTest {
     @DisplayName("[success] 채팅방 조회")
     public void getChat_채팅방_조회() {
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(member);
         when(chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), member.getId())).thenReturn(chatMember);
 
         // when
-        ChatVO findChat = chatService.getChat(chat.getId());
+        ChatVO findChat = chatService.getChat(chat.getId(), member);
 
         // then
         assertThat(findChat.getTitle()).isEqualTo(chat.getTitle());
@@ -143,15 +136,14 @@ public class ChatServiceTest {
     @Test
     @DisplayName("[fail] 채팅방 조회 권한 없음")
     public void getChat_채팅방_조회_권한_없음() {
-        // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(member);
+        // mocking;
         when(chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), member.getId())).thenReturn(chatMember);
         doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION)).when(permissionCheck)
                 .hasPermission(any());
 
         // when
         BaseException exception = assertThrows(MemberException.class, () -> {
-            chatService.getChat(chat.getId());
+            chatService.getChat(chat.getId(), member);
         });
 
         // then
@@ -163,13 +155,14 @@ public class ChatServiceTest {
     @DisplayName("[fail] 채팅방 소속 멤버 조회 실패")
     public void getMembersByChat_채팅방_소속_멤버_조회_실패() {
         // when
+        MemberVO testedMember = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
         doThrow(new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER))
                 .when(permissionCheck)
                 .hasPermission(any(), any());
 
         // when
         BaseException exception = assertThrows(ChatException.class, () -> {
-            chatService.getMembersByChat(chat.getId());
+            chatService.getMembersByChat(chat.getId(), testedMember);
         });
 
         // then
@@ -181,14 +174,16 @@ public class ChatServiceTest {
     @DisplayName("[fail] 채팅방 삭제 권한 없음")
     public void deleteChat_채팅방_삭제_권한_없음() {
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(member);
-        when(chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), member.getId())).thenReturn(chatMember);
+        MemberVO testedMember = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
+        ChatMemberVO testedChatMember = ChatMemberFixture.testIdChatMember(ChatAuthType.GUEST, chat, testedMember);
+        when(chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), testedMember.getId()))
+                .thenReturn(testedChatMember);
         doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION)).when(permissionCheck)
                 .hasPermission(any());
 
         // when
         BaseException exception = assertThrows(MemberException.class, () -> {
-            chatService.deleteChat(chat.getId());
+            chatService.deleteChat(chat.getId(), testedMember);
         });
 
         // then
@@ -200,12 +195,12 @@ public class ChatServiceTest {
     @DisplayName("[fail] 채팅방 멤버 존재 여부 확인 실패")
     public void deleteChat_채팅방_멤버_존재_여부_확인_실패() {
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(member);
-        when(chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), member.getId())).thenReturn(null);
+        MemberVO testedMember = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
+        when(chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), testedMember.getId())).thenReturn(null);
 
         // when
         BaseException exception = assertThrows(ChatException.class, () -> {
-            chatService.deleteChat(chat.getId());
+            chatService.deleteChat(chat.getId(), testedMember);
         });
 
         // then
@@ -217,16 +212,19 @@ public class ChatServiceTest {
     @DisplayName("[fail] 채팅방 멤버 삭제 권한 없음")
     public void removeMember_채팅방_멤버_삭제_권한_없음() {
         // mocking
+        MemberVO testedMember = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
         doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION)).when(permissionCheck)
                 .hasPermission(any());
 
         // when
         BaseException exception = assertThrows(MemberException.class, () -> {
-            chatService.removeMember(chat.getId(), member.getId());
+            chatService.removeMember(chat.getId(), member.getId(), testedMember);
         });
 
         // then
         assertThat(exception.exceptionType().errorCode()).isEqualTo(
                 MemberExceptionType.UNAUTHORIZED_PERMISSION.errorCode());
     }
+
+
 }

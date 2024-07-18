@@ -11,7 +11,6 @@ import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.utils.auth.PermissionCheck;
-import university.market.member.utils.http.HttpRequest;
 import university.market.offer.domain.OfferStatus;
 import university.market.offer.domain.OfferVO;
 import university.market.offer.exception.OfferException;
@@ -28,23 +27,20 @@ public class OfferServiceImpl implements OfferService {
 
     private final ItemService itemService;
 
-    private final HttpRequest httpRequest;
-
     private final PermissionCheck permissionCheck;
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     @Transactional
-    public void createOffer(OfferRequest offerRequest) {
-        MemberVO member = httpRequest.getCurrentMember();
+    public void createOffer(OfferRequest offerRequest, MemberVO currentMember) {
         ItemVO item = itemService.getItemById(offerRequest.itemId());
 
-        permissionCheck.hasPermission(() -> member.equals(item.getSeller()),
+        permissionCheck.hasPermission(() -> currentMember.equals(item.getSeller()),
                 new OfferException(OfferExceptionType.NO_OFFER_MYSELF));
 
         OfferVO offer = OfferVO.builder()
                 .item(itemService.getItemById(offerRequest.itemId()))
-                .buyer(member)
+                .buyer(currentMember)
                 .price(offerRequest.price())
                 .status(OfferStatus.OFFER)
                 .build();
@@ -52,41 +48,42 @@ public class OfferServiceImpl implements OfferService {
         offerMapper.createOffer(offer);
     }
 
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     @Transactional
-    public void updateStatusOffer(Long offerId, String status) {
-        MemberVO member = httpRequest.getCurrentMember();
+    public void updateStatusOffer(Long offerId, String status, MemberVO currentMember) {
         OfferVO offer = offerMapper.findOfferById(offerId);
         ItemVO item = itemService.getItemById(offer.getItem().getId());
 
-        permissionCheck.hasPermission(() -> !member.equals(item.getSeller()));
+        permissionCheck.hasPermission(() -> !currentMember.equals(item.getSeller()));
 
         // offerStatus: ACCEPT, DECLINE
         offerMapper.updateStatusOffer(offerId, OfferStatus.fromValue(status));
     }
 
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     @Transactional
-    public void updatePriceOffer(Long offerId, int price) {
-        checkOfferBuyer(offerId);
+    public void updatePriceOffer(Long offerId, int price, MemberVO currentMember) {
+        checkOfferBuyer(offerId, currentMember);
 
         offerMapper.updatePriceOffer(offerId, price);
     }
 
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     @Transactional
-    public void deleteOffer(Long offerId) {
-        checkOfferBuyer(offerId);
+    public void deleteOffer(Long offerId, MemberVO currentMember) {
+        checkOfferBuyer(offerId, currentMember);
 
         offerMapper.deleteOffer(offerId);
     }
 
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     @Transactional
-    public List<OfferResponse> getOffersByItemId(Long itemId) {
-        MemberVO member = httpRequest.getCurrentMember();
-
-        permissionCheck.hasPermission(() -> !member.equals(itemService.getItemById(itemId).getSeller()));
+    public List<OfferResponse> getOffersByItemId(Long itemId, MemberVO currentMember) {
+        permissionCheck.hasPermission(() -> !currentMember.equals(itemService.getItemById(itemId).getSeller()));
 
         List<OfferVO> offers = offerMapper.getOffersByItemId(itemId);
         return offers.stream().map(
@@ -94,27 +91,28 @@ public class OfferServiceImpl implements OfferService {
         ).collect(Collectors.toList());
     }
 
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     @Transactional
-    public List<OfferResponse> getOffersByMemberId() {
-        MemberVO member = httpRequest.getCurrentMember();
-        List<OfferVO> offers = offerMapper.getOffersByMemberId(member.getId());
-        
+    public List<OfferResponse> getOffersByMemberId(MemberVO currentMember) {
+        List<OfferVO> offers = offerMapper.getOffersByMemberId(currentMember.getId());
+
         return offers.stream().map(
                 OfferResponse::of
         ).collect(Collectors.toList());
     }
 
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
-    public OfferResponse getOfferById(Long offerId) {
+    public OfferResponse getOfferById(Long offerId, MemberVO currentMember) {
         OfferVO offer = offerMapper.findOfferById(offerId);
+        permissionCheck.hasPermission(() -> !currentMember.equals(offer.getBuyer()));
         return OfferResponse.of(offer);
     }
 
-    private void checkOfferBuyer(Long offerId) {
-        MemberVO member = httpRequest.getCurrentMember();
+    private void checkOfferBuyer(Long offerId, MemberVO currentMember) {
         OfferVO offer = offerMapper.findOfferById(offerId);
 
-        permissionCheck.hasPermission(() -> !member.equals(offer.getBuyer()));
+        permissionCheck.hasPermission(() -> !currentMember.equals(offer.getBuyer()));
     }
 }

@@ -45,7 +45,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             MemberVO currentMember = validateMember(session);
             messageService.sendMessage(messageRequest, currentMember);
 
-            broadcastMessage(messageRequest.chatId(), messageRequest);
+            broadcastMessage(messageRequest.chatId(), messageRequest, currentMember);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,8 +53,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    private void broadcastMessage(Long chatId, MessageRequest messageRequest) {
-        List<MemberVO> chatMembers = chatService.getMembersByChat(chatId);
+    private void broadcastMessage(Long chatId, MessageRequest messageRequest, MemberVO currentMember) {
+        List<MemberVO> chatMembers = chatService.getMembersByChat(chatId, currentMember);
         chatMembers.forEach(member -> {
             WebSocketSession session = sessions.get(member.getId());
             if (session != null && session.isOpen()) {

@@ -36,9 +36,6 @@ public class ItemServiceTest {
     private ItemMapper itemMapper;
 
     @Mock
-    private HttpRequest httpRequest;
-
-    @Mock
     private PermissionCheck permissionCheck;
 
     @InjectMocks
@@ -83,11 +80,8 @@ public class ItemServiceTest {
                 mockItem.getPrice()
         );
 
-        // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(mockMember);
-
         // when
-        itemService.postItem(postItemRequest);
+        itemService.postItem(postItemRequest, mockMember);
 
         // then
         verify(itemMapper).postItem(any(ItemVO.class));
@@ -97,12 +91,11 @@ public class ItemServiceTest {
     @DisplayName("[success] item 업데이트 성공")
     public void item_업데이트_성공() {
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(mockMember);
         doNothing().when(itemMapper).updateItem(updateItemRequest.itemId(), mockItem2);
         when(itemMapper.getItemById(updateItemRequest.itemId())).thenReturn(mockItem2);
 
         // when
-        itemService.updateItem(updateItemRequest);
+        itemService.updateItem(updateItemRequest, mockMember);
         ItemVO updatedItem = itemMapper.getItemById(updateItemRequest.itemId());
 
         // then
@@ -119,7 +112,6 @@ public class ItemServiceTest {
         MemberVO testedMember = MemberFixture.testIdMember(AuthType.ROLE_USER);
 
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(testedMember);
         when(itemMapper.getItemById(updateItemRequest.itemId())).thenReturn(mockItem2);
 
         doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION)).when(permissionCheck)
@@ -127,7 +119,7 @@ public class ItemServiceTest {
 
         // when
         MemberException exception = assertThrows(MemberException.class, () -> {
-            itemService.updateItem(updateItemRequest);
+            itemService.updateItem(updateItemRequest, testedMember);
         });
 
         // then
@@ -142,12 +134,11 @@ public class ItemServiceTest {
         Long itemId = mockItem.getId();
 
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(mockMember);
         when(itemMapper.getItemById(itemId)).thenReturn(mockItem);
         doNothing().when(itemMapper).deleteItem(itemId);
 
         // when
-        itemService.deleteItem(itemId);
+        itemService.deleteItem(itemId, mockMember);
 
         // then
         verify(itemMapper).deleteItem(itemId);
@@ -161,14 +152,13 @@ public class ItemServiceTest {
         Long itemId = mockItem.getId();
 
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(testedMember);
         when(itemMapper.getItemById(itemId)).thenReturn(mockItem);
         doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION)).when(permissionCheck)
                 .hasPermission(any());
 
         // when
         MemberException exception = assertThrows(MemberException.class, () -> {
-            itemService.deleteItem(itemId);
+            itemService.deleteItem(itemId, testedMember);
         });
 
         // then
@@ -183,12 +173,11 @@ public class ItemServiceTest {
         Long itemId = mockItem.getId();
 
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(adminMember);
         when(itemMapper.getItemById(itemId)).thenReturn(mockItem);
         doNothing().when(itemMapper).deleteItem(itemId);
 
         // when
-        itemService.deleteItem(itemId);
+        itemService.deleteItem(itemId, adminMember);
 
         // then
         verify(itemMapper).deleteItem(itemId);

@@ -23,10 +23,10 @@ public class ChatMemberFixture {
 
     public static ChatMemberVO testChatMember(ChatAuthType chatAuthType, ChatVO chat, MemberVO member) {
         return ChatMemberVO.builder()
-                .chatAuth(chatAuthType)
-                .chat(chat)
-                .member(member)
-                .build();
+            .chatAuth(chatAuthType)
+            .chat(chat)
+            .member(member)
+            .build();
     }
 
     public static ChatMemberVO testIdChatMember(ChatAuthType chatAuthType, ChatVO chat, MemberVO member) {
