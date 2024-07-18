@@ -2,28 +2,20 @@ package university.market.chat.message.socket;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.net.URI;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.simp.stomp.StompCommand;
-import org.springframework.messaging.simp.stomp.StompFrameHandler;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.stomp.StompSessionHandler;
-import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.socket.client.WebSocketClient;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
-import university.market.chat.message.domain.MessageVO;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 import university.market.chat.message.service.dto.request.MessageRequest;
 import university.market.chat.room.domain.ChatMemberVO;
 import university.market.chat.room.domain.ChatVO;
@@ -39,8 +31,8 @@ import university.market.item.mapper.ItemMapper;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.mapper.MemberMapper;
+import university.market.member.utils.jwt.JwtTokenProvider;
 
-@Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 public class SocketConnectionTest {
 
@@ -56,15 +48,14 @@ public class SocketConnectionTest {
     @Autowired
     private ChatMemberMapper chatMemberMapper;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     private MemberVO seller;
     private MemberVO buyer;
     private ItemVO item;
     private ChatVO chat;
 
-    private final String SEND_CHAT_ENDPOINT = "/pub/send/";
-    private final String SUBSCRIBE_CHAT_ENDPOINT = "/sub/chat/";
-
-    @Transactional
     @BeforeEach
     public void init() throws Exception {
         seller = MemberFixture.testMember(AuthType.ROLE_VERIFY_USER);
@@ -87,58 +78,28 @@ public class SocketConnectionTest {
 
     @Test
     public void testWebSocketConnection() throws Exception {
-        WebSocketClient client = new StandardWebSocketClient();
-        WebSocketStompClient stompClient = new WebSocketStompClient(client);
-        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+        BlockingQueue<String> blockingQueue = new LinkedBlockingQueue<>();
+        StandardWebSocketClient client = new StandardWebSocketClient();
+        WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
+        String token = jwtTokenProvider.generateToken(buyer.getEmail());
+        headers.add("Authorization", "Bearer " + token);
 
-        StompSessionHandler sessionHandler = new StompSessionHandlerAdapter() {
+        client.doHandshake(new TextWebSocketHandler() {
             @Override
-            public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
-                log.info("Connected to WebSocket server");
+            public void afterConnectionEstablished(org.springframework.web.socket.WebSocketSession session)
+                    throws Exception {
+                session.sendMessage(new TextMessage(new ObjectMapper().writeValueAsString(
+                        new MessageRequest(chat.getId(), "Hello, WebSocket!"))));
             }
 
             @Override
-            public void handleTransportError(StompSession session, Throwable exception) {
-                log.error("Transport error", exception);
+            protected void handleTextMessage(org.springframework.web.socket.WebSocketSession session,
+                                             TextMessage message) throws Exception {
+                blockingQueue.offer(message.getPayload());
             }
+        }, headers, URI.create("ws://localhost:8080/ws/message")).get();
 
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                log.info("Received frame: {}", payload);
-            }
-
-            @Override
-            public void handleException(StompSession session, StompCommand command, StompHeaders headers,
-                                        byte[] payload, Throwable exception) {
-                log.error("Handling exception", exception);
-            }
-        };
-
-        StompHeaders connectHeaders = new StompHeaders();
-        String jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwiZXhwIjoxNzIwMzUzMDQ2fQ._23k29xG880bcAuWgwNpmsftWwsA4uCRq3hHgvpJLG8";
-        connectHeaders.add("Authorization", "Bearer " + jwtToken);
-        StompSession session = stompClient.connect("ws://localhost:8080/connection", sessionHandler, connectHeaders)
-                .get(1, TimeUnit.SECONDS);
-
-        BlockingQueue<MessageVO> blockingQueue = new LinkedBlockingQueue<>();
-        session.subscribe(SUBSCRIBE_CHAT_ENDPOINT + chat.getId(), new StompFrameHandler() {
-            @Override
-            public Type getPayloadType(StompHeaders headers) {
-                return MessageVO.class;
-            }
-
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                blockingQueue.offer((MessageVO) payload);
-            }
-        });
-
-        MessageRequest messageRequest = new MessageRequest("Hello, World!");
-        session.send(SEND_CHAT_ENDPOINT + chat.getId(), messageRequest);
-
-        MessageVO message = blockingQueue.poll(5, TimeUnit.SECONDS);
-        assertThat(message).isNotNull();
-        assertThat(message.getContent()).isEqualTo("Hello, World!");
-        assertThat(message.getSender().getId()).isEqualTo(buyer.getId());
+        String receivedMessage = blockingQueue.poll(5, TimeUnit.SECONDS);
+        assertThat(receivedMessage).isEqualTo("{\"chatId\":" + chat.getId() + ",\"content\":\"Hello, WebSocket!\"}");
     }
 }
