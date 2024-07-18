@@ -52,9 +52,11 @@
 
     <select id="getChatsByMember" resultMap="ChatMemberResultMap">
         SELECT cm.*,
+               m.id          AS member_id,
                m.name        AS member_name,
                m.email       AS member_email,
                m.university  AS member_university,
+               c.id          AS chat_id,
                c.title       AS chat_title,
                c.created_at  AS chat_created_at,
                c.updated_at  AS chat_updated_at,
@@ -88,9 +90,11 @@
 
     <select id="getMembersByChat" resultMap="ChatMemberResultMap">
         SELECT cm.*,
+               m.id          AS member_id,
                m.name        AS member_name,
                m.email       AS member_email,
                m.university  AS member_university,
+               c.id          AS chat_id,
                c.title       AS chat_title,
                c.created_at  AS chat_created_at,
                c.updated_at  AS chat_updated_at,
@@ -117,9 +121,11 @@
 
     <select id="getChatMemberByChatAndMember" resultMap="ChatMemberResultMap">
         SELECT cm.*,
+               m.id          AS member_id,
                m.name        AS member_name,
                m.email       AS member_email,
                m.university  AS member_university,
+               c.id          AS chat_id,
                c.title       AS chat_title,
                c.created_at  AS chat_created_at,
                c.updated_at  AS chat_updated_at,

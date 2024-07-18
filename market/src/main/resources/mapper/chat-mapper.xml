@@ -63,7 +63,7 @@
         UPDATE chat
         SET is_deleted = true
         WHERE id = #{chatId}
-          AND c.is_deleted = false
+          AND is_deleted = false
     </delete>
 
     <update id="updateChat">
@@ -71,6 +71,6 @@
         SET title      = #{title},
             updated_at = CURRENT_TIMESTAMP
         WHERE id = #{chatId}
-          AND c.is_deleted = false
+          AND is_deleted = false
     </update>
 </mapper>
