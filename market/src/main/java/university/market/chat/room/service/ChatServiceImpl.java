@@ -14,6 +14,7 @@ import university.market.chat.room.mapper.ChatMapper;
 import university.market.chat.room.mapper.ChatMemberMapper;
 import university.market.chat.room.service.dto.ChatCreateRequest;
 import university.market.item.service.ItemService;
+import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.service.MemberService;
@@ -32,7 +33,7 @@ public class ChatServiceImpl implements ChatService {
 
     private final PermissionCheck permissionCheck;
 
-    //    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     @Transactional
     public ChatVO createChat(ChatCreateRequest request, MemberVO currentMember) {
@@ -66,7 +67,7 @@ public class ChatServiceImpl implements ChatService {
         return chat;
     }
 
-    //    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     public ChatVO getChat(Long chatId, MemberVO currentMember) {
         ChatMemberVO chatMember = chatMemberMapper.getChatMemberByChatAndMember(chatId,
@@ -76,7 +77,7 @@ public class ChatServiceImpl implements ChatService {
         return chatMember.getChat();
     }
 
-    //    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     public List<ChatVO> getChatsByMember(MemberVO currentMember) {
         return chatMemberMapper.getChatsByMember(currentMember.getId())
@@ -85,7 +86,7 @@ public class ChatServiceImpl implements ChatService {
                 ).collect(Collectors.toList());
     }
 
-    //    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     public List<MemberVO> getMembersByChat(Long chatId, MemberVO currentMember) {
         List<MemberVO> members = chatMemberMapper.getMembersByChat(chatId).stream().map(
                 ChatMemberVO::getMember
@@ -97,7 +98,7 @@ public class ChatServiceImpl implements ChatService {
         return members;
     }
 
-    //    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     public void deleteChat(Long chatId, MemberVO currentMember) {
         ChatMemberVO chatMember = chatMemberMapper.getChatMemberByChatAndMember(chatId, currentMember.getId());
@@ -113,7 +114,7 @@ public class ChatServiceImpl implements ChatService {
         chatMapper.deleteChat(chatId);
     }
 
-    //    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     public void addMember(Long chatId, String memberEmail, MemberVO currentMember) {
         List<MemberVO> members = chatMemberMapper.getMembersByChat(chatId).stream().map(
@@ -129,7 +130,7 @@ public class ChatServiceImpl implements ChatService {
                 .build());
     }
 
-    //    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     public void removeMember(Long chatId, Long memberId, MemberVO currentMember) {
         permissionCheck.hasPermission(
@@ -139,13 +140,13 @@ public class ChatServiceImpl implements ChatService {
         chatMemberMapper.deleteMember(chatId, memberId);
     }
 
-    //    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     public void removeMyself(Long chatId, MemberVO currentMember) {
         chatMemberMapper.deleteMember(chatId, currentMember.getId());
     }
 
-    //    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     public void updateChat(Long chatId, String title, MemberVO currentMember) {
         permissionCheck.hasPermission(
@@ -155,7 +156,7 @@ public class ChatServiceImpl implements ChatService {
         chatMapper.updateChat(chatId, title);
     }
 
-    //    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     public ChatMemberVO getChatMember(Long chatId, Long memberId) {
         return chatMemberMapper.getChatMemberByChatAndMember(chatId, memberId);
