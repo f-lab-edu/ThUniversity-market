@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.WebSocketSession;
 import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
@@ -23,7 +24,13 @@ public class AuthCheckAspect {
 
     @Before("@annotation(university.market.member.annotation.AuthCheck)")
     public void checkAuth(JoinPoint joinPoint) {
-        MemberVO currentUser = httpRequest.getCurrentMember();
+        MemberVO currentUser;
+        if (joinPoint.getArgs()[0] instanceof WebSocketSession) {
+            WebSocketSession session = (WebSocketSession) joinPoint.getArgs()[0];
+            currentUser = httpRequest.getCurrentMember(session);
+        } else {
+            currentUser = httpRequest.getCurrentMember();
+        }
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();

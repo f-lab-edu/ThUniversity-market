@@ -13,7 +13,7 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
                                    Map<String, Object> attributes) throws Exception {
-        String token = request.getHeaders().getFirst("Authorization").substring(7);
+        String token = request.getHeaders().getFirst("Authorization");
         if (token != null) {
             attributes.put("token", token);
         } else {
