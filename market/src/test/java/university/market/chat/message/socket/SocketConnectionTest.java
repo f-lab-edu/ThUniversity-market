@@ -4,9 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +11,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;
+import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.springframework.web.socket.handler.AbstractWebSocketHandler;
+import university.market.chat.message.mapper.MessageMapper;
 import university.market.chat.message.service.dto.request.MessageRequest;
 import university.market.chat.room.domain.ChatMemberVO;
 import university.market.chat.room.domain.ChatVO;
 import university.market.chat.room.domain.chatauth.ChatAuthType;
 import university.market.chat.room.mapper.ChatMapper;
 import university.market.chat.room.mapper.ChatMemberMapper;
+import university.market.config.handler.WebSocketHandler;
 import university.market.helper.fixture.ChatFixture;
 import university.market.helper.fixture.ChatMemberFixture;
 import university.market.helper.fixture.ItemFixture;
@@ -32,6 +32,7 @@ import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.mapper.MemberMapper;
 import university.market.member.utils.jwt.JwtTokenProvider;
+import university.market.verify.email.utils.random.RandomUtil;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 public class SocketConnectionTest {
@@ -47,6 +48,15 @@ public class SocketConnectionTest {
 
     @Autowired
     private ChatMemberMapper chatMemberMapper;
+
+    @Autowired
+    WebSocketHandler webSocketHandler;
+
+    @Autowired
+    RandomUtil randomUtil;
+
+    @Autowired
+    MessageMapper messageMapper;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -78,28 +88,26 @@ public class SocketConnectionTest {
 
     @Test
     public void testWebSocketConnection() throws Exception {
-        BlockingQueue<String> blockingQueue = new LinkedBlockingQueue<>();
-        StandardWebSocketClient client = new StandardWebSocketClient();
         WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
         String token = jwtTokenProvider.generateToken(buyer.getEmail());
         headers.add("Authorization", "Bearer " + token);
 
-        client.doHandshake(new TextWebSocketHandler() {
-            @Override
-            public void afterConnectionEstablished(org.springframework.web.socket.WebSocketSession session)
-                    throws Exception {
-                session.sendMessage(new TextMessage(new ObjectMapper().writeValueAsString(
-                        new MessageRequest(chat.getId(), "Hello, WebSocket!"))));
-            }
+        StandardWebSocketClient client = new StandardWebSocketClient();
 
-            @Override
-            protected void handleTextMessage(org.springframework.web.socket.WebSocketSession session,
-                                             TextMessage message) throws Exception {
-                blockingQueue.offer(message.getPayload());
-            }
-        }, headers, URI.create("ws://localhost:8080/ws/message")).get();
+        WebSocketSession session = client.doHandshake(new AbstractWebSocketHandler() {
+        }, headers, new URI("ws://localhost:8080/ws/message")).get();
 
-        String receivedMessage = blockingQueue.poll(5, TimeUnit.SECONDS);
-        assertThat(receivedMessage).isEqualTo("{\"chatId\":" + chat.getId() + ",\"content\":\"Hello, WebSocket!\"}");
+        String message = randomUtil.generateRandomCode('A', 'Z', 100);
+        MessageRequest messageRequest = new MessageRequest(chat.getId(), message);
+        String messageRequestString = new ObjectMapper().writeValueAsString(messageRequest);
+        session.sendMessage(new TextMessage(messageRequestString));
+
+        // 데이터베이스 저장 시간
+        Thread.sleep(100);
+
+        String receivedMessage = messageMapper.getMessagesByChat(chat.getId()).getFirst().getContent();
+        assertThat(receivedMessage).isEqualTo(message);
+
+        session.close();
     }
 }
