@@ -9,6 +9,8 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import university.market.chat.message.exception.MessageException;
+import university.market.chat.message.exception.MessageExceptionType;
 import university.market.chat.message.service.MessageService;
 import university.market.chat.message.service.dto.request.MessageRequest;
 import university.market.chat.room.service.ChatService;
@@ -38,25 +40,19 @@ public class WebSocketHandler extends TextWebSocketHandler {
             sessions.put(currentMember.getId(), session);
             memberService.updateMemberStatus(currentMember.getId(), MemberStatus.ONLINE);
         } catch (Exception e) {
-            throw new Exception("연결에 실패했습니다.");
+            throw new MessageException(MessageExceptionType.SOCKET_NOT_CONNECTED);
         }
     }
 
     @AuthCheck({AuthType.ROLE_ADMIN, AuthType.ROLE_VERIFY_USER})
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        try {
-            String payload = message.getPayload();
-            MessageRequest messageRequest = new ObjectMapper().readValue(payload, MessageRequest.class);
-            MemberVO currentMember = httpRequest.getCurrentMember(session);
-            messageService.sendMessage(messageRequest, currentMember);
+        String payload = message.getPayload();
+        MessageRequest messageRequest = new ObjectMapper().readValue(payload, MessageRequest.class);
+        MemberVO currentMember = httpRequest.getCurrentMember(session);
+        messageService.sendMessage(messageRequest, currentMember);
 
-            broadcastMessage(messageRequest.chatId(), messageRequest, currentMember);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception("메시지 전송에 실패했습니다.");
-        }
+        broadcastMessage(messageRequest.chatId(), messageRequest, currentMember);
     }
 
     private void broadcastMessage(Long chatId, MessageRequest messageRequest, MemberVO currentMember) {
@@ -67,7 +63,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 try {
                     session.sendMessage(new TextMessage(new ObjectMapper().writeValueAsString(messageRequest)));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    throw new MessageException(MessageExceptionType.NOT_SEND_MESSAGE);
                 }
             }
         });
