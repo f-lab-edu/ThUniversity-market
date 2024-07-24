@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import university.market.member.domain.auth.AuthType;
+import university.market.member.domain.memberstatus.MemberStatus;
 import university.market.member.domain.university.UniversityType;
 
 @Data
@@ -25,6 +26,8 @@ public class MemberVO {
 
     private AuthType auth;
 
+    private MemberStatus memberStatus;
+
     private Timestamp createdAt;
 
     private Timestamp updatedAt;
@@ -35,6 +38,7 @@ public class MemberVO {
         this.email = email;
         this.password = password;
         this.university = UniversityType.valueOf(university.toUpperCase());
+        this.memberStatus = MemberStatus.OFFLINE;
         this.auth = auth;
     }
 }

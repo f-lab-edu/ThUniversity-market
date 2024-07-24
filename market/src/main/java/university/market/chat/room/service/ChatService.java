@@ -1,6 +1,7 @@
 package university.market.chat.room.service;
 
 import java.util.List;
+import university.market.chat.room.domain.ChatMemberVO;
 import university.market.chat.room.domain.ChatVO;
 import university.market.chat.room.service.dto.ChatCreateRequest;
 import university.market.member.domain.MemberVO;
@@ -23,4 +24,6 @@ public interface ChatService {
     void removeMyself(Long chatId, MemberVO currentMember);
 
     void updateChat(Long chatId, String title, MemberVO currentMember);
+
+    ChatMemberVO getChatMember(Long chatId, Long memberId);
 }

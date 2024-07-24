@@ -48,13 +48,19 @@ public class DibsServiceTest {
 
     private DibsVO dibs;
 
+    private MemberVO member;
+
+    private MemberVO seller;
+
+    private ItemVO item;
+
     @BeforeEach
     public void init() {
-        MemberVO seller = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
+        seller = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
 
-        MemberVO member = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
+        member = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
 
-        ItemVO item = ItemFixture.testIdItem(seller);
+        item = ItemFixture.testIdItem(seller);
 
         dibs = DibsFixture.testDibs(member, item);
     }
@@ -63,12 +69,11 @@ public class DibsServiceTest {
     @DisplayName("[success] 찜 추가 성공")
     public void 찜_추가_성공() {
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(dibs.getMember());
         when(itemService.getItemById(dibs.getItem().getId())).thenReturn(dibs.getItem());
         doNothing().when(permissionCheck).hasPermission(any(), any());
 
         // when
-        dibsService.addDibs(dibs.getItem().getId());
+        dibsService.addDibs(dibs.getItem().getId(), member);
 
         // then
         verify(dibsMapper).addDibs(dibs);
@@ -78,13 +83,12 @@ public class DibsServiceTest {
     @DisplayName("[fail] 자기 자신 아이템 찜 추가 실패")
     public void 자기_자신_아이템_찜_추가_실패() {
         // mocking
-        when(httpRequest.getCurrentMember()).thenReturn(dibs.getItem().getSeller());
         when(itemService.getItemById(dibs.getItem().getId())).thenReturn(dibs.getItem());
         doThrow(new DibsException(DibsExceptionType.NO_DIBS_MYSELF)).when(permissionCheck).hasPermission(any(), any());
 
         // when
         DibsException exception = assertThrows(DibsException.class, () -> {
-            dibsService.addDibs(dibs.getItem().getId());
+            dibsService.addDibs(item.getId(), seller);
         });
 
         // then

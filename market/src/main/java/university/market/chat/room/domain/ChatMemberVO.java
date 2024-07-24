@@ -20,6 +20,8 @@ public class ChatMemberVO {
 
     private MemberVO member;
 
+    private Timestamp lastReadAt;
+
     private Timestamp createdAt;
 
     @Builder

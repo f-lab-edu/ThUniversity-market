@@ -2,6 +2,7 @@ package university.market.member.service;
 
 
 import university.market.member.domain.MemberVO;
+import university.market.member.domain.memberstatus.MemberStatus;
 import university.market.member.service.dto.request.JoinRequest;
 import university.market.member.service.dto.request.LoginRequest;
 import university.market.member.service.dto.response.LoginResponse;
@@ -20,5 +21,9 @@ public interface MemberService {
 
     void deleteMyself(String token);
 
+    void updateMemberStatus(Long id, MemberStatus memberStatus);
+
     void verifyEmailUser(CheckVerificationCodeRequest checkVerificationCodeRequest);
+
+    MemberVO findMemberByToken(String token);
 }

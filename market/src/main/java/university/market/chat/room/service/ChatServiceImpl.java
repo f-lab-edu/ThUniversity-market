@@ -72,7 +72,6 @@ public class ChatServiceImpl implements ChatService {
     public ChatVO getChat(Long chatId, MemberVO currentMember) {
         ChatMemberVO chatMember = chatMemberMapper.getChatMemberByChatAndMember(chatId,
                 currentMember.getId());
-
         permissionCheck.hasPermission(() -> !chatMember.getMember().getId()
                 .equals(currentMember.getId()));
         return chatMember.getChat();
@@ -92,7 +91,7 @@ public class ChatServiceImpl implements ChatService {
         List<MemberVO> members = chatMemberMapper.getMembersByChat(chatId).stream().map(
                 ChatMemberVO::getMember
         ).toList();
-        permissionCheck.hasPermission(() -> members.stream().anyMatch(
+        permissionCheck.hasPermission(() -> members.stream().noneMatch(
                         member -> member.getId().equals(currentMember.getId())),
                 new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER));
 
@@ -155,5 +154,11 @@ public class ChatServiceImpl implements ChatService {
                         .getChatAuth()
                         != ChatAuthType.HOST);
         chatMapper.updateChat(chatId, title);
+    }
+
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @Override
+    public ChatMemberVO getChatMember(Long chatId, Long memberId) {
+        return chatMemberMapper.getChatMemberByChatAndMember(chatId, memberId);
     }
 }

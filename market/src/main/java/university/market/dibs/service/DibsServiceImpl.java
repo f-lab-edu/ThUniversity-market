@@ -14,12 +14,10 @@ import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.utils.auth.PermissionCheck;
-import university.market.member.utils.http.HttpRequest;
 
 @Service
 @RequiredArgsConstructor
 public class DibsServiceImpl implements DibsService {
-    private HttpRequest httpRequest;
 
     private ItemService itemService;
 
@@ -30,16 +28,16 @@ public class DibsServiceImpl implements DibsService {
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
-    public void addDibs(Long itemId) {
-        MemberVO member = httpRequest.getCurrentMember();
+    public void addDibs(Long itemId, MemberVO currentMember) {
         ItemVO item = itemService.getItemById(itemId);
 
-        permissionCheck.hasPermission(() -> item.getSeller().equals(member), new DibsException(DibsExceptionType.NO_DIBS_MYSELF));
+        permissionCheck.hasPermission(() -> item.getSeller().equals(currentMember),
+                new DibsException(DibsExceptionType.NO_DIBS_MYSELF));
 
         DibsVO dibsVO = DibsVO.builder()
-            .member(member)
-            .item(item)
-            .build();
+                .member(currentMember)
+                .item(item)
+                .build();
 
         dibsMapper.addDibs(dibsVO);
     }
@@ -54,7 +52,7 @@ public class DibsServiceImpl implements DibsService {
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional(readOnly = true)
     @Override
-    public List<DibsVO> getDibsByMemberId() {
-        return dibsMapper.getDibsByMemberId(httpRequest.getCurrentMember().getId());
+    public List<DibsVO> getDibsByMemberId(MemberVO currentMember) {
+        return dibsMapper.getDibsByMemberId(currentMember.getId());
     }
 }

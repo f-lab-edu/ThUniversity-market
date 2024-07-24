@@ -10,12 +10,10 @@ import university.market.item.exception.ItemExceptionType;
 import university.market.item.mapper.ItemMapper;
 import university.market.item.service.dto.request.PostItemRequest;
 import university.market.item.service.dto.request.UpdateItemRequest;
-import university.market.item.service.dto.response.ItemResponse;
 import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.utils.auth.PermissionCheck;
-import university.market.member.utils.http.HttpRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +49,8 @@ public class ItemServiceImpl implements ItemService {
             throw new ItemException(ItemExceptionType.INVALID_ITEM);
         }
 
-        permissionCheck.hasPermission(() -> item.getSeller() != currentMember && currentMember.getAuth() != AuthType.ROLE_ADMIN);
+        permissionCheck.hasPermission(
+                () -> item.getSeller() != currentMember && currentMember.getAuth() != AuthType.ROLE_ADMIN);
 
         final ItemVO updateItem = ItemVO.builder()
                 .title(updateItemRequest.title())
@@ -76,7 +75,8 @@ public class ItemServiceImpl implements ItemService {
             throw new ItemException(ItemExceptionType.INVALID_ITEM);
         }
 
-        permissionCheck.hasPermission(() -> item.getSeller() != currentMember && currentMember.getAuth() != AuthType.ROLE_ADMIN);
+        permissionCheck.hasPermission(
+                () -> item.getSeller() != currentMember && currentMember.getAuth() != AuthType.ROLE_ADMIN);
 
         itemMapper.deleteItem(itemId);
     }

@@ -1,4 +1,4 @@
-package university.market.chat.service;
+package university.market.chat.room.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;

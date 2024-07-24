@@ -1,4 +1,4 @@
-package university.market.chat.mapper;
+package university.market.chat.room.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
