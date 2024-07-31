@@ -48,11 +48,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
-        MessageRequest messageRequest = new ObjectMapper().readValue(payload, MessageRequest.class);
+        MessageRequest request = new ObjectMapper().readValue(payload, MessageRequest.class);
         MemberVO currentMember = httpRequest.getCurrentMember(session);
-        messageService.sendMessage(messageRequest, currentMember);
+        messageService.sendMessage(request.chatId(), request.content(), currentMember);
 
-        broadcastMessage(messageRequest.chatId(), messageRequest, currentMember);
+        broadcastMessage(request.chatId(), request, currentMember);
     }
 
     private void broadcastMessage(Long chatId, MessageRequest messageRequest, MemberVO currentMember) {

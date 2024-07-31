@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import university.market.chat.message.domain.MessageVO;
 import university.market.chat.message.mapper.MessageMapper;
-import university.market.chat.message.service.dto.request.MessageRequest;
+import university.market.chat.room.annotation.ChatAuth;
 import university.market.chat.room.exception.ChatException;
 import university.market.chat.room.exception.ChatExceptionType;
 import university.market.chat.room.mapper.ChatMemberMapper;
@@ -28,14 +28,14 @@ public class MessageServiceImpl implements MessageService {
     @AuthCheck({AuthType.ROLE_ADMIN, AuthType.ROLE_VERIFY_USER})
     @Transactional
     @Override
-    public void sendMessage(MessageRequest request, MemberVO member) {
-        permissionCheck.hasPermission(() -> chatService.getChatMember(request.chatId(), member.getId()) == null,
+    public void sendMessage(@ChatAuth Long chatId, String content, MemberVO member) {
+        permissionCheck.hasPermission(() -> chatService.getChatMember(chatId, member.getId()) == null,
                 new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER));
 
         MessageVO message = MessageVO.builder()
-                .content(request.content())
+                .content(content)
                 .sender(member)
-                .chat(chatService.getChat(request.chatId(), member))
+                .chat(chatService.getChat(chatId, member))
                 .build();
 
         messageMapper.sendMessage(message);
@@ -44,10 +44,7 @@ public class MessageServiceImpl implements MessageService {
     @AuthCheck({AuthType.ROLE_ADMIN, AuthType.ROLE_VERIFY_USER})
     @Transactional
     @Override
-    public List<MessageVO> getMessageByChat(Long chatId, MemberVO member) {
-        permissionCheck.hasPermission(() -> chatService.getChatMember(chatId, member.getId()) == null,
-                new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER));
-
+    public List<MessageVO> getMessageByChat(@ChatAuth Long chatId, MemberVO member) {
         chatMemberMapper.updateLastReadAt(chatId, member.getId(), new Timestamp(System.currentTimeMillis()));
         return messageMapper.getMessagesByChat(chatId);
     }
