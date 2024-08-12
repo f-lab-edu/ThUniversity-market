@@ -1,0 +1,6 @@
+rootProject.name = 'market'
+include 'market-api'
+include 'market-common'
+include 'market-batch'
+include 'market-socket'
+
