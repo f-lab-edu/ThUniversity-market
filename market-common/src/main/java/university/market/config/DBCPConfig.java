@@ -3,10 +3,12 @@ package university.market.config;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import javax.sql.DataSource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@Slf4j
 @Configuration
 public class DBCPConfig {
 
@@ -21,6 +23,9 @@ public class DBCPConfig {
 
     @Bean
     public DataSource dataSource() {
+        log.info("DBCPConfig dataSource {}", url);
+        log.info("DBCPConfig dataSource {}", username);
+        log.info("DBCPConfig dataSource {}", password);
         HikariConfig hikariConfig = new HikariConfig();
 
         hikariConfig.setUsername(username);

@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -14,7 +12,6 @@ import university.market.verify.email.domain.EmailVO;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@ExtendWith(MockitoExtension.class)
 public class EmailMapperTest {
     @Autowired
     private EmailMapper emailMapper;

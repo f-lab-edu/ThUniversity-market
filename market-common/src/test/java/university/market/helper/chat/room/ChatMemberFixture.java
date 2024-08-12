@@ -6,8 +6,8 @@ import university.market.chat.room.domain.ChatMemberVO;
 import university.market.chat.room.domain.ChatVO;
 import university.market.chat.room.domain.chatauth.ChatAuthType;
 import university.market.member.domain.MemberVO;
-import university.market.utils.random.RandomUtil;
-import university.market.utils.random.RandomUtilImpl;
+import university.market.verify.email.utils.random.RandomUtil;
+import university.market.verify.email.utils.random.RandomUtilImpl;
 
 public class ChatMemberFixture {
 

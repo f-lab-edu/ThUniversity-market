@@ -5,8 +5,8 @@ import java.sql.Timestamp;
 import university.market.dibs.domain.DibsVO;
 import university.market.item.domain.ItemVO;
 import university.market.member.domain.MemberVO;
-import university.market.utils.random.RandomUtil;
-import university.market.utils.random.RandomUtilImpl;
+import university.market.verify.email.utils.random.RandomUtil;
+import university.market.verify.email.utils.random.RandomUtilImpl;
 
 public class DibsFixture {
     public static final RandomUtil randomUtil;
