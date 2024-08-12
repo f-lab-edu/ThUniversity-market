@@ -2,11 +2,10 @@ package university.market;
 
 import jakarta.annotation.PostConstruct;
 import java.util.TimeZone;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Hello world!");
-    }
+@SpringBootApplication
+public class MarketCommonApplication {
 
     @PostConstruct
     public void init() {

@@ -1,4 +1,4 @@
-package university.market.member.repository;
+package university.market.member.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,7 +13,6 @@ import university.market.helper.fixture.MemberFixture;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.domain.memberstatus.MemberStatus;
-import university.market.member.mapper.MemberMapper;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
