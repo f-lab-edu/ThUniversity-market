@@ -1,4 +1,4 @@
-package sample;
+package university.market;
 
 import jakarta.annotation.PostConstruct;
 import java.util.TimeZone;
