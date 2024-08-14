@@ -1,7 +1,9 @@
 package university.market.member.utils.http;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 import university.market.member.domain.MemberVO;
@@ -11,24 +13,21 @@ import university.market.member.mapper.MemberMapper;
 import university.market.member.utils.jwt.JwtTokenProvider;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class HttpRequestImpl implements HttpRequest {
 
     private static final ThreadLocal<MemberVO> currentUser = new ThreadLocal<>();
 
-    @Autowired
-    private HttpServletRequest request;
+    private final HttpServletRequest request;
 
-    @Autowired
-    private MemberMapper memberMapper;
+    private final MemberMapper memberMapper;
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    private final String header = "Authorization";
+    public final static String prefixToken = "Bearer ";
 
-    private final String prefixToken = "Bearer ";
-
-    private final String socketToken = "token";
+    public final static String socketToken = "token";
 
     @Override
     public MemberVO getCurrentMember() {
@@ -64,7 +63,7 @@ public class HttpRequestImpl implements HttpRequest {
     private String getTokenFromRequest(HttpServletRequest request, WebSocketSession session) {
         String token = null;
         if (request != null) {
-            token = request.getHeader(header);
+            token = request.getHeader(HttpHeaders.AUTHORIZATION);
         }
 
         if (session != null) {

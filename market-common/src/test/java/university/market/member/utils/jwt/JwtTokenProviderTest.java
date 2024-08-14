@@ -13,11 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import university.market.helper.member.MemberFixture;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
+import university.market.utils.test.helper.member.MemberFixture;
 
 @ExtendWith(MockitoExtension.class)
 public class JwtTokenProviderTest {

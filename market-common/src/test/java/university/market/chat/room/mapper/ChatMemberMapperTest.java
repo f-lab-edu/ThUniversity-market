@@ -16,15 +16,15 @@ import university.market.chat.room.domain.ChatVO;
 import university.market.chat.room.domain.chatauth.ChatAuthType;
 import university.market.chat.room.exception.ChatException;
 import university.market.chat.room.exception.ChatExceptionType;
-import university.market.helper.chat.room.ChatFixture;
-import university.market.helper.chat.room.ChatMemberFixture;
-import university.market.helper.item.ItemFixture;
-import university.market.helper.member.MemberFixture;
 import university.market.item.domain.ItemVO;
 import university.market.item.mapper.ItemMapper;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.mapper.MemberMapper;
+import university.market.utils.test.helper.chat.room.ChatFixture;
+import university.market.utils.test.helper.chat.room.ChatMemberFixture;
+import university.market.utils.test.helper.item.ItemFixture;
+import university.market.utils.test.helper.member.MemberFixture;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = NONE)

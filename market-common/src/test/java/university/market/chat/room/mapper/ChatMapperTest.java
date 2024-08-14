@@ -11,14 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.transaction.annotation.Transactional;
 import university.market.chat.room.domain.ChatVO;
-import university.market.helper.chat.room.ChatFixture;
-import university.market.helper.item.ItemFixture;
-import university.market.helper.member.MemberFixture;
 import university.market.item.domain.ItemVO;
 import university.market.item.mapper.ItemMapper;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.mapper.MemberMapper;
+import university.market.utils.test.helper.chat.room.ChatFixture;
+import university.market.utils.test.helper.item.ItemFixture;
+import university.market.utils.test.helper.member.MemberFixture;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = NONE)

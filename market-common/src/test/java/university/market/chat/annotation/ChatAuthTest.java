@@ -22,14 +22,14 @@ import university.market.chat.annotation.aspect.ChatAuthAspect;
 import university.market.chat.room.domain.ChatVO;
 import university.market.chat.room.exception.ChatException;
 import university.market.chat.room.exception.ChatExceptionType;
-import university.market.helper.chat.room.ChatFixture;
-import university.market.helper.item.ItemFixture;
-import university.market.helper.member.MemberFixture;
 import university.market.item.domain.ItemVO;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.utils.http.HttpRequest;
 import university.market.utils.auth.PermissionCheck;
+import university.market.utils.test.helper.chat.room.ChatFixture;
+import university.market.utils.test.helper.item.ItemFixture;
+import university.market.utils.test.helper.member.MemberFixture;
 
 @ExtendWith(MockitoExtension.class)
 public class ChatAuthTest {

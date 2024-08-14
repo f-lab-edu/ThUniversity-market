@@ -31,7 +31,6 @@ public class AuthCheckAspect {
         } else {
             currentUser = httpRequest.getCurrentMember();
         }
-
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         AuthCheck authCheck = method.getAnnotation(AuthCheck.class);

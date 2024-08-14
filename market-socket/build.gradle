@@ -3,4 +3,9 @@ bootJar.enabled = false
 jar.enabled = true
 
 dependencies {
+    implementation project(':market-common')
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    testImplementation 'org.springframework.security:spring-security-test'
 }

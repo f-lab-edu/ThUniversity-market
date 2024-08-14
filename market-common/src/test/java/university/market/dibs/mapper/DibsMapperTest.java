@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,16 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.transaction.annotation.Transactional;
 import university.market.dibs.domain.DibsVO;
-import university.market.helper.dibs.DibsFixture;
-import university.market.helper.item.ItemFixture;
-import university.market.helper.member.MemberFixture;
 import university.market.item.domain.ItemVO;
 import university.market.item.mapper.ItemMapper;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.mapper.MemberMapper;
+import university.market.utils.test.helper.dibs.DibsFixture;
+import university.market.utils.test.helper.item.ItemFixture;
+import university.market.utils.test.helper.member.MemberFixture;
 
-@Slf4j
 @MybatisTest
 @AutoConfigureTestDatabase(replace = NONE)
 public class DibsMapperTest {
