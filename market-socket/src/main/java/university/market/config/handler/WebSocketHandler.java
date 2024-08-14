@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -22,6 +23,7 @@ import university.market.member.service.MemberService;
 import university.market.member.utils.http.HttpRequest;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
 
@@ -46,7 +48,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     @AuthCheck({AuthType.ROLE_ADMIN, AuthType.ROLE_VERIFY_USER})
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+    public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
         MessageRequest request = new ObjectMapper().readValue(payload, MessageRequest.class);
         MemberVO currentMember = httpRequest.getCurrentMember(session);

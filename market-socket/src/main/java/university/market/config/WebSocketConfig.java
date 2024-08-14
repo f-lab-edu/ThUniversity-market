@@ -5,8 +5,8 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import university.market.config.handler.WebSocketHandler;
-import university.market.config.interceptor.WebSocketInterceptor;
-import university.market.config.interceptor.WebSocketLoggingInterceptor;
+import university.market.config.intercepter.WebSocketInterceptor;
+import university.market.config.intercepter.WebSocketLoggingInterceptor;
 
 @Configuration
 @EnableWebSocket

@@ -1,19 +1,23 @@
-package university.market.chat.message.socket;
+package university.market.socket;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.handler.AbstractWebSocketHandler;
-import university.market.MarketApplication;
+import university.market.MarketSocketApplication;
 import university.market.chat.message.mapper.MessageMapper;
 import university.market.chat.message.service.dto.request.MessageRequest;
 import university.market.chat.room.domain.ChatMemberVO;
@@ -21,11 +25,6 @@ import university.market.chat.room.domain.ChatVO;
 import university.market.chat.room.domain.chatauth.ChatAuthType;
 import university.market.chat.room.mapper.ChatMapper;
 import university.market.chat.room.mapper.ChatMemberMapper;
-import university.market.config.handler.WebSocketHandler;
-import university.market.helper.fixture.ChatFixture;
-import university.market.helper.fixture.ChatMemberFixture;
-import university.market.helper.fixture.ItemFixture;
-import university.market.helper.fixture.MemberFixture;
 import university.market.item.domain.ItemVO;
 import university.market.item.mapper.ItemMapper;
 import university.market.member.domain.MemberVO;
@@ -33,8 +32,13 @@ import university.market.member.domain.auth.AuthType;
 import university.market.member.mapper.MemberMapper;
 import university.market.member.utils.jwt.JwtTokenProvider;
 import university.market.utils.random.RandomUtil;
+import university.market.utils.test.helper.chat.room.ChatFixture;
+import university.market.utils.test.helper.chat.room.ChatMemberFixture;
+import university.market.utils.test.helper.item.ItemFixture;
+import university.market.utils.test.helper.member.MemberFixture;
 
-@SpringBootTest(classes = MarketApplication.class)
+@Slf4j
+@SpringBootTest(classes = MarketSocketApplication.class, webEnvironment = WebEnvironment.DEFINED_PORT)
 public class SocketConnectionTest {
 
     @Autowired
@@ -50,9 +54,6 @@ public class SocketConnectionTest {
     private ChatMemberMapper chatMemberMapper;
 
     @Autowired
-    private WebSocketHandler webSocketHandler;
-
-    @Autowired
     private RandomUtil randomUtil;
 
     @Autowired
@@ -60,6 +61,9 @@ public class SocketConnectionTest {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private WebSocketHandler webSocketHandler;
 
     private MemberVO seller;
     private MemberVO buyer;
@@ -90,24 +94,29 @@ public class SocketConnectionTest {
     public void testWebSocketConnection() throws Exception {
         WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
         String token = jwtTokenProvider.generateToken(buyer.getId());
-        headers.add("Authorization", "Bearer " + token);
-
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
         StandardWebSocketClient client = new StandardWebSocketClient();
 
-        WebSocketSession session = client.doHandshake(new AbstractWebSocketHandler() {
-        }, headers, new URI("ws://localhost:8080/ws/message")).get();
+        try (WebSocketSession session = client.doHandshake(webSocketHandler, headers,
+                new URI("ws://localhost:8081/ws/message")).get()) {
+            String message = randomUtil.generateRandomCode('A', 'Z', 100);
+            MessageRequest messageRequest = new MessageRequest(chat.getId(), message);
+            String messageRequestString = new ObjectMapper().writeValueAsString(messageRequest);
+            // Ensure the message is received// Wait for the message to be processed
 
-        String message = randomUtil.generateRandomCode('A', 'Z', 100);
-        MessageRequest messageRequest = new MessageRequest(chat.getId(), message);
-        String messageRequestString = new ObjectMapper().writeValueAsString(messageRequest);
-        session.sendMessage(new TextMessage(messageRequestString));
+            log.info("Sending message: {}", messageRequestString);
+            log.info("session isOpen: {}", session.isOpen());
+            session.sendMessage(new TextMessage(messageRequestString));
 
-        // 데이터베이스 저장 시간
-        Thread.sleep(100);
+            Thread.sleep(1000);
 
-        String receivedMessage = messageMapper.getMessagesByChat(chat.getId()).getFirst().getContent();
-        assertThat(receivedMessage).isEqualTo(message);
-
-        session.close();
+            String receivedMessage = messageMapper.getMessagesByChat(chat.getId()).getFirst().getContent();
+            assertThat(receivedMessage).isEqualTo(message);
+        } catch (ExecutionException e) {
+            log.error("Handshake failed due to: ", e.getCause());
+        } catch (Exception e) {
+            log.error("WebSocket handshake failed: ", e);
+            throw e;
+        }
     }
 }
