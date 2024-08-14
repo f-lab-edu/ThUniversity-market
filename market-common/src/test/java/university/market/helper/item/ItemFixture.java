@@ -5,8 +5,8 @@ import java.sql.Timestamp;
 import university.market.item.domain.ItemVO;
 import university.market.item.domain.status.StatusType;
 import university.market.member.domain.MemberVO;
-import university.market.verify.email.utils.random.RandomUtil;
-import university.market.verify.email.utils.random.RandomUtilImpl;
+import university.market.utils.random.RandomUtil;
+import university.market.utils.random.RandomUtilImpl;
 
 public class ItemFixture {
 

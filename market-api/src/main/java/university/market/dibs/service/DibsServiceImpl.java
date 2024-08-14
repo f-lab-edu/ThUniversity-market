@@ -13,7 +13,7 @@ import university.market.item.service.ItemService;
 import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
-import university.market.member.utils.auth.PermissionCheck;
+import university.market.utils.auth.PermissionCheck;
 
 @Service
 @RequiredArgsConstructor

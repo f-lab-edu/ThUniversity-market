@@ -1,4 +1,4 @@
-package university.market.member.utils.auth;
+package university.market.utils.auth;
 
 import org.springframework.stereotype.Component;
 import university.market.base.exception.BaseException;

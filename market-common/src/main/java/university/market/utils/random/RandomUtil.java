@@ -1,4 +1,4 @@
-package university.market.verify.email.utils.random;
+package university.market.utils.random;
 
 public interface RandomUtil {
     String generateRandomCode(final char leftLimit, final char rightLimit, final int limit);

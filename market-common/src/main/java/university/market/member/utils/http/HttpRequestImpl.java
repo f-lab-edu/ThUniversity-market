@@ -7,7 +7,7 @@ import org.springframework.web.socket.WebSocketSession;
 import university.market.member.domain.MemberVO;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
-import university.market.member.service.MemberService;
+import university.market.member.mapper.MemberMapper;
 import university.market.member.utils.jwt.JwtTokenProvider;
 
 @Component
@@ -19,7 +19,7 @@ public class HttpRequestImpl implements HttpRequest {
     private HttpServletRequest request;
 
     @Autowired
-    private MemberService memberService;
+    private MemberMapper memberMapper;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -37,7 +37,8 @@ public class HttpRequestImpl implements HttpRequest {
         }
 
         String token = getTokenFromRequest(request, null);
-        MemberVO member = memberService.findMemberById(jwtTokenProvider.extractMemberId(token));
+        MemberVO member = memberMapper.findMemberById(jwtTokenProvider.extractMemberId(token))
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         currentUser.set(member);
         return currentUser.get();
     }
@@ -53,7 +54,8 @@ public class HttpRequestImpl implements HttpRequest {
         }
 
         String token = getTokenFromRequest(null, session);
-        MemberVO member = memberService.findMemberById(jwtTokenProvider.extractMemberId(token));
+        MemberVO member = memberMapper.findMemberById(jwtTokenProvider.extractMemberId(token))
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         currentUser.set(member);
         return currentUser.get();
     }

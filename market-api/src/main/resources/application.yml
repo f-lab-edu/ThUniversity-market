@@ -2,7 +2,6 @@ spring:
   profiles:
     active: default
     include: common
-
   application:
     name: market-api
   mail:
@@ -21,8 +20,3 @@ spring:
             enable: true
           ssl:
             protocols: TLSv1.2
-
-security:
-  jwt:
-    secret-key: testtesttesttesttesttesttesttesttesttesttest
-    expire-length: 360000000

@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import university.market.chat.room.domain.ChatMemberVO;
 import university.market.chat.room.domain.ChatVO;
 import university.market.chat.room.domain.chatauth.ChatAuthType;
+import university.market.chat.room.exception.ChatException;
+import university.market.chat.room.exception.ChatExceptionType;
 import university.market.helper.chat.room.ChatFixture;
 import university.market.helper.chat.room.ChatMemberFixture;
 import university.market.helper.item.ItemFixture;
@@ -74,7 +76,8 @@ public class ChatMemberMapperTest {
         chatMemberMapper.addMember(chatMember1);
         chatMemberMapper.addMember(chatMember2);
 
-        List<ChatMemberVO> chatMembers = chatMemberMapper.getMembersByChat(chat.getId());
+        List<ChatMemberVO> chatMembers = chatMemberMapper.getMembersByChat(chat.getId())
+                .orElseThrow(() -> new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER));
         List<MemberVO> members = chatMembers.stream().map(ChatMemberVO::getMember).toList();
 
         assertThat(members.size()).isEqualTo(2);
@@ -90,7 +93,8 @@ public class ChatMemberMapperTest {
 
         chatMemberMapper.deleteMember(chat.getId(), chatMember1.getMember().getId());
 
-        List<ChatMemberVO> chatMembers = chatMemberMapper.getMembersByChat(chat.getId());
+        List<ChatMemberVO> chatMembers = chatMemberMapper.getMembersByChat(chat.getId())
+                .orElseThrow(() -> new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER));
         List<MemberVO> members = chatMembers.stream().map(ChatMemberVO::getMember).toList();
 
         assertThat(members.size()).isEqualTo(0);
@@ -115,7 +119,8 @@ public class ChatMemberMapperTest {
         chatMemberMapper.addMember(chatMember3);
         chatMemberMapper.addMember(chatMember4);
 
-        List<ChatMemberVO> chatMembers = chatMemberMapper.getChatsByMember(buyer.getId());
+        List<ChatMemberVO> chatMembers = chatMemberMapper.getChatsByMember(buyer.getId())
+                .orElseThrow(() -> new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER));
         List<ChatVO> chats = chatMembers.stream().map(ChatMemberVO::getChat).toList();
 
         assertThat(chats.size()).isEqualTo(2);
@@ -130,7 +135,8 @@ public class ChatMemberMapperTest {
         chatMemberMapper.addMember(chatMember1);
         chatMemberMapper.addMember(chatMember2);
 
-        ChatMemberVO chatMember = chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), buyer.getId());
+        ChatMemberVO chatMember = chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), buyer.getId())
+                .orElseThrow(() -> new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER));
 
         assertThat(chatMember.getMember().getName()).isEqualTo(buyer.getName());
     }

@@ -26,8 +26,8 @@ import university.market.item.domain.ItemVO;
 import university.market.item.service.ItemService;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
-import university.market.member.utils.auth.PermissionCheck;
 import university.market.member.utils.http.HttpRequest;
+import university.market.utils.auth.PermissionCheck;
 
 @ExtendWith(MockitoExtension.class)
 public class DibsServiceTest {

@@ -8,12 +8,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
+import university.market.MarketApplication;
 import university.market.chat.message.mapper.MessageMapper;
 import university.market.chat.message.service.dto.request.MessageRequest;
 import university.market.chat.room.domain.ChatMemberVO;
@@ -32,9 +32,9 @@ import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.mapper.MemberMapper;
 import university.market.member.utils.jwt.JwtTokenProvider;
-import university.market.verify.email.utils.random.RandomUtil;
+import university.market.utils.random.RandomUtil;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = MarketApplication.class)
 public class SocketConnectionTest {
 
     @Autowired
@@ -50,13 +50,13 @@ public class SocketConnectionTest {
     private ChatMemberMapper chatMemberMapper;
 
     @Autowired
-    WebSocketHandler webSocketHandler;
+    private WebSocketHandler webSocketHandler;
 
     @Autowired
-    RandomUtil randomUtil;
+    private RandomUtil randomUtil;
 
     @Autowired
-    MessageMapper messageMapper;
+    private MessageMapper messageMapper;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;

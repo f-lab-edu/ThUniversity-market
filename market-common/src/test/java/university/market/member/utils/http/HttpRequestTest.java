@@ -8,6 +8,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,18 +17,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
-import university.market.helper.fixture.MemberFixture;
+import university.market.helper.member.MemberFixture;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
-import university.market.member.service.MemberService;
+import university.market.member.mapper.MemberMapper;
 import university.market.member.utils.jwt.JwtTokenProvider;
 
 @ExtendWith(MockitoExtension.class)
 public class HttpRequestTest {
     @Mock
-    private MemberService memberService;
+    private MemberMapper memberMapper;
 
     @Mock
     private HttpServletRequest httpServletRequest;
@@ -61,7 +62,7 @@ public class HttpRequestTest {
         when(httpServletRequest.getHeader(authorization)).thenReturn(bearer + validToken);
         doNothing().when(jwtTokenProvider).validateToken(validToken);
         when(jwtTokenProvider.extractMemberId(validToken)).thenReturn(member.getId());
-        when(memberService.findMemberById(member.getId())).thenReturn(member);
+        when(memberMapper.findMemberById(member.getId())).thenReturn(Optional.of(member));
 
         // then
         assertThat(httpRequest.getCurrentMember()).isEqualTo(member);

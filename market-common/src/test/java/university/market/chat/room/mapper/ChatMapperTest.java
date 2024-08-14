@@ -54,7 +54,7 @@ public class ChatMapperTest {
     public void createChatTest_채팅방_생성() {
         chatMapper.createChat(chat);
 
-        ChatVO findChat = chatMapper.getChat(chat.getId());
+        ChatVO findChat = chatMapper.getChat(chat.getId()).get();
 
         assertThat(findChat.getTitle()).isEqualTo(chat.getTitle());
     }
@@ -67,7 +67,7 @@ public class ChatMapperTest {
 
         chatMapper.deleteChat(chat.getId());
 
-        ChatVO findChat = chatMapper.getChat(chat.getId());
+        ChatVO findChat = chatMapper.getChat(chat.getId()).get();
 
         assertThat(findChat).isNull();
     }
@@ -81,7 +81,7 @@ public class ChatMapperTest {
         String newTitle = "newTitle";
         chatMapper.updateChat(chat.getId(), newTitle);
 
-        ChatVO findChat = chatMapper.getChat(chat.getId());
+        ChatVO findChat = chatMapper.getChat(chat.getId()).get();
 
         assertThat(findChat.getTitle()).isEqualTo(newTitle);
     }

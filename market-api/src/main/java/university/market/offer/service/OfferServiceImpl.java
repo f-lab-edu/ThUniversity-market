@@ -10,7 +10,6 @@ import university.market.item.service.ItemService;
 import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
-import university.market.member.utils.auth.PermissionCheck;
 import university.market.offer.domain.OfferStatus;
 import university.market.offer.domain.OfferVO;
 import university.market.offer.exception.OfferException;
@@ -18,6 +17,7 @@ import university.market.offer.exception.OfferExceptionType;
 import university.market.offer.mapper.OfferMapper;
 import university.market.offer.service.dto.request.OfferRequest;
 import university.market.offer.service.dto.response.OfferResponse;
+import university.market.utils.auth.PermissionCheck;
 
 @Service
 @RequiredArgsConstructor

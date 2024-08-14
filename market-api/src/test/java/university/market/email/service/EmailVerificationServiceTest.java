@@ -3,8 +3,15 @@ package university.market.email.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import jakarta.mail.internet.MimeMessage;
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import university.market.utils.random.RandomUtil;
 import university.market.verify.email.domain.EmailVO;
 import university.market.verify.email.exception.EmailException;
 import university.market.verify.email.exception.EmailExceptionType;
@@ -22,10 +30,7 @@ import university.market.verify.email.mapper.EmailMapper;
 import university.market.verify.email.service.EmailVerificationServiceImpl;
 import university.market.verify.email.service.dto.CheckVerificationCodeRequest;
 import university.market.verify.email.service.dto.EmailRequest;
-import university.market.verify.email.utils.random.RandomUtil;
 import university.market.verify.email.utils.content.EmailContent;
-
-import jakarta.mail.internet.MimeMessage;
 
 @ExtendWith(MockitoExtension.class)
 public class EmailVerificationServiceTest {
@@ -61,7 +66,8 @@ public class EmailVerificationServiceTest {
 
         // mocking
         when(emailContent.buildVerificationEmailTitle()).thenReturn("Verification Code");
-        when(emailContent.buildVerificationEmailContent(anyString())).thenReturn("Your verification code is: " + verificationCode);
+        when(emailContent.buildVerificationEmailContent(anyString())).thenReturn(
+                "Your verification code is: " + verificationCode);
         when(randomUtil.generateRandomCode('0', 'Z', 6)).thenReturn(verificationCode);
 
         MimeMessage mimeMessage = mock(MimeMessage.class);
@@ -88,7 +94,8 @@ public class EmailVerificationServiceTest {
         // mocking
         when(randomUtil.generateRandomCode('0', 'Z', 6)).thenReturn(verificationCode);
         when(emailContent.buildVerificationEmailTitle()).thenReturn("Verification Code");
-        when(emailContent.buildVerificationEmailContent(anyString())).thenReturn("Your verification code is: " + verificationCode);
+        when(emailContent.buildVerificationEmailContent(anyString())).thenReturn(
+                "Your verification code is: " + verificationCode);
 
         MimeMessage mimeMessage = mock(MimeMessage.class);
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
@@ -101,7 +108,7 @@ public class EmailVerificationServiceTest {
             assert e.exceptionType() == EmailExceptionType.EMAIL_SEND_FAILED;
         }
 
-        verify(randomUtil, times(1)).generateRandomCode('0','Z',6);
+        verify(randomUtil, times(1)).generateRandomCode('0', 'Z', 6);
         verify(javaMailSender, times(1)).send(mimeMessage);
         verify(emailMapper, times(0)).saveVerificationCode(any(EmailVO.class));
     }

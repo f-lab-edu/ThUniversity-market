@@ -1,4 +1,4 @@
-package university.market.email.util;
+package university.market.utils.random;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.times;
@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import university.market.verify.email.utils.random.RandomUtil;
 
 @ExtendWith(MockitoExtension.class)
 public class RandomGenerateTest {
@@ -26,13 +25,13 @@ public class RandomGenerateTest {
         int limit = 6;
         String verificationCode = "123abc";
 
-        when(randomUtil.generateRandomCode(leftLimit,rightLimit,limit)).thenReturn(verificationCode);
+        when(randomUtil.generateRandomCode(leftLimit, rightLimit, limit)).thenReturn(verificationCode);
 
         // when
         final String generateRandomCode = randomUtil.generateRandomCode(leftLimit, rightLimit, limit);
 
         // then
-        verify(randomUtil, times(1)).generateRandomCode(leftLimit,rightLimit,limit);
+        verify(randomUtil, times(1)).generateRandomCode(leftLimit, rightLimit, limit);
         assertThat(verificationCode).isEqualTo(generateRandomCode);
     }
 }

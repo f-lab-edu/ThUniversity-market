@@ -8,8 +8,8 @@ import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.domain.memberstatus.MemberStatus;
 import university.market.member.domain.university.UniversityType;
-import university.market.verify.email.utils.random.RandomUtil;
-import university.market.verify.email.utils.random.RandomUtilImpl;
+import university.market.utils.random.RandomUtil;
+import university.market.utils.random.RandomUtilImpl;
 
 public class MemberFixture {
 

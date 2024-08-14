@@ -5,10 +5,12 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import university.market.chat.room.annotation.ChatAuth;
+import university.market.chat.annotation.ChatAuth;
 import university.market.chat.room.domain.ChatMemberVO;
 import university.market.chat.room.domain.ChatVO;
 import university.market.chat.room.domain.chatauth.ChatAuthType;
+import university.market.chat.room.exception.ChatException;
+import university.market.chat.room.exception.ChatExceptionType;
 import university.market.chat.room.mapper.ChatMapper;
 import university.market.chat.room.mapper.ChatMemberMapper;
 import university.market.chat.room.service.dto.ChatCreateRequest;
@@ -17,7 +19,7 @@ import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.service.MemberService;
-import university.market.member.utils.auth.PermissionCheck;
+import university.market.utils.auth.PermissionCheck;
 
 @Service
 @RequiredArgsConstructor
@@ -70,7 +72,9 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public ChatVO getChat(@ChatAuth Long chatId, MemberVO currentMember) {
         ChatMemberVO chatMember = chatMemberMapper.getChatMemberByChatAndMember(chatId,
-                currentMember.getId());
+                currentMember.getId()).orElseThrow(
+                () -> new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER)
+        );
         return chatMember.getChat();
     }
 
@@ -78,6 +82,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public List<ChatVO> getChatsByMember(MemberVO currentMember) {
         return chatMemberMapper.getChatsByMember(currentMember.getId())
+                .orElseThrow(() -> new ChatException(ChatExceptionType.NOT_FOUND_CHAT))
                 .stream().map(
                         ChatMemberVO::getChat
                 ).collect(Collectors.toList());
@@ -85,11 +90,12 @@ public class ChatServiceImpl implements ChatService {
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     public List<MemberVO> getMembersByChat(@ChatAuth Long chatId, MemberVO currentMember) {
-        List<MemberVO> members = chatMemberMapper.getMembersByChat(chatId).stream().map(
-                ChatMemberVO::getMember
-        ).toList();
 
-        return members;
+        return chatMemberMapper.getMembersByChat(chatId)
+                .orElseThrow(() -> new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER))
+                .stream().map(
+                        ChatMemberVO::getMember
+                ).toList();
     }
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
@@ -103,7 +109,9 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void addMember(@ChatAuth Long chatId, Long memberId, MemberVO currentMember) {
         chatMemberMapper.addMember(ChatMemberVO.builder()
-                .chat(chatMapper.getChat(chatId))
+                .chat(chatMapper.getChat(chatId).orElseThrow(
+                        () -> new ChatException(ChatExceptionType.NOT_FOUND_CHAT)
+                ))
                 .member(memberService.findMemberById(memberId))
                 .build());
     }
@@ -131,13 +139,16 @@ public class ChatServiceImpl implements ChatService {
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
     public ChatMemberVO getChatMember(Long chatId, Long memberId) {
-        return chatMemberMapper.getChatMemberByChatAndMember(chatId, memberId);
+        return chatMemberMapper.getChatMemberByChatAndMember(chatId, memberId)
+                .orElseThrow(() -> new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER));
     }
 
     private void hostPermissionCheck(Long chatId, MemberVO currentMember) {
         permissionCheck.hasPermission(
-                () -> chatMemberMapper.getChatMemberByChatAndMember(chatId, currentMember.getId())
-                        .getChatAuth()
-                        != ChatAuthType.HOST && currentMember.getAuth() != AuthType.ROLE_ADMIN);
+                () -> chatMemberMapper
+                        .getChatMemberByChatAndMember(chatId, currentMember.getId())
+                        .orElseThrow(() -> new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER))
+                        .getChatAuth() != ChatAuthType.HOST
+                        && currentMember.getAuth() != AuthType.ROLE_ADMIN);
     }
 }

@@ -4,7 +4,8 @@ import org.springframework.http.HttpStatus;
 import university.market.base.exception.BaseExceptionType;
 
 public enum ChatExceptionType implements BaseExceptionType {
-    NOT_EXISTED_CHAT_MEMBER(HttpStatus.NOT_FOUND, "채팅방에 참여하지 않은 유저입니다.", 404503);
+    NOT_EXISTED_CHAT_MEMBER(HttpStatus.NOT_FOUND, "채팅방에 참여하지 않은 유저입니다.", 404503),
+    NOT_FOUND_CHAT(HttpStatus.NOT_FOUND, "채팅방을 찾을 수 없습니다.", 404504);
     private final HttpStatus httpStatus;
     private final String errorMessage;
     private final int errorCode;

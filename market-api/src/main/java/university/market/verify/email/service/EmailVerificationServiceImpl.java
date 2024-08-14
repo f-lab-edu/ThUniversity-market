@@ -9,13 +9,13 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import university.market.utils.random.RandomUtil;
 import university.market.verify.email.domain.EmailVO;
 import university.market.verify.email.exception.EmailException;
 import university.market.verify.email.exception.EmailExceptionType;
 import university.market.verify.email.mapper.EmailMapper;
 import university.market.verify.email.service.dto.CheckVerificationCodeRequest;
 import university.market.verify.email.service.dto.EmailRequest;
-import university.market.verify.email.utils.random.RandomUtil;
 import university.market.verify.email.utils.content.EmailContent;
 
 @Service
@@ -31,10 +31,9 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     private String username;
 
 
-
     @Override
     public void sendVerificationCodeByEmail(EmailRequest emailRequest) {
-        String verificationCode = randomUtil.generateRandomCode('0','Z',6);
+        String verificationCode = randomUtil.generateRandomCode('0', 'Z', 6);
         String setFrom = this.username;
         String toMail = emailRequest.email();
         String title = emailContent.buildVerificationEmailTitle();
@@ -67,11 +66,11 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     private void mailSend(String setFrom, String toMail, String title, String content, String verificationCode) {
         MimeMessage message = javaMailSender.createMimeMessage();
         try {
-            MimeMessageHelper helper = new MimeMessageHelper(message,true,"utf-8");
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
             helper.setFrom(setFrom);
             helper.setTo(toMail);
             helper.setSubject(title);
-            helper.setText(content,true);
+            helper.setText(content, true);
             javaMailSender.send(message);
             saveVerificationCode(toMail, verificationCode);
         } catch (MessagingException e) {

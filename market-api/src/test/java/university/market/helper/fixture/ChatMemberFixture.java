@@ -6,8 +6,8 @@ import university.market.chat.room.domain.ChatMemberVO;
 import university.market.chat.room.domain.ChatVO;
 import university.market.chat.room.domain.chatauth.ChatAuthType;
 import university.market.member.domain.MemberVO;
-import university.market.verify.email.utils.random.RandomUtil;
-import university.market.verify.email.utils.random.RandomUtilImpl;
+import university.market.utils.random.RandomUtil;
+import university.market.utils.random.RandomUtilImpl;
 
 public class ChatMemberFixture {
 
@@ -23,10 +23,10 @@ public class ChatMemberFixture {
 
     public static ChatMemberVO testChatMember(ChatAuthType chatAuthType, ChatVO chat, MemberVO member) {
         return ChatMemberVO.builder()
-            .chatAuth(chatAuthType)
-            .chat(chat)
-            .member(member)
-            .build();
+                .chatAuth(chatAuthType)
+                .chat(chat)
+                .member(member)
+                .build();
     }
 
     public static ChatMemberVO testIdChatMember(ChatAuthType chatAuthType, ChatVO chat, MemberVO member) {

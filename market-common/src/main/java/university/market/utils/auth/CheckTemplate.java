@@ -1,4 +1,4 @@
-package university.market.member.utils.auth;
+package university.market.utils.auth;
 
 public interface CheckTemplate {
     boolean checkAuth();

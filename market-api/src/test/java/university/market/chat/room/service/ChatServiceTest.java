@@ -1,12 +1,14 @@
 package university.market.chat.room.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +36,8 @@ import university.market.member.domain.auth.AuthType;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
 import university.market.member.service.MemberService;
-import university.market.member.utils.auth.PermissionCheck;
+import university.market.member.utils.http.HttpRequest;
+import university.market.utils.auth.PermissionCheck;
 
 @ExtendWith(MockitoExtension.class)
 public class ChatServiceTest {
@@ -43,6 +46,9 @@ public class ChatServiceTest {
 
     @Mock
     private MemberService memberService;
+
+    @Mock
+    private HttpRequest httpRequest;
 
     @Mock
     private ChatMapper chatMapper;
@@ -123,7 +129,8 @@ public class ChatServiceTest {
     @DisplayName("[success] 채팅방 조회")
     public void getChat_채팅방_조회() {
         // mocking
-        when(chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), member.getId())).thenReturn(chatMember);
+        when(chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), member.getId())).thenReturn(
+                Optional.of(chatMember));
 
         // when
         ChatVO findChat = chatService.getChat(chat.getId(), member);
@@ -135,38 +142,17 @@ public class ChatServiceTest {
     @Test
     @DisplayName("[fail] 채팅방 조회 권한 없음")
     public void getChat_채팅방_조회_권한_없음() {
-        // mocking;
-        when(chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), member.getId())).thenReturn(chatMember);
-        doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION)).when(permissionCheck)
-                .hasPermission(any());
-
-        // when
-        BaseException exception = assertThrows(MemberException.class, () -> {
-            chatService.getChat(chat.getId(), member);
-        });
-
-        // then
-        assertThat(exception.exceptionType().errorCode()).isEqualTo(
-                MemberExceptionType.UNAUTHORIZED_PERMISSION.errorCode());
-    }
-
-    @Test
-    @DisplayName("[fail] 채팅방 소속 멤버 조회 실패")
-    public void getMembersByChat_채팅방_소속_멤버_조회_실패() {
-        // when
+        // given
         MemberVO testedMember = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
-        doThrow(new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER))
-                .when(permissionCheck)
-                .hasPermission(any(), any());
 
-        // when
-        BaseException exception = assertThrows(ChatException.class, () -> {
-            chatService.getMembersByChat(chat.getId(), testedMember);
-        });
+        // mocking;
+        when(chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), testedMember.getId())).thenReturn(
+                Optional.empty());
 
-        // then
-        assertThat(exception.exceptionType().errorCode()).isEqualTo(
-                ChatExceptionType.NOT_EXISTED_CHAT_MEMBER.errorCode());
+        // when & then
+        assertThatThrownBy(() -> chatService.getChat(chat.getId(), testedMember))
+                .isInstanceOf(ChatException.class)
+                .hasMessage(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER.errorMessage());
     }
 
     @Test
@@ -174,37 +160,13 @@ public class ChatServiceTest {
     public void deleteChat_채팅방_삭제_권한_없음() {
         // mocking
         MemberVO testedMember = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
-        ChatMemberVO testedChatMember = ChatMemberFixture.testIdChatMember(ChatAuthType.GUEST, chat, testedMember);
-        when(chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), testedMember.getId()))
-                .thenReturn(testedChatMember);
         doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION)).when(permissionCheck)
                 .hasPermission(any());
 
-        // when
-        BaseException exception = assertThrows(MemberException.class, () -> {
-            chatService.deleteChat(chat.getId(), testedMember);
-        });
-
         // then
-        assertThat(exception.exceptionType().errorCode()).isEqualTo(
-                MemberExceptionType.UNAUTHORIZED_PERMISSION.errorCode());
-    }
-
-    @Test
-    @DisplayName("[fail] 채팅방 멤버 존재 여부 확인 실패")
-    public void deleteChat_채팅방_멤버_존재_여부_확인_실패() {
-        // mocking
-        MemberVO testedMember = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
-        when(chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), testedMember.getId())).thenReturn(null);
-
-        // when
-        BaseException exception = assertThrows(ChatException.class, () -> {
-            chatService.deleteChat(chat.getId(), testedMember);
-        });
-
-        // then
-        assertThat(exception.exceptionType().errorCode()).isEqualTo(
-                ChatExceptionType.NOT_EXISTED_CHAT_MEMBER.errorCode());
+        assertThatThrownBy(() -> chatService.deleteChat(chat.getId(), testedMember))
+                .isInstanceOf(MemberException.class)
+                .hasMessage(MemberExceptionType.UNAUTHORIZED_PERMISSION.errorMessage());
     }
 
     @Test

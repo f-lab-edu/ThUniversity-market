@@ -1,4 +1,4 @@
-package university.market.base.exception;
+package university.market.config.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import university.market.base.exception.BaseException;
 import university.market.base.exception.response.ErrorResponse;
 
 @RestControllerAdvice

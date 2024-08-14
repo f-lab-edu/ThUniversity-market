@@ -5,8 +5,8 @@ import java.sql.Timestamp;
 import university.market.chat.message.domain.MessageVO;
 import university.market.chat.room.domain.ChatVO;
 import university.market.member.domain.MemberVO;
-import university.market.verify.email.utils.random.RandomUtil;
-import university.market.verify.email.utils.random.RandomUtilImpl;
+import university.market.utils.random.RandomUtil;
+import university.market.utils.random.RandomUtilImpl;
 
 public class MessageFixture {
     private static final RandomUtil randomUtil;

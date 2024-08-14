@@ -4,7 +4,6 @@ import javax.sql.DataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +12,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 @Configuration
-@MapperScan(basePackages = "university.market")
 public class MyBatisConfig {
 
     @Autowired
@@ -30,14 +28,12 @@ public class MyBatisConfig {
         SqlSessionFactoryBean sessionFactoryBean = new SqlSessionFactoryBean();
         sessionFactoryBean.setDataSource(dataSource);
 
-        // 설정된 `mapper-locations`를 반영하여 XML 매퍼 파일 위치 설정
-        Resource[] mapperLocations = new PathMatchingResourcePatternResolver()
-                .getResources("classpath:mapper/*.xml");
-        sessionFactoryBean.setMapperLocations(mapperLocations);
+        Resource[] mapperResources = new PathMatchingResourcePatternResolver()
+                .getResources(mapperLocations);
+        sessionFactoryBean.setMapperLocations(mapperResources);
 
-        // 설정된 `config-location`을 반영하여 MyBatis 설정 파일 위치 설정
         sessionFactoryBean.setConfigLocation(
-                new PathMatchingResourcePatternResolver().getResource("classpath:mybatis-config.xml")
+                new PathMatchingResourcePatternResolver().getResource(configLocation)
         );
 
         return sessionFactoryBean.getObject();

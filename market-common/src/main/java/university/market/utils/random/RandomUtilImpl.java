@@ -1,4 +1,4 @@
-package university.market.verify.email.utils.random;
+package university.market.utils.random;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;

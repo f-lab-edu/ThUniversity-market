@@ -1,4 +1,4 @@
-package university.market.chat.room.annotation;
+package university.market.chat.annotation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -18,19 +18,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import university.market.chat.room.annotation.aspect.ChatAuthAspect;
+import university.market.chat.annotation.aspect.ChatAuthAspect;
 import university.market.chat.room.domain.ChatVO;
 import university.market.chat.room.exception.ChatException;
 import university.market.chat.room.exception.ChatExceptionType;
-import university.market.chat.room.service.ChatService;
-import university.market.helper.fixture.ChatFixture;
-import university.market.helper.fixture.ItemFixture;
-import university.market.helper.fixture.MemberFixture;
+import university.market.helper.chat.room.ChatFixture;
+import university.market.helper.item.ItemFixture;
+import university.market.helper.member.MemberFixture;
 import university.market.item.domain.ItemVO;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
-import university.market.member.utils.auth.PermissionCheck;
 import university.market.member.utils.http.HttpRequest;
+import university.market.utils.auth.PermissionCheck;
 
 @ExtendWith(MockitoExtension.class)
 public class ChatAuthTest {
@@ -39,9 +38,6 @@ public class ChatAuthTest {
 
     @Mock
     private PermissionCheck permissionCheck;
-
-    @Mock
-    private ChatService chatService;
 
     @Mock
     private JoinPoint joinPoint;

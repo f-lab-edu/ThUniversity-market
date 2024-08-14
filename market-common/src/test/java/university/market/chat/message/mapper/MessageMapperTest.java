@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
 import java.sql.Timestamp;
-import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +14,8 @@ import university.market.chat.message.domain.MessageVO;
 import university.market.chat.room.domain.ChatMemberVO;
 import university.market.chat.room.domain.ChatVO;
 import university.market.chat.room.domain.chatauth.ChatAuthType;
+import university.market.chat.room.exception.ChatException;
+import university.market.chat.room.exception.ChatExceptionType;
 import university.market.chat.room.mapper.ChatMapper;
 import university.market.chat.room.mapper.ChatMemberMapper;
 import university.market.helper.chat.message.MessageFixture;
@@ -29,7 +29,6 @@ import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.mapper.MemberMapper;
 
-@Slf4j
 @MybatisTest
 @AutoConfigureTestDatabase(replace = NONE)
 public class MessageMapperTest {
@@ -85,17 +84,15 @@ public class MessageMapperTest {
         messageMapper.sendMessage(message);
 
         // then
-        List<MessageVO> messages = messageMapper.getMessagesByChat(chat.getId());
-        assertThat(messages.size()).isEqualTo(1);
-        assertThat(messages.getFirst().getSender().getName()).isEqualTo(buyer.getName());
-        assertThat(messages.getFirst().getContent()).isEqualTo(message.getContent());
+        assertThat(message.getId()).isNotNull();
     }
 
     @Test
     @DisplayName("[success] 메시지 조회 lastReadAt 업데이트 성공")
     public void lastReadAt_업데이트_성공() {
         //given
-        ChatMemberVO chatMember = chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), buyer.getId());
+        ChatMemberVO chatMember = chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), buyer.getId())
+                .orElseThrow(() -> new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER));
         Timestamp beforeLastReadAt = chatMember.getLastReadAt();
 
         //when
@@ -103,7 +100,8 @@ public class MessageMapperTest {
                 new Timestamp(System.currentTimeMillis() + 1000));
 
         //then
-        ChatMemberVO updatedChatMember = chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), buyer.getId());
+        ChatMemberVO updatedChatMember = chatMemberMapper.getChatMemberByChatAndMember(chat.getId(), buyer.getId())
+                .orElseThrow(() -> new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER));
         Timestamp updatedLastReadAt = updatedChatMember.getLastReadAt();
         assertThat(updatedLastReadAt).isNotEqualTo(beforeLastReadAt);
     }

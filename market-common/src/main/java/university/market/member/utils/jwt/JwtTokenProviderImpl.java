@@ -7,15 +7,13 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import java.util.Date;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
 
-@Slf4j
 @Component
-public class JwtTokenProviderImpl implements JwtTokenProvider{
+public class JwtTokenProviderImpl implements JwtTokenProvider {
     @Value("${security.jwt.secret-key}")
     private String secretKey;
     @Value("${security.jwt.expire-length}")
@@ -40,7 +38,8 @@ public class JwtTokenProviderImpl implements JwtTokenProvider{
     public void validateToken(final String token) {
         try {
             Claims claims = Jwts.parser().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
-        }  catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | UnsupportedJwtException |
+                 IllegalArgumentException e) {
             throw new MemberException(MemberExceptionType.INVALID_ACCESS_TOKEN);
         } catch (ExpiredJwtException e) {
             throw new MemberException(MemberExceptionType.EXPIRED_ACCESS_TOKEN);
@@ -52,11 +51,11 @@ public class JwtTokenProviderImpl implements JwtTokenProvider{
         try {
             return Long.parseLong(
                     Jwts.parser()
-                    .setSigningKey(secretKey).build()
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .get(MEMBER_ID)
-                    .toString()
+                            .setSigningKey(secretKey).build()
+                            .parseClaimsJws(token)
+                            .getBody()
+                            .get(MEMBER_ID)
+                            .toString()
             );
 
         } catch (RuntimeException e) {

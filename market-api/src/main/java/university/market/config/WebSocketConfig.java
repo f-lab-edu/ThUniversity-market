@@ -1,6 +1,5 @@
 package university.market.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -13,14 +12,18 @@ import university.market.config.interceptor.WebSocketLoggingInterceptor;
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    @Autowired
-    private WebSocketHandler webSocketHandler;
+    private final WebSocketHandler webSocketHandler;
 
-    @Autowired
-    private WebSocketInterceptor webSocketInterceptor;
+    private final WebSocketInterceptor webSocketInterceptor;
 
-    @Autowired
-    private WebSocketLoggingInterceptor webSocketLoggingInterceptor;
+    private final WebSocketLoggingInterceptor webSocketLoggingInterceptor;
+
+    public WebSocketConfig(WebSocketHandler webSocketHandler, WebSocketInterceptor webSocketInterceptor,
+                           WebSocketLoggingInterceptor webSocketLoggingInterceptor) {
+        this.webSocketHandler = webSocketHandler;
+        this.webSocketInterceptor = webSocketInterceptor;
+        this.webSocketLoggingInterceptor = webSocketLoggingInterceptor;
+    }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
