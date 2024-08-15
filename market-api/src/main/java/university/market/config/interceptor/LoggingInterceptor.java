@@ -34,19 +34,23 @@ public class LoggingInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
                                 Object handler, Exception ex) throws Exception {
-        ContentCachingRequestWrapper cachingRequest = (ContentCachingRequestWrapper) request;
-        ContentCachingResponseWrapper cachingResponse = (ContentCachingResponseWrapper) response;
-        log.info(
-                HTTP_LOG_FORMAT,
-                request.getMethod(),
-                request.getRequestURI(),
-                request.getQueryString(),
-                request.getHeader("Authorization"),
-                objectMapper.readTree(cachingRequest.getContentAsByteArray()),
-                handler,
+        if (request instanceof ContentCachingRequestWrapper && response instanceof ContentCachingResponseWrapper) {
+            ContentCachingRequestWrapper cachingRequest = (ContentCachingRequestWrapper) request;
+            ContentCachingResponseWrapper cachingResponse = (ContentCachingResponseWrapper) response;
 
-                response.getStatus(),
-                objectMapper.readTree(cachingResponse.getContentAsByteArray())
-        );
+            log.info(
+                    HTTP_LOG_FORMAT,
+                    request.getMethod(),
+                    request.getRequestURI(),
+                    request.getQueryString(),
+                    request.getHeader("Authorization"),
+                    objectMapper.readTree(cachingRequest.getContentAsByteArray()),
+                    handler,
+                    response.getStatus(),
+                    objectMapper.readTree(cachingResponse.getContentAsByteArray())
+            );
+        } else {
+            log.warn("Request or Response is not an instance of ContentCachingRequestWrapper/ContentCachingResponseWrapper");
+        }
     }
 }
