@@ -11,7 +11,7 @@ public class FilterConfig {
     public FilterRegistrationBean<CachingFilter> contentCachingFilter() {
         FilterRegistrationBean<CachingFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new CachingFilter());
-        registrationBean.addUrlPatterns("/api/member/*", "/api/dibs/*", "/api/item/*", "/api/offer/*", "/api/email/*");
+        registrationBean.addUrlPatterns("/api/member/*", "/api/dibs/*", "/api/item/*", "/api/offer/*", "/api/email/*, /api/message/*, /api/chat/*");
         registrationBean.setOrder(1);
         registrationBean.setName("CachingFilter");
         return registrationBean;
