@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import university.market.MarketMapperApplication;
 import university.market.chat.room.domain.ChatMemberVO;
 import university.market.chat.room.domain.ChatVO;
 import university.market.chat.room.domain.chatauth.ChatAuthType;
@@ -28,6 +30,7 @@ import university.market.utils.test.helper.member.MemberFixture;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = NONE)
+@ContextConfiguration(classes = MarketMapperApplication.class)
 public class ChatMemberMapperTest {
     @Autowired
     private ChatMapper chatMapper;
@@ -76,8 +79,7 @@ public class ChatMemberMapperTest {
         chatMemberMapper.addMember(chatMember1);
         chatMemberMapper.addMember(chatMember2);
 
-        List<ChatMemberVO> chatMembers = chatMemberMapper.getMembersByChat(chat.getId())
-                .orElseThrow(() -> new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER));
+        List<ChatMemberVO> chatMembers = chatMemberMapper.getMembersByChat(chat.getId());
         List<MemberVO> members = chatMembers.stream().map(ChatMemberVO::getMember).toList();
 
         assertThat(members.size()).isEqualTo(2);
@@ -93,8 +95,7 @@ public class ChatMemberMapperTest {
 
         chatMemberMapper.deleteMember(chat.getId(), chatMember1.getMember().getId());
 
-        List<ChatMemberVO> chatMembers = chatMemberMapper.getMembersByChat(chat.getId())
-                .orElseThrow(() -> new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER));
+        List<ChatMemberVO> chatMembers = chatMemberMapper.getMembersByChat(chat.getId());
         List<MemberVO> members = chatMembers.stream().map(ChatMemberVO::getMember).toList();
 
         assertThat(members.size()).isEqualTo(0);

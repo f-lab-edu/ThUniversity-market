@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import university.market.MarketMapperApplication;
 import university.market.item.domain.ItemVO;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
@@ -19,6 +21,7 @@ import university.market.utils.test.helper.member.MemberFixture;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = NONE)
+@ContextConfiguration(classes = MarketMapperApplication.class)
 public class ItemMapperTest {
     @Autowired
     private ItemMapper itemMapper;

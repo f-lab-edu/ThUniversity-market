@@ -3,13 +3,16 @@ package university.market.chat.room.mapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import university.market.MarketMapperApplication;
 import university.market.chat.room.domain.ChatVO;
 import university.market.item.domain.ItemVO;
 import university.market.item.mapper.ItemMapper;
@@ -22,6 +25,7 @@ import university.market.utils.test.helper.member.MemberFixture;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = NONE)
+@ContextConfiguration(classes = MarketMapperApplication.class)
 public class ChatMapperTest {
     @Autowired
     private ChatMapper chatMapper;
@@ -67,9 +71,9 @@ public class ChatMapperTest {
 
         chatMapper.deleteChat(chat.getId());
 
-        ChatVO findChat = chatMapper.getChat(chat.getId()).get();
+        Optional<ChatVO> findChat = chatMapper.getChat(chat.getId());
 
-        assertThat(findChat).isNull();
+        assertThat(findChat).isEmpty();
     }
 
     @Test

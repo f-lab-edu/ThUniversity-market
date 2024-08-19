@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import university.market.MarketMapperApplication;
 import university.market.dibs.domain.DibsVO;
 import university.market.item.domain.ItemVO;
 import university.market.item.mapper.ItemMapper;
@@ -23,6 +25,7 @@ import university.market.utils.test.helper.member.MemberFixture;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = NONE)
+@ContextConfiguration(classes = MarketMapperApplication.class)
 public class DibsMapperTest {
     @Autowired
     private DibsMapper dibsMapper;

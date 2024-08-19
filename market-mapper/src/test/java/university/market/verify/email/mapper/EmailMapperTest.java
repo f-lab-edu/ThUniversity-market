@@ -8,10 +8,13 @@ import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+import org.springframework.test.context.ContextConfiguration;
+import university.market.MarketMapperApplication;
 import university.market.verify.email.domain.EmailVO;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
+@ContextConfiguration(classes = MarketMapperApplication.class)
 public class EmailMapperTest {
     @Autowired
     private EmailMapper emailMapper;

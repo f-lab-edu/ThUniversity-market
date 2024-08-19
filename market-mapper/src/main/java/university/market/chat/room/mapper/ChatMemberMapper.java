@@ -11,7 +11,7 @@ public interface ChatMemberMapper {
 
     Optional<List<ChatMemberVO>> getChatsByMember(Long memberId);
 
-    Optional<List<ChatMemberVO>> getMembersByChat(Long chatId);
+    List<ChatMemberVO> getMembersByChat(Long chatId);
 
     void updateLastReadAt(Long chatId, Long memberId, Timestamp lastReadAt);
 
