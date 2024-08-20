@@ -1,15 +1,9 @@
 spring:
   profiles:
     active: default
-    include: common
+    include: common, mapper
   application:
     name: market-socket
 
 server:
   port: 8081
-
-#logging:
-#  level:
-#    org.springframework.web.socket: TRACE
-#    org.springframework.web.socket.server: TRACE
-#    org.springframework.web.socket.sockjs: TRACE

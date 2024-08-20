@@ -4,6 +4,8 @@ jar.enabled = true
 
 dependencies {
     implementation project(':market-common')
+    implementation project(':market-mapper')
+    implementation project(':market-domain')
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework:spring-messaging:6.1.10'
     implementation 'jakarta.annotation:jakarta.annotation-api:3.0.0'
