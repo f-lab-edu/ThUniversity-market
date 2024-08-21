@@ -1,4 +1,4 @@
-package university.market.config.intercepter;
+package university.market.config.interceptor;
 
 import static university.market.member.utils.http.HttpRequestImpl.socketToken;
 
