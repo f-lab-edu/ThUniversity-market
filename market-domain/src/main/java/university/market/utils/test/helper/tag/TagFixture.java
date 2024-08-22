@@ -26,7 +26,7 @@ public class TagFixture {
                 .build();
     }
 
-    public static TagVO testIdTag(String title) {
+    public static TagVO testIdTag() {
         return new TagVO(
                 Long.parseLong(randomUtil.generateRandomCode('0', '9', 10)),
                 randomUtil.generateRandomCountCode('A', 'z', 1, 100),
