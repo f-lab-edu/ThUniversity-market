@@ -1,5 +1,6 @@
 package university.market.item.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,5 +53,11 @@ public class ItemController {
     public ResponseEntity<Void> deleteItem(@PathVariable Long itemId) {
         itemService.deleteItem(itemId, httpRequest.getCurrentMember());
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @GetMapping("/university/{universityType}")
+    public ResponseEntity<List<ItemVO>> getItemsByUniversity(@PathVariable String universityType) {
+        return ResponseEntity.ok(itemService.getItemsByUniversity(universityType));
     }
 }
