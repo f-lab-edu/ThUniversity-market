@@ -58,8 +58,14 @@ public class TagServiceImpl implements TagService {
     public void createTagMember(TagMemberRequest request) {
         List<TagMemberVO> tagMembers = tagMemberMapper.findTagMembersByTagId(request.tagId());
 
-        if (tagMembers.isEmpty()) {
-            throw new TagException(TagExceptionType.ALREADY_EXIST_TAG_MEMBER);
+        if (!tagMembers.isEmpty()) {
+            tagMembers.forEach(
+                    tagMember -> {
+                        if (Objects.equals(tagMember.getMember().getId(), request.member().getId())) {
+                            throw new TagException(TagExceptionType.ALREADY_EXIST_TAG_MEMBER);
+                        }
+                    }
+            );
         }
 
         TagVO tag = tagMapper.findTagById(request.tagId())
