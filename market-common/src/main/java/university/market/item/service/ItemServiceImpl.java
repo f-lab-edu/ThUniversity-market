@@ -13,6 +13,7 @@ import university.market.item.service.dto.request.UpdateItemRequest;
 import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
+import university.market.tag.service.TagService;
 import university.market.utils.auth.PermissionCheck;
 
 @Service
@@ -20,12 +21,13 @@ import university.market.utils.auth.PermissionCheck;
 public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
     private final PermissionCheck permissionCheck;
+    private final TagService tagService;
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
     public ItemVO postItem(PostItemRequest postItemRequest, MemberVO currentMember) {
-        final ItemVO itemVO = ItemVO.builder()
+        final ItemVO item = ItemVO.builder()
                 .title(postItemRequest.title())
                 .description(postItemRequest.description())
                 .imageUrl("blank")
@@ -35,8 +37,10 @@ public class ItemServiceImpl implements ItemService {
                 .price(postItemRequest.price())
                 .build();
 
-        itemMapper.postItem(itemVO);
-        return itemVO;
+        itemMapper.postItem(item);
+        tagService.createTagItem(postItemRequest.tags(), item);
+
+        return item;
     }
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
