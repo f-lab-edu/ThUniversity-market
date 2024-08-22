@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="university.market.tag.mapper.TagItemMapper">
+
+    <resultMap id="TagItemResultMap" type="university.market.tag.domain.TagItemVO">
+        <id property="id" column="id"/>
+        <result property="createdAt" column="created_at"/>
+
+        <association property="tag" javaType="university.market.tag.domain.TagVO">
+            <id property="id" column="tag_id"/>
+            <result property="title" column="tag_title"/>
+            <result property="createdAt" column="tag_created_at"/>
+            <result property="updatedAt" column="tag_updated_at"/>
+        </association>
+
+        <association property="item" javaType="university.market.item.domain.ItemVO">
+            <id property="id" column="item_id"/>
+            <result property="title" column="item_title"/>
+            <result property="description" column="item_description"/>
+            <result property="imageUrl" column="item_image_url"/>
+            <result property="status" column="item_status"/>
+            <result property="auction" column="item_auction"/>
+            <result property="price" column="item_price"/>
+            <result property="createdAt" column="item_created_at"/>
+            <result property="updatedAt" column="item_updated_at"/>
+
+            <association property="seller" javaType="university.market.member.domain.MemberVO">
+                <id property="id" column="seller_id"/>
+                <result property="name" column="seller_name"/>
+                <result property="email" column="seller_email"/>
+                <result property="university" column="seller_university"/>
+            </association>
+        </association>
+    </resultMap>
+
+    <insert id="insertTagItem" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tag_item (tag, item, created_at)
+        VALUES (#{tag.id}, #{item.id}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <delete id="deleteTagItem">
+        DELETE
+        FROM tag_item ti
+        WHERE ti.id = #{id}
+    </delete>
+
+    <select id="findTagItemById" resultMap="TagItemResultMap">
+        SELECT ti.id,
+               ti.created_at,
+               tag.id            AS tag_id,
+               tag.title         AS tag_title,
+               tag.created_at    AS tag_created_at,
+               tag.updated_at    AS tag_updated_at,
+               item.id           AS item_id,
+               item.title        AS item_title,
+               item.description  AS item_description,
+               item.image_url    AS item_image_url,
+               item.status       AS item_status,
+               item.auction      AS item_auction,
+               item.price        AS item_price,
+               item.created_at   AS item_created_at,
+               item.updated_at   AS item_updated_at,
+               seller.id         AS seller_id,
+               seller.name       AS seller_name,
+               seller.email      AS seller_email,
+               seller.university AS seller_university
+        FROM tag_item ti
+                 JOIN tag ON ti.tag = tag.id
+                 JOIN item ON ti.item = item.id
+                 JOIN member seller ON item.seller = seller.id
+        WHERE ti.id = #{id}
+    </select>
+
+    <select id="findTagItemsByTagId" resultMap="TagItemResultMap">
+        SELECT ti.id,
+               ti.created_at,
+               tag.id            AS tag_id,
+               tag.title         AS tag_title,
+               tag.created_at    AS tag_created_at,
+               tag.updated_at    AS tag_updated_at,
+               item.id           AS item_id,
+               item.title        AS item_title,
+               item.description  AS item_description,
+               item.image_url    AS item_image_url,
+               item.status       AS item_status,
+               item.auction      AS item_auction,
+               item.price        AS item_price,
+               item.created_at   AS item_created_at,
+               item.updated_at   AS item_updated_at,
+               seller.id         AS seller_id,
+               seller.name       AS seller_name,
+               seller.email      AS seller_email,
+               seller.university AS seller_university
+        FROM tag_item ti
+                 JOIN tag ON ti.tag = tag.id
+                 JOIN item ON ti.item = item.id
+                 JOIN member seller ON item.seller = seller.id
+        WHERE tag.id = #{tagId}
+    </select>
+
+    <select id="findTagItemsByItemId" resultMap="TagItemResultMap">
+        SELECT ti.id,
+               ti.created_at,
+               tag.id            AS tag_id,
+               tag.title         AS tag_title,
+               tag.created_at    AS tag_created_at,
+               tag.updated_at    AS tag_updated_at,
+               item.id           AS item_id,
+               item.title        AS item_title,
+               item.description  AS item_description,
+               item.image_url    AS item_image_url,
+               item.status       AS item_status,
+               item.auction      AS item_auction,
+               item.price        AS item_price,
+               item.created_at   AS item_created_at,
+               item.updated_at   AS item_updated_at,
+               seller.id         AS seller_id,
+               seller.name       AS seller_name,
+               seller.email      AS seller_email,
+               seller.university AS seller_university
+        FROM tag_item ti
+                 JOIN tag ON ti.tag = tag.id
+                 JOIN item ON ti.item = item.id
+                 JOIN member seller ON item.seller = seller.id
+        WHERE item.id = #{itemId}
+    </select>
+</mapper>
