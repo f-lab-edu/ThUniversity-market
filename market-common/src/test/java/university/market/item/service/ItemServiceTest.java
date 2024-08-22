@@ -8,6 +8,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
+import university.market.tag.service.TagService;
 import university.market.utils.auth.PermissionCheck;
 import university.market.utils.test.helper.item.ItemFixture;
 import university.market.utils.test.helper.member.MemberFixture;
@@ -36,6 +38,9 @@ public class ItemServiceTest {
 
     @Mock
     private PermissionCheck permissionCheck;
+
+    @Mock
+    private TagService tagService;
 
     @InjectMocks
     private ItemServiceImpl itemService;
@@ -76,8 +81,12 @@ public class ItemServiceTest {
                 mockItem.getTitle(),
                 mockItem.getDescription(),
                 mockItem.isAuction(),
-                mockItem.getPrice()
+                mockItem.getPrice(),
+                List.of()
         );
+
+        // mocking
+        doNothing().when(tagService).createTagItem(any(), any());
 
         // when
         itemService.postItem(postItemRequest, mockMember);
