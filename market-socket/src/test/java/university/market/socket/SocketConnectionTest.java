@@ -4,19 +4,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
-import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 import university.market.MarketSocketApplication;
 import university.market.chat.message.mapper.MessageMapper;
 import university.market.chat.message.service.dto.request.MessageRequest;
@@ -39,8 +40,8 @@ import university.market.utils.test.helper.member.MemberFixture;
 
 @Slf4j
 @SpringBootTest(classes = MarketSocketApplication.class, webEnvironment = WebEnvironment.DEFINED_PORT)
+@ExtendWith(MockitoExtension.class)
 public class SocketConnectionTest {
-
     @Autowired
     private ChatMapper chatMapper;
 
@@ -53,17 +54,15 @@ public class SocketConnectionTest {
     @Autowired
     private ChatMemberMapper chatMemberMapper;
 
-    @Autowired
-    private RandomUtil randomUtil;
 
     @Autowired
-    private MessageMapper messageMapper;
+    RandomUtil randomUtil;
+
+    @Autowired
+    MessageMapper messageMapper;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-
-    @Autowired
-    private WebSocketHandler webSocketHandler;
 
     private MemberVO seller;
     private MemberVO buyer;
@@ -77,6 +76,9 @@ public class SocketConnectionTest {
 
         memberMapper.joinMember(seller);
         memberMapper.joinMember(buyer);
+
+        log.info("seller: {}", memberMapper.findMemberById(seller.getId()));
+        log.info("buyer: {}", memberMapper.findMemberById(buyer.getId()));
 
         item = ItemFixture.testItem(seller);
         itemMapper.postItem(item);
@@ -95,28 +97,23 @@ public class SocketConnectionTest {
         WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
         String token = jwtTokenProvider.generateToken(buyer.getId());
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+
         StandardWebSocketClient client = new StandardWebSocketClient();
 
-        try (WebSocketSession session = client.doHandshake(webSocketHandler, headers,
-                new URI("ws://localhost:8081/ws/message")).get()) {
-            String message = randomUtil.generateRandomCode('A', 'Z', 100);
-            MessageRequest messageRequest = new MessageRequest(chat.getId(), message);
-            String messageRequestString = new ObjectMapper().writeValueAsString(messageRequest);
-            // Ensure the message is received// Wait for the message to be processed
+        WebSocketSession session = client.doHandshake(new AbstractWebSocketHandler() {
+        }, headers, new URI("ws://localhost:8081/ws/message")).get();
 
-            log.info("Sending message: {}", messageRequestString);
-            log.info("session isOpen: {}", session.isOpen());
-            session.sendMessage(new TextMessage(messageRequestString));
+        String message = randomUtil.generateRandomCode('A', 'Z', 100);
+        MessageRequest messageRequest = new MessageRequest(chat.getId(), message);
+        String messageRequestString = new ObjectMapper().writeValueAsString(messageRequest);
+        session.sendMessage(new TextMessage(messageRequestString));
 
-            Thread.sleep(1000);
+        // 데이터베이스 저장 시간
+        Thread.sleep(100);
 
-            String receivedMessage = messageMapper.getMessagesByChat(chat.getId()).getFirst().getContent();
-            assertThat(receivedMessage).isEqualTo(message);
-        } catch (ExecutionException e) {
-            log.error("Handshake failed due to: ", e.getCause());
-        } catch (Exception e) {
-            log.error("WebSocket handshake failed: ", e);
-            throw e;
-        }
+        String receivedMessage = messageMapper.getMessagesByChat(chat.getId()).getFirst().getContent();
+        assertThat(receivedMessage).isEqualTo(message);
+
+        session.close();
     }
 }

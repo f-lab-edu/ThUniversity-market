@@ -92,7 +92,6 @@ public class ChatServiceImpl implements ChatService {
     public List<MemberVO> getMembersByChat(@ChatAuth Long chatId, MemberVO currentMember) {
 
         return chatMemberMapper.getMembersByChat(chatId)
-                .orElseThrow(() -> new ChatException(ChatExceptionType.NOT_EXISTED_CHAT_MEMBER))
                 .stream().map(
                         ChatMemberVO::getMember
                 ).toList();
