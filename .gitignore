@@ -1,6 +1,6 @@
 HELP.md
-market/.gradle
-market/build/
+.gradle
+build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -49,6 +49,3 @@ logs
 
 ### env ###
 .env
-
-### local environment test files ###
-src/main/generated

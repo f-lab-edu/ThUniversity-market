@@ -1,2 +1,0 @@
-INSERT INTO member (name, email, password, university, auth, created_at, updated_at)
-VALUES ('admin', 'admin@example.com', '$2a$10$TVB5rOGgv0w0O1Kr.T5yCeSaKsCdtM.kfjFRhrTj0egEgvV6pqm5y', 0,  'ROLE_ADMIN', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
