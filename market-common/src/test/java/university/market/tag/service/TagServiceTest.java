@@ -115,7 +115,6 @@ class TagServiceTest {
         TagMemberRequest tagMemberRequest = TagMemberRequest
                 .builder()
                 .tagId(tag.getId())
-                .member(member)
                 .build();
 
         tagMember = TagMemberVO.builder()
@@ -129,7 +128,7 @@ class TagServiceTest {
         doNothing().when(tagMemberMapper).insertTagMember(tagMember);
 
         // when
-        tagService.createTagMember(tagMemberRequest);
+        tagService.createTagMember(tagMemberRequest, member);
 
         // then
         verify(tagMemberMapper).findTagMembersByTagId(tag.getId());
@@ -188,7 +187,6 @@ class TagServiceTest {
         TagMemberRequest tagMemberRequest = TagMemberRequest
                 .builder()
                 .tagId(tag.getId())
-                .member(member)
                 .build();
 
         tagMember = TagMemberVO.builder()
@@ -201,7 +199,7 @@ class TagServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> tagService.createTagMember(tagMemberRequest))
+        assertThatThrownBy(() -> tagService.createTagMember(tagMemberRequest, member))
                 .isInstanceOf(TagException.class)
                 .hasMessage(TagExceptionType.ALREADY_EXIST_TAG_MEMBER.errorMessage());
     }

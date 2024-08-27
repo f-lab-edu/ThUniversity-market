@@ -14,7 +14,7 @@ public interface TagService {
 
     void deleteTagItem(long tagItemId, MemberVO member);
 
-    void createTagMember(TagMemberRequest request);
+    void createTagMember(TagMemberRequest request, MemberVO member);
 
     void deleteTagMember(long tagMemberId, MemberVO member);
 

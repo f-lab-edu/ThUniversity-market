@@ -68,11 +68,11 @@ public class TagServiceImpl implements TagService {
 
     @Transactional
     @Override
-    public void createTagMember(TagMemberRequest request) {
+    public void createTagMember(TagMemberRequest request, MemberVO member) {
         List<TagMemberVO> tagMembers = tagMemberMapper.findTagMembersByTagId(request.tagId());
 
         if (tagMembers.stream().anyMatch(tagMember ->
-                Objects.equals(tagMember.getMember().getId(), request.member().getId()))) {
+                Objects.equals(tagMember.getMember().getId(), member.getId()))) {
             throw new TagException(TagExceptionType.ALREADY_EXIST_TAG_MEMBER);
         }
 
@@ -81,7 +81,7 @@ public class TagServiceImpl implements TagService {
 
         TagMemberVO tagMember = TagMemberVO.builder()
                 .tag(tag)
-                .member(request.member())
+                .member(member)
                 .build();
         tagMemberMapper.insertTagMember(tagMember);
     }
