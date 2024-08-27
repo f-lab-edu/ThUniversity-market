@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import university.market.member.annotation.AuthCheck;
+import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
+import university.market.member.utils.http.HttpRequest;
 import university.market.tag.domain.TagItemVO;
 import university.market.tag.domain.TagMemberVO;
 import university.market.tag.service.TagService;
@@ -19,8 +21,9 @@ import university.market.tag.service.TagService;
 @RequiredArgsConstructor
 public class TagController {
     private final TagService tagService;
+    private final HttpRequest httpRequest;
 
-    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @AuthCheck(AuthType.ROLE_ADMIN)
     @DeleteMapping("/{tagId}")
     public ResponseEntity<Void> deleteTag(@PathVariable long tagId) {
         tagService.deleteTag(tagId);
@@ -29,15 +32,15 @@ public class TagController {
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @DeleteMapping("/item/{tagItemId}")
-    public ResponseEntity<Void> deleteTagItem(@PathVariable long tagItemId) {
-        tagService.deleteTagItem(tagItemId);
+    public ResponseEntity<Void> deleteTagItem(@PathVariable long tagItemId, MemberVO member) {
+        tagService.deleteTagItem(tagItemId, member);
         return ResponseEntity.ok().build();
     }
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @DeleteMapping("/member/{tagMemberId}")
     public ResponseEntity<Void> deleteTagMember(@PathVariable long tagMemberId) {
-        tagService.deleteTagMember(tagMemberId);
+        tagService.deleteTagMember(tagMemberId, httpRequest.getCurrentMember());
         return ResponseEntity.ok().build();
     }
 
@@ -56,9 +59,9 @@ public class TagController {
     }
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
-    @GetMapping("/member/{memberId}")
-    public ResponseEntity<List<TagMemberVO>> findTagMembersByMemberId(@PathVariable long memberId) {
-        List<TagMemberVO> tagItems = tagService.findTagMembersByMemberId(memberId);
+    @GetMapping("/member")
+    public ResponseEntity<List<TagMemberVO>> findTagMembersByMemberId() {
+        List<TagMemberVO> tagItems = tagService.findTagMembersByMemberId(httpRequest.getCurrentMember().getId());
         return ResponseEntity.ok(tagItems);
     }
 }
