@@ -1,9 +1,12 @@
+DROP TABLE IF EXISTS market.tag;
 DROP TABLE IF EXISTS market.chat_member;
+DROP TABLE IF EXISTS market.tag_member;
 DROP TABLE IF EXISTS market.message;
 DROP TABLE IF EXISTS market.chat;
 drop table if exists market.offer;
 drop table if exists market.dibs;
 drop table if exists market.item;
+drop table if exists market.tag_item;
 drop table if exists market.member;
 drop table if exists market.email;
 
@@ -95,6 +98,31 @@ CREATE TABLE message (
     created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (chat) REFERENCES chat(id),
     FOREIGN KEY (sender) REFERENCES member(id)
+);
+
+CREATE TABLE tag (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE tag_item (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    item BIGINT NOT NULL,
+    tag BIGINT NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (item) REFERENCES item(id),
+    FOREIGN KEY (tag) REFERENCES tag(id)
+);
+
+CREATE TABLE tag_member (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    member BIGINT NOT NULL,
+    tag BIGINT NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (member) REFERENCES member(id),
+    FOREIGN KEY (tag) REFERENCES tag(id)
 );
 
 CREATE INDEX idx_item_id_is_deleted ON item (id, is_deleted);

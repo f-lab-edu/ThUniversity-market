@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="university.market.tag.mapper.TagMemberMapper">
+
+    <resultMap id="TagMemberResultMap" type="university.market.tag.domain.TagMemberVO">
+        <id property="id" column="id"/>
+        <result property="createdAt" column="created_at"/>
+
+        <association property="tag" javaType="university.market.tag.domain.TagVO">
+            <id property="id" column="tag_id"/>
+            <result property="title" column="tag_title"/>
+            <result property="createdAt" column="tag_created_at"/>
+            <result property="updatedAt" column="tag_updated_at"/>
+        </association>
+
+        <association property="member" javaType="university.market.member.domain.MemberVO">
+            <id property="id" column="member_id"/>
+            <result property="name" column="member_name"/>
+            <result property="email" column="member_email"/>
+            <result property="university" column="member_university"/>
+        </association>
+    </resultMap>
+
+    <insert id="insertTagMember" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tag_member (tag, member, created_at)
+        VALUES (#{tag.id}, #{member.id}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <select id="findTagMemberById" resultMap="TagMemberResultMap">
+        SELECT tm.id,
+               tm.created_at,
+               tag.id            AS tag_id,
+               tag.title         AS tag_title,
+               tag.created_at    AS tag_created_at,
+               tag.updated_at    AS tag_updated_at,
+               member.id         AS member_id,
+               member.name       AS member_name,
+               member.email      AS member_email,
+               member.university AS member_university
+        FROM tag_member tm
+                 JOIN tag ON tm.tag = tag.id
+                 JOIN member ON tm.member = member.id
+        WHERE tm.id = #{id}
+    </select>
+
+    <select id="findTagMembersByTagId" resultMap="TagMemberResultMap">
+        SELECT tm.id,
+               tm.created_at,
+               tag.id            AS tag_id,
+               tag.title         AS tag_title,
+               tag.created_at    AS tag_created_at,
+               tag.updated_at    AS tag_updated_at,
+               member.id         AS member_id,
+               member.name       AS member_name,
+               member.email      AS member_email,
+               member.university AS member_university
+        FROM tag_member tm
+                 JOIN tag ON tm.tag = tag.id
+                 JOIN member ON tm.member = member.id
+        WHERE tag.id = #{tagId}
+    </select>
+
+    <select id="findTagMembersByMemberId" resultMap="TagMemberResultMap">
+        SELECT tm.id,
+               tm.created_at,
+               tag.id            AS tag_id,
+               tag.title         AS tag_title,
+               tag.created_at    AS tag_created_at,
+               tag.updated_at    AS tag_updated_at,
+               member.id         AS member_id,
+               member.name       AS member_name,
+               member.email      AS member_email,
+               member.university AS member_university
+        FROM tag_member tm
+                 JOIN tag ON tm.tag = tag.id
+                 JOIN member ON tm.member = member.id
+        WHERE member.id = #{memberId}
+    </select>
+
+    <delete id="deleteTagMember">
+        DELETE
+        FROM tag_member
+        WHERE id = #{id}
+    </delete>
+</mapper>

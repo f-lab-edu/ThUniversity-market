@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="university.market.tag.mapper.TagMapper">
+    <resultMap id="TagResultMap" type="university.market.tag.domain.TagVO">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <insert id="insertTag" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tag (title, created_at, updated_at)
+        VALUES (#{title}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    </insert>
+
+    <select id="findTagById" resultMap="TagResultMap">
+        SELECT *
+        FROM tag
+        WHERE id = #{id}
+    </select>
+
+    <select id="findTagByTitle" resultMap="TagResultMap">
+        SELECT *
+        FROM tag
+        WHERE title = #{title}
+    </select>
+
+    <delete id="deleteTag">
+        DELETE
+        FROM tag
+        WHERE id = #{id}
+    </delete>
+</mapper>
