@@ -1,5 +1,6 @@
 package university.market.item.service;
 
+import java.util.List;
 import university.market.item.domain.ItemVO;
 import university.market.item.service.dto.request.PostItemRequest;
 import university.market.item.service.dto.request.UpdateItemRequest;
@@ -13,4 +14,6 @@ public interface ItemService {
     void deleteItem(Long id, MemberVO currentMember);
 
     ItemVO getItemById(Long id);
+
+    List<ItemVO> getItemsByUniversity(String universityType);
 }

@@ -1,5 +1,6 @@
 package university.market.item.controller;
 
+import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -82,5 +83,11 @@ public class ItemController {
     public ResponseEntity<Void> deleteItem(@PathVariable Long itemId) {
         itemService.deleteItem(itemId, httpRequest.getCurrentMember());
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
+    @GetMapping("/university/{universityType}")
+    public ResponseEntity<List<ItemVO>> getItemsByUniversity(@PathVariable String universityType) {
+        return ResponseEntity.ok(itemService.getItemsByUniversity(universityType));
     }
 }

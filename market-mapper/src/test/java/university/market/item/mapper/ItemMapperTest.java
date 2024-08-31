@@ -3,6 +3,7 @@ package university.market.item.mapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -89,5 +90,20 @@ public class ItemMapperTest {
 
         // then
         assertThat(deletedItem).isNull();
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("[success] 대학교 item 찾기 성공")
+    public void 대학교_item_찾기_성공() {
+        // given
+        itemMapper.postItem(item);
+
+        // when
+        List<ItemVO> foundItem = itemMapper.getItemsByUniversity(member.getUniversity());
+
+        // then
+        assertThat(foundItem.size()).isEqualTo(1);
+        assertThat(foundItem.get(0).getTitle()).isEqualTo(item.getTitle());
     }
 }

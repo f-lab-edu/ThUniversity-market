@@ -1,5 +1,6 @@
 package university.market.item.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import university.market.item.service.dto.request.UpdateItemRequest;
 import university.market.member.annotation.AuthCheck;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
+import university.market.member.domain.university.UniversityType;
 import university.market.tag.service.TagService;
 import university.market.utils.auth.PermissionCheck;
 
@@ -85,10 +87,16 @@ public class ItemServiceImpl implements ItemService {
         itemMapper.deleteItem(itemId);
     }
 
+
     @AuthCheck({AuthType.ROLE_USER, AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Transactional
     @Override
     public ItemVO getItemById(Long id) {
         return itemMapper.getItemById(id);
+    }
+
+    @Override
+    public List<ItemVO> getItemsByUniversity(String universityType) {
+        return itemMapper.getItemsByUniversity(UniversityType.valueOf(universityType.toUpperCase()).getValue());
     }
 }
