@@ -2,6 +2,7 @@ package university.market.tag.service;
 
 import java.util.List;
 import university.market.item.domain.ItemVO;
+import university.market.member.domain.MemberVO;
 import university.market.tag.domain.TagItemVO;
 import university.market.tag.domain.TagMemberVO;
 import university.market.tag.service.dto.request.TagMemberRequest;
@@ -11,11 +12,11 @@ public interface TagService {
 
     void createTagItem(List<String> tags, ItemVO item);
 
-    void deleteTagItem(long tagItemId);
+    void deleteTagItem(long tagItemId, MemberVO member);
 
-    void createTagMember(TagMemberRequest request);
+    void createTagMember(TagMemberRequest request, MemberVO member);
 
-    void deleteTagMember(long tagMemberId);
+    void deleteTagMember(long tagMemberId, MemberVO member);
 
     List<TagItemVO> findTagItemsByTagId(long TagId);
 

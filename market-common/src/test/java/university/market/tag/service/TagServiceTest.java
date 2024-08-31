@@ -3,6 +3,7 @@ package university.market.tag.service;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -18,6 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import university.market.item.domain.ItemVO;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.auth.AuthType;
+import university.market.member.exception.MemberException;
+import university.market.member.exception.MemberExceptionType;
 import university.market.tag.domain.TagItemVO;
 import university.market.tag.domain.TagMemberVO;
 import university.market.tag.domain.TagVO;
@@ -27,6 +30,7 @@ import university.market.tag.mapper.TagItemMapper;
 import university.market.tag.mapper.TagMapper;
 import university.market.tag.mapper.TagMemberMapper;
 import university.market.tag.service.dto.request.TagMemberRequest;
+import university.market.utils.auth.PermissionCheck;
 import university.market.utils.test.helper.item.ItemFixture;
 import university.market.utils.test.helper.member.MemberFixture;
 import university.market.utils.test.helper.tag.TagFixture;
@@ -41,6 +45,9 @@ class TagServiceTest {
 
     @Mock
     private TagMemberMapper tagMemberMapper;
+
+    @Mock
+    private PermissionCheck permissionCheck;
 
     @InjectMocks
     private TagServiceImpl tagService;
@@ -108,7 +115,6 @@ class TagServiceTest {
         TagMemberRequest tagMemberRequest = TagMemberRequest
                 .builder()
                 .tagId(tag.getId())
-                .member(member)
                 .build();
 
         tagMember = TagMemberVO.builder()
@@ -122,12 +128,56 @@ class TagServiceTest {
         doNothing().when(tagMemberMapper).insertTagMember(tagMember);
 
         // when
-        tagService.createTagMember(tagMemberRequest);
+        tagService.createTagMember(tagMemberRequest, member);
 
         // then
         verify(tagMemberMapper).findTagMembersByTagId(tag.getId());
         verify(tagMapper).findTagById(tag.getId());
         verify(tagMemberMapper).insertTagMember(tagMember);
+    }
+
+    @Test
+    @DisplayName("[fail] 태그 멤버 삭제 - 권한 없음")
+    void deleteTagMember_태그_멤버_삭제_권한_없음() {
+        // given
+        TagMemberVO tagMember = TagMemberVO.builder()
+                .tag(tag)
+                .member(member)
+                .build();
+
+        MemberVO testMember = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
+
+        // mocking
+        when(tagMemberMapper.findTagMemberById(tagMember.getId())).thenReturn(Optional.of(tagMember));
+        doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION)).when(permissionCheck)
+                .hasPermission(any());
+
+        // when & then
+        assertThatThrownBy(() -> tagService.deleteTagMember(tagMember.getId(), testMember))
+                .isInstanceOf(MemberException.class)
+                .hasMessage(MemberExceptionType.UNAUTHORIZED_PERMISSION.errorMessage());
+    }
+
+    @Test
+    @DisplayName("[fail] 태그 아이템 삭제 - 권한 없음")
+    void deleteTagItem_태그_아이템_삭제_권한_없음() {
+        // given
+        TagItemVO tagItem = TagItemVO.builder()
+                .tag(tag)
+                .item(item)
+                .build();
+
+        MemberVO testMember = MemberFixture.testIdMember(AuthType.ROLE_VERIFY_USER);
+
+        // mocking
+        when(tagItemMapper.findTagItemById(tagItem.getId())).thenReturn(Optional.of(tagItem));
+        doThrow(new MemberException(MemberExceptionType.UNAUTHORIZED_PERMISSION)).when(permissionCheck)
+                .hasPermission(any());
+
+        // when & then
+        assertThatThrownBy(() -> tagService.deleteTagItem(tagItem.getId(), testMember))
+                .isInstanceOf(MemberException.class)
+                .hasMessage(MemberExceptionType.UNAUTHORIZED_PERMISSION.errorMessage());
     }
 
     @Test
@@ -137,7 +187,6 @@ class TagServiceTest {
         TagMemberRequest tagMemberRequest = TagMemberRequest
                 .builder()
                 .tagId(tag.getId())
-                .member(member)
                 .build();
 
         tagMember = TagMemberVO.builder()
@@ -150,7 +199,7 @@ class TagServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> tagService.createTagMember(tagMemberRequest))
+        assertThatThrownBy(() -> tagService.createTagMember(tagMemberRequest, member))
                 .isInstanceOf(TagException.class)
                 .hasMessage(TagExceptionType.ALREADY_EXIST_TAG_MEMBER.errorMessage());
     }

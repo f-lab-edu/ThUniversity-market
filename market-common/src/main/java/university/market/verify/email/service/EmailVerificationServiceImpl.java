@@ -9,6 +9,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import university.market.member.service.MemberService;
 import university.market.utils.random.RandomUtil;
 import university.market.verify.email.domain.EmailVO;
 import university.market.verify.email.exception.EmailException;
@@ -22,6 +23,7 @@ import university.market.verify.email.utils.content.EmailContent;
 @RequiredArgsConstructor
 public class EmailVerificationServiceImpl implements EmailVerificationService {
 
+    private final MemberService memberService;
     private final JavaMailSender javaMailSender;
     private final EmailMapper emailMapper;
     private final EmailContent emailContent;
@@ -52,6 +54,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         if (!Objects.equals(findEmail.getVerificationCode(), request.verificationCode())) {
             throw new EmailException(EmailExceptionType.INVALID_VERIFICATION_CODE);
         }
+        memberService.verifyEmailUser(request);
     }
 
     public void saveVerificationCode(String email, String verificationCode) {

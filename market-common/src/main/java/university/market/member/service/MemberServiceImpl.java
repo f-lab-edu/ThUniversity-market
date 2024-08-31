@@ -25,7 +25,6 @@ public class MemberServiceImpl implements MemberService {
     private final MemberMapper memberMapper;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
-    private final EmailVerificationService emailVerificationService;
 
     @Transactional
     public void joinMember(JoinRequest joinRequest) {
@@ -67,8 +66,6 @@ public class MemberServiceImpl implements MemberService {
     @AuthCheck({AuthType.ROLE_USER})
     @Transactional
     public void verifyEmailUser(CheckVerificationCodeRequest checkVerificationCodeRequest) {
-        emailVerificationService.checkVerificationCode(checkVerificationCodeRequest);
-
         try {
             memberMapper.updateAuth(checkVerificationCodeRequest.email(), AuthType.ROLE_VERIFY_USER);
         } catch (Exception e) {
