@@ -4,4 +4,5 @@ include 'market-common'
 include 'market-socket'
 include 'market-domain'
 include 'market-mapper'
+include 'market-batch'
 
